@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaSearch } from "react-icons/fa";
-import Pagination from '../pages/Pagination';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Categories() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -10,7 +13,9 @@ function Categories() {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [newCategory, setNewCategory] = useState('');
+    const [editCategory, setEditCategory] = useState(null);
+
+    const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
         fetchItems();
@@ -20,33 +25,107 @@ function Categories() {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get(`${baseUrl}/admin/categories`);
-            console.log(response.data);
-            // Access the categories array from the response
+            const response = await axios.get(`${baseUrl}/admin/categories-list`);
+            // console.log(response.data.data.categories, "Fetched Categories");
             setItems(response.data.data.categories || []);
         } catch (error) {
+            console.error('Error fetching categories:', error);
             setError('Failed to fetch items. Please try again later.');
-            console.error('Error fetching items:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddCategory = async () => {
+    const handleAddcategory = async (data) => {
+        if (!data.title.trim()) {
+            alert("Please enter a Category name.");
+            return;
+        }
+
         try {
-            await axios.post(`${baseUrl}/admin/categories`, { title: newCategory });
+            const response = await axios.post(`${baseUrl}/admin/categories`, { title: data.title });
+            // console.log('Category added:', response.data);
             setShowModal(false);
             fetchItems();
-            setNewCategory('');
         } catch (error) {
-            console.error('Error adding category:', error);
+            console.error('Error adding Category:', error);
+            setError('Failed to add Category. Please try again.');
         }
     };
+
+    const handleDelete = async (_id) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+        });
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`${baseUrl}/admin/categories-delete/${_id}`);
+                fetchItems();
+                toast.success('Item deleted successfully!', {
+                    position: "top-right",
+                    autoClose: 1000,
+                    theme: "colored",
+                });
+            } catch (error) {
+                setError('Failed to delete item. Please try again.');
+                console.error('Error deleting item:', error);
+                toast.error('Failed to delete item. Please try again.', {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: "colored",
+                });
+            }
+        }
+    };
+
+    const handleEdit = (item) => {
+        setEditCategory(item);
+        setShowModal(true);
+        setValue('title', item.title);  // Updated field name
+    };
+
+    const onSubmit = async (data) => {
+        if (editCategory) {
+            try {
+                const response = await axios.put(`${baseUrl}/admin/categories-update/${editCategory._id}`, { title: data.title });
+                if (response.data.success) {
+                    toast.success(response.data.message || "Item updated successfully!", {
+                        position: "top-right",
+                        autoClose: 1000,
+                        theme: "colored",
+                        style: {
+                            backgroundColor: '#FFEB3B',
+                            color: '#000',
+                        },
+                    });
+                    reset();
+                    setEditCategory(null);
+                    fetchItems();
+                    setShowModal(false);
+                }
+            } catch (error) {
+                console.error("Error details:", error.response ? error.response.data : error);
+                toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
+            }
+        } else {
+            handleAddcategory(data);
+        }
+    };
+
 
     return (
         <div className="page-container">
             <div className="header">
-                <div className="add-item" onClick={() => setShowModal(true)}>
+                <div className="add-item" onClick={() => {
+                    setShowModal(true);
+                    setEditCategory(null);
+                    reset();
+                }}>
                     <FaPlus className="plus-icon" />
                     <span className="text-white">Add New Category</span>
                 </div>
@@ -62,22 +141,22 @@ function Categories() {
                 </div>
             </div>
 
-            {/* Modal for adding new category */}
             {showModal && (
-                <div className="modal">
+                <div className="modal-backdrop">
                     <div className="modal-content">
-                        <h3>Add New Category</h3>
-                        <input
-                            type="text"
-                            placeholder="Enter category name"
-                            value={newCategory}
-                            onChange={(e) => setNewCategory(e.target.value)}
-                            className="form-control"
-                        />
-                        <span>
-                            <button onClick={handleAddCategory} className="edit-btn">Submit</button>
-                            <button onClick={() => setShowModal(false)} className="delete-btn">Close</button>
-                        </span>
+                        <h3>{editCategory ? 'Edit Category' : 'Add New Category'}</h3>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <input
+                                type="text"
+                                placeholder="Enter Category name"
+                                {...register('title', { required: true })}
+                                className="form-control"
+                            />
+                            <div className="modal-actions mt-3">
+                                <button type="submit" className="edit-btn">{editCategory ? 'Update' : 'Submit'}</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="delete-btn">Close</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
@@ -87,32 +166,30 @@ function Categories() {
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (
-                <div className="no-data">No categories found</div>
+                <div className="no-data">No Categories found</div>
             ) : (
                 <table className="table mt-3">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Status</th>
+                            <th>Category</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items
-                            .filter((item) => item.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .filter((item) => item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase())) // Fixed filter condition
                             .map((item) => (
-                                <tr key={item._id} className="table-row">
+                                <tr key={item._id}>
                                     <td>{item.title}</td>
-                                    <td>{item.isActive ? "Active" : "Inactive"}</td>
                                     <td className="actions d-flex justify-content-end">
-                                        <button className="edit-btn">EDIT</button>
-                                        <button className="delete-btn ms-5">DELETE</button>
+                                        <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
+                                        <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
                                     </td>
                                 </tr>
                             ))}
                     </tbody>
                 </table>
             )}
-            <Pagination />
+            <ToastContainer />
         </div>
     );
 }

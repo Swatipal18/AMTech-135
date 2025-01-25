@@ -645,6 +645,7 @@ input::placeholder {
 }
 
 .header {
+    border: 1px solid red;
     background-color: var(--secondary-color);
     padding: 0.5rem;
     display: flex;
@@ -686,6 +687,7 @@ input::placeholder {
 }
 
 .search input {
+    height: 2rem;
     border: none;
     outline: none;
     background: none;
@@ -696,8 +698,9 @@ input::placeholder {
 }
 
 .search input::placeholder {
-    color: #fff;
+    color: #fff !important;
     opacity: 1;
+    font-size: 16px;
 }
 
 .search .search-icons {
@@ -707,10 +710,11 @@ input::placeholder {
 }
 
 .custom-select {
-    width: 100px;
+    width: 120px !important;
     color: #0B2545;
-    border: 2px solid #0B2545;
+    border: 2px solid #0B2545 !important;
     border-radius: 30px !important;
+    margin-left: 20px;
 }
 
 .custom-select:focus {
@@ -731,14 +735,18 @@ input::placeholder {
 .table th {
     padding: 12px;
     text-align: left;
-    color: #929090;
+    color: #929090 !important;
     border: none;
+}
+
+
+.table tbody tr {
+    border-bottom: 3px dashed #ccc !important;
 }
 
 .table td {
     padding: 12px;
     text-align: left;
-    border-bottom: 3px dashed #ccc;
     margin-bottom: -1.5px;
 }
 
@@ -751,12 +759,12 @@ input::placeholder {
 .star {
     font-size: 20px;
     font-weight: bold;
-    color: #00b300;
+    color: #34C759;
     margin-bottom: 9.5px !important;
 }
 
 .filled {
-    color: #00b300;
+    color: #34C759;
 }
 
 .empty {
@@ -816,7 +824,7 @@ input::placeholder {
 }
 
 .actions {
-    border: none;
+    /* /border: none; */
     border-radius: 5px;
     padding: 6px 12px;
     cursor: pointer;
@@ -938,41 +946,45 @@ input::placeholder {
 }
 
 /* Categories */
-.modal {
+/*  */
+
+/* add Size&Category */
+.modal-backdrop {
+    margin-top: 7.5em;
+    margin-left: 30rem;
+    height: 200px !important;
+    width: 48% !important;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background-color: var(--secondary-color) !important;
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
+    border-radius: 50px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 400px;
+    max-width: 90%;
     text-align: center;
 }
 
-.modal input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #504646;
-    color: #f6f2f2;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    font-size: 14px;
+.modal-content h3 {
+    margin-bottom: 15px;
+    color: #0B2545;
 }
 
-.modal input:focus {
-    background-color: #fff;
-    border-color: #007bff;
-    outline: none;
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
 }
 
 /* staff styles */
@@ -1010,20 +1022,15 @@ input::placeholder {
 
 .order-card {
     background-color: var(--backdround-color);
-    /* Fix typo in var name */
     color: white;
     padding: 15px;
     border-radius: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     font-size: 14px;
     width: 100%;
-    /* Ensure the card fills the column */
     height: auto;
-    /* Adjust height based on content */
     break-inside: avoid;
-    /* Prevents items from breaking between columns */
     margin-bottom: 10px;
-    /* Space between cards vertically */
     position: relative;
 
 
@@ -1318,7 +1325,7 @@ input::placeholder {
 }
 
 .toggle-switch.on {
-    background-color: green;
+    background-color: #34C759;
 
 }
 
@@ -1404,8 +1411,8 @@ input::placeholder {
     border-radius: 30px;
     color: var(--backdround-color);
     padding: 6px;
-    /* background-image: url('/src/assets/Audios/new-order-store-admin.mp3'); */
 }
+
 
 @media (max-width: 768px) {
     .sidebar-wrapper.col-auto {

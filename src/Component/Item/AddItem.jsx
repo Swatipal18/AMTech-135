@@ -34,7 +34,7 @@ function AddItem() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const category = await axios.get(`${baseUrl}/admin/categories`);
+                const category = await axios.get(`${baseUrl}/admin/categories-list`);
                 setCategories(category.data.data.categories);
                 const sizes = await axios.get(`${baseUrl}/size/list`);
                 setSizes(sizes.data.data.sizes);

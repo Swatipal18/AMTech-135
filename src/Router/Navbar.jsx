@@ -18,6 +18,7 @@ import EditStaff from '../Component/Staff/EditStaff'
 import EditItem from '../Component/Item/EditItem'
 import AllNotifications from '../Component/Notifications/AllNotifications'
 import NewNotification from '../Component/Notifications/NewNotification'
+import Sizes from '../Component/Item/Size/Sizes'
 
 
 function Navbar() {
@@ -51,10 +52,10 @@ function Navbar() {
                     path: "/categories",
                     element: <Categories />
                 },
-                // {
-                //     path: "/sizes",
-                //     element: <Sizes />
-                // },
+                {
+                    path: "/sizes",
+                    element: <Sizes />
+                },
 
                 // Staff Management Routes
                 {

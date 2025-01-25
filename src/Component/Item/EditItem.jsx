@@ -14,8 +14,8 @@ function EditItem() {
     const [image, setImage] = useState(null);
     const [imageError, setImageError] = useState('');
     const [rating, setRating] = useState(0);
-    const [categories, setCategories] = useState([]); // Initialized as empty array
-    const [sizes, setSizes] = useState([]); // Initialized as empty array
+    const [categories, setCategories] = useState([]);
+    const [sizes, setSizes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [imagePreviews, setImagePreviews] = useState(null);
@@ -55,7 +55,7 @@ function EditItem() {
     };
 
     const onSubmit = async (data) => {
-        console.log("Submitted Data:", data);   
+        console.log("Submitted Data:", data);
         try {
             const formData = new FormData();
             formData.append('images', data.images);

@@ -48,7 +48,7 @@ const AllItem = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/admin/categories`);
+      const response = await axios.get(`${baseUrl}/admin/categories-list`);
       if (response.data?.data?.categories) {
         setCategories(response.data.data.categories);
       } else {
@@ -191,6 +191,7 @@ const AllItem = () => {
             </tbody>
           </table>
         )}
+      <ToastContainer />
     </div >
   );
 };
