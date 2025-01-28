@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; // Import SweetAlert2
-import { ToastContainer, toast } from 'react-toastify'; // Import Toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import Swal from 'sweetalert2'; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AllStaff = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -30,8 +30,6 @@ const AllStaff = () => {
     } catch (error) {
       setError('Failed to fetch staff details. Please try again.');
       console.error('Error fetching staff details:', error);
-
-      // Display error notification with toast
       toast.error('Failed to fetch staff details. Please try again.', {
         position: "top-right",
         autoClose: 3000,
@@ -43,7 +41,6 @@ const AllStaff = () => {
   };
 
   const handleDelete = async (id) => {
-    // Confirmation dialog using SweetAlert2
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "This action cannot be undone!",
@@ -150,7 +147,7 @@ const AllStaff = () => {
         </table>
       )}
 
-      <ToastContainer /> {/* ToastContainer for notifications */}
+      <ToastContainer /> 
     </div>
   );
 };

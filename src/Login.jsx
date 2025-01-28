@@ -24,18 +24,19 @@ const Login = () => {
                     password: data.password,
                 }
             );
+            // console.log(response.data);
             toast.success("Login successful!", {
                 position: "top-right",
                 autoClose: 3000,
                 theme: "colored",
             });
-
+            reset();
             navigate("/Admin");
             // const token = response.data.data.token;
             // console.log(token, "response");
 
             // localStorage.setItem("authToken", token);
-            reset();
+
 
         } catch (err) {
             console.log(err);

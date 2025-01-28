@@ -36,16 +36,13 @@ function Sizes() {
     };
 
     const handleAddSize = async (data) => {
-        // Ensure size name is not empty
         if (!data.size.trim()) {
             alert("Please enter a size name.");
             return;
         }
 
         try {
-            // Send POST request to add the size
             const response = await axios.post(`${baseUrl}/size/create`, { size: data.size });
-            console.log('Size added:', response.data);  // Log response for debugging
             setShowModal(false);
             fetchItems();
         } catch (error) {
@@ -114,7 +111,7 @@ function Sizes() {
                 toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
             }
         } else {
-            handleAddcategory(data);
+            handleAddSize(data);
         }
     };
 

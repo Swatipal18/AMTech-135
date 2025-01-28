@@ -40,14 +40,13 @@ function AddStaff() {
         try {
             const url = "http://192.168.1.12:9000/store/create";
             const response = await axios.post(url, data);
-            toast.success("Form submitted successfully!"); // Success toast
+            toast.success("Form submitted successfully!");
             reset();
             setSelectedRole('');
             setImagePreview(null);
 
 
-            navigate('/AllStaff'); // Change '/staff-list' to the desired route
-
+            navigate('/AllStaff');
         } catch (error) {
             console.error("Error submitting form:", error);
             toast.error("Failed to submit the form. Please try again."); // Error toast
@@ -166,7 +165,7 @@ function AddStaff() {
 
                                 {/* Button Section */}
                                 <div className="mt-4">
-                                    <button type="submit" className="submit-btn">ADD ITEM</button>
+                                    <button type="submit" className="submit-btn">ADD STAFF</button>
                                 </div>
                             </div>
                         </form>

@@ -2,11 +2,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
 /* styles.css */
 :root {
@@ -540,8 +535,11 @@ input::placeholder {
     text-align: center;
     background-color: #f8f9fa;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
 }
 
+/* Icon */
 .upload-icon {
     color: #6982a5;
     margin-bottom: 8px;
@@ -550,9 +548,9 @@ input::placeholder {
 .arrow-up {
     font-size: 40px;
     display: inline-block;
-
 }
 
+/* Upload Text and Subtext */
 .upload-text {
     color: #6982a5;
     margin-bottom: 5px;
@@ -560,14 +558,92 @@ input::placeholder {
 
 .upload-subtext {
     color: #6982a5;
-    font-size: 14px;
+    font-size: 8px;
 }
 
-.img-thumbnail {
-    max-width: 180px !important;
-    max-height: 150px !important;
-    margin-top: -20px;
+/* Image Preview */
+.image-preview-container {
+
+
+    margin-top: 15px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.image-preview-container img {
+    border: 2px solid #0b2545;
+    width: 4500px !important;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Modal Overlay (for large image preview) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+}
+
+/* Modal Main Container (changed to modal-div) */
+.modal-div {
+    width: 900px;
+    height: 600px;
+    position: relative;
+    padding: 18px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Close Button */
+.close-button {
+    position: absolute;
+    right: 10px;
+    top: -40px;
+    color: white;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Image inside modal */
+.modal-div img {
+    width: 100% !important;
+    height: 450px !important;
     object-fit: contain;
+    border-radius: 10px;
+}
+
+.crop-controls {
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* Add margin or padding if needed */
+input[type="range"] {
+    flex: 1;
+    margin: 0 10px;
+    color: #00ff51 !important;
+}
+
+.crop-controls input[type="range"] {
+    z-index: 1050;
 }
 
 .rating-stars {
@@ -637,6 +713,12 @@ input::placeholder {
 
 }
 
+.disabled-select {
+    pointer-events: none;
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
 /* table Item */
 
 .page-container {
@@ -645,7 +727,6 @@ input::placeholder {
 }
 
 .header {
-    border: 1px solid red;
     background-color: var(--secondary-color);
     padding: 0.5rem;
     display: flex;
@@ -741,7 +822,7 @@ input::placeholder {
 
 
 .table tbody tr {
-    border-bottom: 3px dashed #ccc !important;
+    border-bottom: 4px dotted #ccc !important;
 }
 
 .table td {
@@ -752,6 +833,7 @@ input::placeholder {
 
 /* Rating Stars */
 .rating {
+    border: none;
     display: flex;
     gap: 6px;
 }
@@ -824,7 +906,7 @@ input::placeholder {
 }
 
 .actions {
-    /* /border: none; */
+    border: none;
     border-radius: 5px;
     padding: 6px 12px;
     cursor: pointer;
@@ -847,10 +929,26 @@ input::placeholder {
 }
 
 .edit-btn:hover {
-    background-color: #000080;
-    color: #ffffff;
+    background-color: #000080 !important;
+    color: #ffffff !important;
     border: 2px solid #000080;
     opacity: 0.9;
+}
+
+.zoom-icon {
+    background-color: #ffffff;
+    color: #000080;
+    border: 2px solid #000080;
+    border-radius: 30px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100px;
+    height: 40px;
+    margin-right: 10px;
 }
 
 .delete-btn {

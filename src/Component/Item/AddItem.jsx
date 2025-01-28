@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { GrUploadOption } from "react-icons/gr";
+import { GrUploadOption, GrClose } from "react-icons/gr";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
+import Cropper from 'react-easy-crop';
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { GoPlusCircle } from "react-icons/go";
+import { FiMinusCircle } from "react-icons/fi";
 
 function AddItem() {
     const { register, handleSubmit, setValue, reset, watch } = useForm({
@@ -23,15 +28,21 @@ function AddItem() {
             }]
         }
     });
-
+    const baseUrl = import.meta.env.VITE_API_URL;
     const [imagePreviews, setImagePreviews] = useState("");
     const [imageError, setImageError] = useState('');
     const [rating, setRating] = useState(0);
     const [categories, setCategories] = useState([]);
     const [sizes, setSizes] = useState([]);
-    const baseUrl = import.meta.env.VITE_API_URL;
+    const [imageSelected, setImageSelected] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [rotation, setRotation] = useState(0);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
+
         const fetchData = async () => {
             try {
                 const category = await axios.get(`${baseUrl}/admin/categories-list`);
@@ -59,11 +70,10 @@ function AddItem() {
     };
 
     const addBusinessVariant = () => {
-        const sizeArray = watch("size");
+        const sizeArray = watch("size") || [];
         sizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
         setValue("size", sizeArray);
     };
-
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -71,6 +81,7 @@ function AddItem() {
             if (!allowedTypes.includes(file.type)) {
                 setImageError('Only image files (JPG, PNG) are allowed!');
                 setImagePreviews(null);
+                setImageSelected(false);
                 return;
             }
 
@@ -78,18 +89,36 @@ function AddItem() {
             if (fileSizeInMB > 10) {
                 setImageError('File size should not exceed 10 MB.');
                 setImagePreviews(null);
+                setImageSelected(false);
                 return;
             }
             setImagePreviews(URL.createObjectURL(file));
             setValue("images", file);
-            console.log(file, "file");
+            setImageSelected(true);
             setImageError('');
         }
     };
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+    const updateImagePreview = async () => {
+        try {
+            const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
+            setImagePreviews(croppedImage);
+            const base64Response = await fetch(croppedImage);
+            const blob = await base64Response.blob();
+            const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
+            setValue("images", croppedFile);
 
-
+        } catch (error) {
+            console.error("Error while cropping the image: ", error);
+        }
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
     const onSubmit = async (data) => {
-        // console.log(data.images)
+
         try {
             const formData = new FormData();
             formData.append('images', data.images)
@@ -202,12 +231,105 @@ function AddItem() {
                                         <GrUploadOption className="arrow-up" />
                                     </div>
                                     {imagePreviews ? (
-                                        <img
-                                            src={imagePreviews}
-                                            alt="Uploaded Preview"
-                                            className="img-thumbnail"
-                                            style={{ maxWidth: "100%", height: "auto" }}
-                                        />
+                                        <>
+                                            <div className="image-preview-container mt-3">
+                                                <img
+                                                    src={imagePreviews}
+                                                    alt="Uploaded Preview"
+                                                    className="img-thumbnail cursor-pointer"
+                                                    style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                    onClick={() => setIsModalOpen(true)}
+                                                />
+                                            </div>
+
+                                            {isModalOpen && (
+                                                <div
+                                                    className="modal-overlay"
+                                                    onClick={(e) => {
+                                                        if (e.target === e.currentTarget) {
+                                                            closeModal();
+                                                        }
+                                                    }}
+                                                >
+                                                    <div
+                                                        className="modal-div"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <button
+                                                            type='button'
+                                                            onClick={closeModal}
+                                                            className="close-button"
+                                                        >
+                                                            <GrClose />
+                                                        </button>
+                                                        <Cropper
+                                                            image={imagePreviews}
+                                                            crop={crop}
+                                                            zoom={zoom}
+                                                            rotation={rotation}
+                                                            aspect={5 / 3}
+                                                            onCropChange={setCrop}
+                                                            onZoomChange={setZoom}
+                                                            onRotationChange={setRotation}
+                                                            onCropComplete={onCropComplete}
+                                                        />
+                                                        <div className="crop-controls">
+                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    " style={{ width: "180px", fontSize: "15px" }}>
+                                                                <label className="form-labels me-2">Zoom</label>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm border-0 "
+                                                                    onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                >
+                                                                    <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                </button>
+                                                                <span className="mx-2">{zoom.toFixed(1)}x</span>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm border-0"
+                                                                    onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                >
+                                                                    <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                </button>
+                                                            </div>
+                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  " style={{ width: "130px", fontSize: "15px" }} >
+                                                                <label className="form-labels">Rotation</label>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm  mx-2 border-0"
+                                                                    onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                                >
+                                                                    <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                                </button>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                style={{ fontSize: "15px" }}
+                                                                className="edit-btn"
+                                                                onClick={async () => {
+                                                                    console.log("Done button clicked");
+                                                                    await updateImagePreview();
+                                                                    closeModal();
+                                                                }}
+                                                            >
+                                                                Done
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                style={{ fontSize: "15px" }}
+                                                                className="edit-btn full-size-btn"
+                                                                onClick={() => {
+                                                                    setZoom(1);
+                                                                    setRotation(0);
+                                                                }}
+                                                            >
+                                                                Real Size
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <>
                                             <div className="upload-text fs-5">Upload Image Here</div>
@@ -236,7 +358,6 @@ function AddItem() {
                                 {imageError && <div className="text-danger mt-2">{imageError}</div>}
                             </div>
                         </div>
-
                         {/* Business Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Business Menu Variants</h3>
@@ -292,7 +413,10 @@ function AddItem() {
                                     </div>
                                 </div>
                             ))}
-                            <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                            <button type="button" className="add-variant-btn" onClick={() => {
+                                addBusinessVariant();
+                                // removeBusinessVariant(index);
+                            }}>
                                 + ADD VARIANT
                             </button>
                         </div>
@@ -365,9 +489,9 @@ function AddItem() {
                         </div>
                     </form>
                 </div>
-            </div>
+            </div >
             <ToastContainer />
-        </div>
+        </div >
     );
 }
 
