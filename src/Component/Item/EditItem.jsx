@@ -1,25 +1,48 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { GrUploadOption } from "react-icons/gr";
-import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { GrUploadOption, GrClose } from "react-icons/gr";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
+import Cropper from 'react-easy-crop';
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { GoPlusCircle } from "react-icons/go";
+import { FiMinusCircle } from "react-icons/fi";
 
 function EditItem() {
-    const baseUrl = import.meta.env.VITE_API_URL;
-    const { register, handleSubmit, reset, setValue, watch } = useForm();
     const { id } = useParams();
-    const navigate = useNavigate();
-    const [image, setImage] = useState(null);
+    console.log(id);
+    const { register, handleSubmit, setValue, reset, watch } = useForm({
+        defaultValues: {
+            ratings: 0,
+            images: null,
+            size: [{
+                sizeId: "",
+                volume: "",
+                sizePrice: ""
+            }],
+            personalSize: [{
+                sizeId: "",
+                volume: "",
+                sizePrice: ""
+            }]
+        }
+    });
+    const baseUrl = import.meta.env.VITE_API_URL;
+    const [imagePreviews, setImagePreviews] = useState("");
     const [imageError, setImageError] = useState('');
     const [rating, setRating] = useState(0);
     const [categories, setCategories] = useState([]);
     const [sizes, setSizes] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [imagePreviews, setImagePreviews] = useState(null);
-
+    const [imageSelected, setImageSelected] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [rotation, setRotation] = useState(0);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const navigate = useNavigate();
     const handleRatingClick = (index) => {
         setRating(index + 1);
         setValue("ratings", index + 1);
@@ -32,7 +55,7 @@ function EditItem() {
             if (!allowedTypes.includes(file.type)) {
                 setImageError('Only image files (JPG, PNG) are allowed!');
                 setImagePreviews(null);
-                setImage(null);
+                setImageSelected(false);
                 return;
             }
 
@@ -40,22 +63,36 @@ function EditItem() {
             if (fileSizeInMB > 10) {
                 setImageError('File size should not exceed 10 MB.');
                 setImagePreviews(null);
-                setImage(null);
+                setImageSelected(false);
                 return;
             }
-
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreviews(reader.result);
-                setImage(file);
-                setImageError('');
-            };
-            reader.readAsDataURL(file);
+            setImagePreviews(URL.createObjectURL(file));
+            setValue("images", file);
+            setImageSelected(true);
+            setImageError('');
         }
     };
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+    const updateImagePreview = async () => {
+        try {
+            const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
+            setImagePreviews(croppedImage);
+            const base64Response = await fetch(croppedImage);
+            const blob = await base64Response.blob();
+            const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
+            setValue("images", croppedFile);
 
+        } catch (error) {
+            console.error("Error while cropping the image: ", error);
+        }
+    };
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
     const onSubmit = async (data) => {
-        console.log("Submitted Data:", data);
+        // console.log("Submitted Data:", data);
         try {
             const formData = new FormData();
             formData.append('images', data.images);
@@ -101,20 +138,25 @@ function EditItem() {
         setValue("size", sizeArray);
     };
 
-    const fetchStaffDetails = async () => {
+    const fetchItemDetails = async () => {
         try {
-            setLoading(true);
             const response = await axios.get(`${baseUrl}/menu/details/${id}`);
-            const staffData = response.data.data;
-
-            if (staffData.images) {
-                setImagePreviews(staffData.images);
+            const ItemData = response.data.data;
+            if (ItemData.images) {
+                setImagePreviews(ItemData.images);
             } else {
                 setImagePreviews(null);
             }
 
-            setRating(staffData.ratings || 0);
-            reset(staffData);
+            setRating(ItemData.ratings || 0);
+            reset({
+                ...ItemData,
+                ratings: ItemData.ratings || 0,
+                images: ItemData.images || null,
+                size: ItemData.size || [{ sizeId: "", volume: "", sizePrice: "" }],
+                personalSize: ItemData.personalSize || [{ sizeId: "", volume: "", sizePrice: "" }],
+            });
+
         } catch (err) {
             console.error("Error fetching staff details:", err);
             setError("Failed to load staff details. Please try again.");
@@ -130,13 +172,9 @@ function EditItem() {
 
     const fetchData = async () => {
         try {
-            // Fetch categories
-            const category = await axios.get(`${baseUrl}/admin/categories`);
+            const category = await axios.get(`${baseUrl}/admin/categories-list`);
             setCategories(category.data.data.categories);
-
-            // Fetch sizes
             const sizes = await axios.get(`${baseUrl}/size/list`);
-            // console.log(sizes.data.data.sizes, "sizes");
             setSizes(sizes.data.data.sizes);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -145,7 +183,7 @@ function EditItem() {
     };
 
     useEffect(() => {
-        fetchStaffDetails();
+        fetchItemDetails();
         fetchData();
     }, [id]);
 
@@ -153,12 +191,11 @@ function EditItem() {
         <div className='dashboard-container'>
             <div className="col-md-12 main-content">
                 <div className="form-container">
-                    <h1 className="form-title"> Edit Item Details </h1>
-                    {/* Single Parent Form */}
+                    <h1 className="form-title">Add New Item</h1>
                     <form onSubmit={handleSubmit(onSubmit)}>
+                        {/* Name Field */}
                         <div className="row">
                             <div className="col-md-8">
-                                {/* Name Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Name :</label>
                                     <input
@@ -175,7 +212,8 @@ function EditItem() {
                                     <textarea
                                         {...register("description")}
                                         className="form-control shadow"
-                                        rows="4" style={{
+                                        rows="4"
+                                        style={{
                                             resize: 'none',
                                             overflowY: 'auto',
                                             scrollbarWidth: 'none',
@@ -192,7 +230,7 @@ function EditItem() {
                                         type='text'
                                         {...register("ingredients")}
                                         className="form-control shadow"
-                                        placeholder="e.g. Masala Tea"
+                                        placeholder="e.g. Tea, Sugar, Milk"
                                     />
                                 </div>
 
@@ -204,14 +242,14 @@ function EditItem() {
                                             <span
                                                 key={index}
                                                 className={`rating-stars ${index < rating ? "selected" : ""}`}
-                                                onClick={() => handleRatingClick(index)} // Handle star click
+                                                onClick={() => handleRatingClick(index)}
                                             >
                                                 ★
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                                {/* Hidden Input for React Hook Form */}
+
                                 <input
                                     type="hidden"
                                     {...register("ratings", { required: true })}
@@ -227,12 +265,105 @@ function EditItem() {
                                         <GrUploadOption className="arrow-up" />
                                     </div>
                                     {imagePreviews ? (
-                                        <img
-                                            src={imagePreviews}
-                                            alt="Uploaded Preview"
-                                            className="img-thumbnail"
-                                            style={{ maxWidth: "100%", height: "auto" }}
-                                        />
+                                        <>
+                                            <div className="image-preview-container mt-3">
+                                                <img
+                                                    src={imagePreviews}
+                                                    alt="Uploaded Preview"
+                                                    className="img-thumbnail cursor-pointer"
+                                                    style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                    onClick={() => setIsModalOpen(true)}
+                                                />
+                                            </div>
+
+                                            {isModalOpen && (
+                                                <div
+                                                    className="modal-overlay"
+                                                    onClick={(e) => {
+                                                        if (e.target === e.currentTarget) {
+                                                            closeModal();
+                                                        }
+                                                    }}
+                                                >
+                                                    <div
+                                                        className="modal-div"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <button
+                                                            type='button'
+                                                            onClick={closeModal}
+                                                            className="close-button"
+                                                        >
+                                                            <GrClose />
+                                                        </button>
+                                                        <Cropper
+                                                            image={imagePreviews}
+                                                            crop={crop}
+                                                            zoom={zoom}
+                                                            rotation={rotation}
+                                                            aspect={5 / 3}
+                                                            onCropChange={setCrop}
+                                                            onZoomChange={setZoom}
+                                                            onRotationChange={setRotation}
+                                                            onCropComplete={onCropComplete}
+                                                        />
+                                                        <div className="crop-controls">
+                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    " style={{ width: "180px", fontSize: "15px" }}>
+                                                                <label className="form-labels me-2">Zoom</label>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm border-0 "
+                                                                    onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                >
+                                                                    <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                </button>
+                                                                <span className="mx-2">{zoom.toFixed(1)}x</span>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm border-0"
+                                                                    onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                >
+                                                                    <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                </button>
+                                                            </div>
+                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  " style={{ width: "130px", fontSize: "15px" }} >
+                                                                <label className="form-labels">Rotation</label>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm  mx-2 border-0"
+                                                                    onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                                >
+                                                                    <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                                </button>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                style={{ fontSize: "15px" }}
+                                                                className="edit-btn"
+                                                                onClick={async () => {
+                                                                    console.log("Done button clicked");
+                                                                    await updateImagePreview();
+                                                                    closeModal();
+                                                                }}
+                                                            >
+                                                                Done
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                style={{ fontSize: "15px" }}
+                                                                className="edit-btn full-size-btn"
+                                                                onClick={() => {
+                                                                    setZoom(1);
+                                                                    setRotation(0);
+                                                                }}
+                                                            >
+                                                                Real Size
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
                                     ) : (
                                         <>
                                             <div className="upload-text fs-5">Upload Image Here</div>
@@ -258,23 +389,23 @@ function EditItem() {
                                         Select File
                                     </button>
                                 </div>
+                                {imageError && <div className="text-danger mt-2">{imageError}</div>}
                             </div>
-
                         </div>
-
                         {/* Business Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Business Menu Variants</h3>
-                            {watch("size")?.map((_, index) => (
-                                <div key={index} className="row">
+                            {watch("size").map((_, index) => (
+                                <div key={index} className="row" >
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
                                             {...register('categoryId')}
                                             className="form-control shadow"
+
                                         >
                                             <option value="">Select Any One</option>
-                                            {categories && categories.length > 0 && categories.map((category) => (
+                                            {categories.map((category) => (
                                                 <option key={category._id} value={category._id}>
                                                     {category.title}
                                                 </option>
@@ -288,10 +419,9 @@ function EditItem() {
                                             {...register(`size[${index}].sizeId`)}
                                             className="form-control shadow"
                                         >
-                                            {sizes && sizes.length > 0 && sizes.map((size) => (
-                                                <option key={size._id} value={size._id}>
-                                                    {size.size}
-                                                </option>
+                                            <option value="">Select Any One</option>
+                                            {sizes.map((size) => (
+                                                <option key={size._id} value={size._id}>{size.size}</option>
                                             ))}
                                         </select>
                                     </div>
@@ -309,7 +439,7 @@ function EditItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Price :</label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             {...register(`size[${index}].sizePrice`)}
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
@@ -317,15 +447,17 @@ function EditItem() {
                                     </div>
                                 </div>
                             ))}
-                            <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                            <button type="button" className="add-variant-btn" onClick={() => {
+                                addBusinessVariant();
+                                // removeBusinessVariant(index);
+                            }}>
                                 + ADD VARIANT
                             </button>
                         </div>
-
                         {/* Personal Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Personal Menu Variants</h3>
-                            {watch("personalSize")?.map((_, index) => (
+                            {watch("personalSize").map((_, index) => (
                                 <div key={index} className="row">
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
@@ -335,7 +467,7 @@ function EditItem() {
                                             disabled
                                         >
                                             <option value="">Select Any One</option>
-                                            {categories && categories.length > 0 && categories.map((category) => (
+                                            {categories.map((category) => (
                                                 <option key={category._id} value={category._id}>
                                                     {category.title}
                                                 </option>
@@ -350,10 +482,9 @@ function EditItem() {
                                             {...register(`personalSize[${index}].sizeId`)}
                                             className="form-control shadow"
                                         >
-                                            {sizes && sizes.length > 0 && sizes.map((size) => (
-                                                <option key={size._id} value={size._id}>
-                                                    {size.size}
-                                                </option>
+                                            <option value="">Select Any One</option>
+                                            {sizes.map((size) => (
+                                                <option key={size._id} value={size._id}>{size.size}</option>
                                             ))}
                                         </select>
                                     </div>
@@ -373,7 +504,7 @@ function EditItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Price :</label>
                                         <input
-                                            type="text"
+                                            type="number"
                                             {...register(`personalSize[${index}].sizePrice`)}
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
@@ -384,18 +515,17 @@ function EditItem() {
                             <button type="button" className="add-variant-btn" onClick={addPersonalVariant}>
                                 + ADD VARIANT
                             </button>
+
                         </div>
 
                         <div className="mt-4">
-                            <button type="submit" className="submit-btn">
-                                {loading ? "Updating..." : "Update Item"}
-                            </button>
+                            <button type="submit" className="submit-btn">ADD ITEM</button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </div >
             <ToastContainer />
-        </div>
+        </div >
     );
 }
 

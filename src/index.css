@@ -965,7 +965,6 @@ input[type="range"] {
     transition: all 0.3s ease;
     width: 100px;
     height: 40px;
-    /* margin-right: 10px; */
 }
 
 .delete-btn:hover {
@@ -975,72 +974,59 @@ input[type="range"] {
 }
 
 /* Pagination */
-.pagination-wrapper {
-    position: absolute;
-    bottom: 1rem;
-    transition: all 0.3s ease;
-    padding-left: 1rem;
-}
-
-.pagination {
-    margin: 0;
+.pagination-container {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    justify-content: flex-start;
+    padding: 15px 0;
+    font-size: 14px;
+    color: var(--backdround-color);
+    margin-top: 20px;
+    bottom: 2rem;
+    position: fixed;
 }
 
-.page-link {
-    border-radius: 50% !important;
+.showing-text {
+    margin-right: 15px;
+    color: #8DA9C4;
+}
+
+.pagination-controls {
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pagination-button {
     width: 32px;
-    height: 32px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background-color: var(--backdround-color);
+    border-radius: 50px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    border: none;
-    color: #6c757d;
+    color: var(--secondary-color);
+    transition: all 0.2s ease;
 }
 
-.pagination-nav-btn {
-    background-color: var(--backdround-color) !important;
-    color: white !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.pagination-nav-btn svg {
-    width: 16px;
-    height: 16px;
-}
-
-.pagination-nav-btn:hover {
-    background-color: #1e40af !important;
-}
-
-.page-item.active .page-link {
-    background-color: #e5e7eb !important;
-    color: #374151 !important;
-    border: none;
-}
-
-.page-item.disabled .pagination-nav-btn {
-    background-color: #e5e7eb !important;
-    color: #9ca3af !important;
+/* .pagination-button:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
-}
+} */
 
-.page-link:focus {
-    box-shadow: none;
-}
 
-.gap-2 {
-    gap: 0.5rem;
-}
-
-.pagination-nav-btn svg {
-    display: block;
-    margin: auto;
+.page-number {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Categories */

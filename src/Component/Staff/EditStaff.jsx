@@ -1,19 +1,37 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { GrUploadOption } from "react-icons/gr";
+import axios from 'axios';
+import { GrUploadOption, GrClose } from "react-icons/gr";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify'; // Import ToastContainer and toast
-import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
+import Cropper from 'react-easy-crop';
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { GoPlusCircle } from "react-icons/go";
+import { FiMinusCircle } from "react-icons/fi";
 
 function EditStaff() {
     const baseUrl = import.meta.env.VITE_API_URL;
+    const { register, handleSubmit, reset, setValue } = useForm();
     const { id } = useParams();
     const navigate = useNavigate();
-    const { register, handleSubmit, reset } = useForm();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null);
+    const [selectedRole, setSelectedRole] = useState('');
+    const [imagePreviews, setImagePreviews] = useState("");
+    const [imageError, setImageError] = useState('');
+    const [imageSelected, setImageSelected] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [rotation, setRotation] = useState(0);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+    const roleMapping = {
+        "Staff Member": 1,
+        "Kitchen Member": 2,
+        "Store Manager": 3,
+        "Delivery Boy": 4,
+    };
     const roles = ['Delivery Boy', 'Staff Member', 'Store Manager', 'Kitchen Member'];
 
     const fetchStaffDetails = async () => {
@@ -21,10 +39,21 @@ function EditStaff() {
             setLoading(true);
             const response = await axios.get(`${baseUrl}/store/details/${id}`);
             const staffData = response.data.data;
-            reset(staffData);
+
+            // Set form data, including role mapping if necessary
+            if (staffData.role) {
+                staffData.role = roles[staffData.role - 1]; // Assuming the role is a number, convert it to the string
+            }
+
+            reset(staffData); // Reset the form with the fetched data
+
+            // If image URL exists, set the preview image
+            if (staffData.image) {
+                setImagePreviews(staffData.image); // Assuming 'image' is the URL in your response
+            }
+
         } catch (err) {
             console.error("Error fetching staff details:", err);
-            setError("Failed to load staff details. Please try again.");
             toast.error("Failed to load staff details. Please try again.", {
                 position: "top-right",
                 autoClose: 3000,
@@ -41,8 +70,20 @@ function EditStaff() {
 
     const submitData = async (data) => {
         try {
+            const formData = new FormData();
+
+            formData.append('username', data.username);
+            formData.append('contact', data.contact);
+            formData.append('email', data.email);
+            formData.append('address', data.address);
+            formData.append('role', roleMapping[data.role]);
+
+            if (data.images) {
+                formData.append('images', data.images);
+            }
+
             setLoading(true);
-            await axios.put(`${baseUrl}/store/update/${id}`, data);
+            await axios.put(`${baseUrl}/store/update/${id}`, formData);
             toast.success("Staff updated successfully!", {
                 position: "top-right",
                 autoClose: 1000,
@@ -57,7 +98,6 @@ function EditStaff() {
             }, 1000);
         } catch (err) {
             console.error("Error updating staff:", err);
-            setError("Failed to update staff details. Please try again.");
             toast.error("Failed to update staff details. Please try again.", {
                 position: "top-right",
                 autoClose: 3000,
@@ -68,6 +108,51 @@ function EditStaff() {
         }
     };
 
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (file) {
+            if (!allowedTypes.includes(file.type)) {
+                setImageError('Only image files (JPG, PNG) are allowed!');
+                setImagePreviews(null);
+                setImageSelected(false);
+                return;
+            }
+
+            const fileSizeInMB = file.size / (1024 * 1024);
+            if (fileSizeInMB > 10) {
+                setImageError('File size should not exceed 10 MB.');
+                setImagePreviews(null);
+                setImageSelected(false);
+                return;
+            }
+            setImagePreviews(URL.createObjectURL(file));
+            setValue("images", file);
+            setImageSelected(true);
+            setImageError('');
+        }
+    };
+
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+
+    const updateImagePreview = async () => {
+        try {
+            const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
+            setImagePreviews(croppedImage);
+            const base64Response = await fetch(croppedImage);
+            const blob = await base64Response.blob();
+            const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
+            setValue("images", croppedFile);
+        } catch (error) {
+            console.error("Error while cropping the image: ", error);
+        }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     return (
         <div className="container-fluid">
@@ -123,74 +208,169 @@ function EditStaff() {
                                     </div>
 
                                     {/* Role */}
-                                    <label className="form-label">Role:</label>
+                                    <label className="form-label">Role :</label>
                                     <select
                                         {...register("role")}
                                         className="form-select form-control shadow"
-                                        style={{ width: '150px' }}
+                                        style={{
+                                            marginLeft: '10px',
+                                            width: '400px',
+                                            color: selectedRole === "" ? '#8DA9C4 ' : 'inherit'
+                                        }}
+                                        value={selectedRole}
+                                        onChange={(e) => setSelectedRole(e.target.value)}
                                     >
                                         <option value="">Select Role</option>
                                         {roles.map(role => (
-                                            <option key={role} value={role}>
-                                                {role}
-                                            </option>
+                                            <option key={role} value={role} className='text-dark'>{role}</option>
                                         ))}
                                     </select>
                                 </div>
 
                                 {/* Image Upload Section */}
                                 <div className="col-md-4">
-                                    <label className="rating-label form-label mb-3 ms-4">Profile Picture:</label>
+                                    <label className="form-label mb-3 ms-4">Image:</label>
                                     <div className="image-upload shadow ms-4">
                                         <div className="upload-icon">
                                             <GrUploadOption className="arrow-up" />
                                         </div>
-                                        {imagePreview ? (
-                                            <img
-                                                src={imagePreview}
-                                                alt="Uploaded Preview"
-                                                className="img-thumbnail"
-                                                style={{ maxWidth: "100%", height: "auto" }}
-                                            />
+                                        {imagePreviews ? (
+                                            <>
+                                                <div className="image-preview-container mt-3">
+                                                    <img
+                                                        src={imagePreviews}
+                                                        alt="Uploaded Preview"
+                                                        className="img-thumbnail cursor-pointer"
+                                                        style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                        onClick={() => setIsModalOpen(true)}
+                                                    />
+                                                </div>
+
+                                                {isModalOpen && (
+                                                    <div
+                                                        className="modal-overlay"
+                                                        onClick={(e) => {
+                                                            if (e.target === e.currentTarget) {
+                                                                closeModal();
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div
+                                                            className="modal-div"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            <button
+                                                                type='button'
+                                                                onClick={closeModal}
+                                                                className="close-button"
+                                                            >
+                                                                <GrClose />
+                                                            </button>
+                                                            <Cropper
+                                                                image={imagePreviews}
+                                                                crop={crop}
+                                                                zoom={zoom}
+                                                                rotation={rotation}
+                                                                aspect={5 / 3}
+                                                                onCropChange={setCrop}
+                                                                onZoomChange={setZoom}
+                                                                onRotationChange={setRotation}
+                                                                onCropComplete={onCropComplete}
+                                                            />
+                                                            <div className="crop-controls">
+                                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    " style={{ width: "180px", fontSize: "15px" }}>
+                                                                    <label className="form-labels me-2">Zoom</label>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm border-0 "
+                                                                        onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                    >
+                                                                        <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                    </button>
+                                                                    <span className="mx-2">{zoom.toFixed(1)}x</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm border-0"
+                                                                        onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                    >
+                                                                        <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                    </button>
+                                                                </div>
+                                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  " style={{ width: "130px", fontSize: "15px" }} >
+                                                                    <label className="form-labels">Rotation</label>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm  mx-2 border-0"
+                                                                        onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                                    >
+                                                                        <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    style={{ fontSize: "15px" }}
+                                                                    className="edit-btn"
+                                                                    onClick={async () => {
+                                                                        console.log("Done button clicked");
+                                                                        await updateImagePreview();
+                                                                        closeModal();
+                                                                    }}
+                                                                >
+                                                                    Done
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    style={{ fontSize: "15px" }}
+                                                                    className="edit-btn full-size-btn"
+                                                                    onClick={() => {
+                                                                        setZoom(1);
+                                                                        setRotation(0);
+                                                                    }}
+                                                                >
+                                                                    Real Size
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         ) : (
-                                            <div>
+                                            <>
                                                 <div className="upload-text fs-5">Upload Image Here</div>
                                                 <div className="upload-subtext fs-6">
                                                     (Jpg, png files supported only)
                                                     <br />
-                                                    (Max File Size 2 MB)
+                                                    (Max File Size 10 MB)
                                                 </div>
-                                            </div>
+                                            </>
                                         )}
                                         <input
                                             type="file"
-                                            {...register("image")}
                                             className="form-control d-none"
                                             id="fileInput"
+                                            {...register("images")}
+                                            onChange={handleImageChange}
                                         />
                                         <button
                                             type="button"
-                                            className="btn edit-btn mt-4"
+                                            className="edit-btn mt-4"
                                             onClick={() => document.getElementById("fileInput").click()}
                                         >
                                             Select File
                                         </button>
                                     </div>
+                                    {imageError && <div className="text-danger mt-2">{imageError}</div>}
                                 </div>
 
                                 {/* Button Section */}
                                 <div className="mt-4">
-                                    <button type="submit" className="submit-btn">
-                                        {loading ? "Updating..." : "Update Staff"}
-                                    </button>
+                                    <button type="submit" className="submit-btn">UPDATE STAFF</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            {/* Toast Container */}
-            <ToastContainer />
         </div>
     );
 }

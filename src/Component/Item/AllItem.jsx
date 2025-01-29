@@ -109,7 +109,7 @@ const AllItem = () => {
           <Link className="text-decoration-none text-white" to="/AddNewItem"> Add Item</Link>
         </div>
 
-        <div className="search">
+        <div className="search w-50">
           <FaSearch className="search-icons" />
           <input
             type="search"
@@ -119,7 +119,7 @@ const AllItem = () => {
           />
         </div>
 
-        <select className="form-select custom-select text-center z" onChange={selectRole}>
+        <select className="form-select custom-select text-center" onChange={selectRole}>
           <option value="all">All</option>
           <option value="business">Business</option>
           <option value="personal">Personal</option>

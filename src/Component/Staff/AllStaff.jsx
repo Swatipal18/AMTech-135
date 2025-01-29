@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -16,6 +16,12 @@ const AllStaff = () => {
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
+  const roleMapping = {
+    1: "Staff Member",
+    2: "Kitchen Member",
+    3: "Store Manager",
+    4: "Delivery Boy",
+  };
   useEffect(() => {
     fetchStaff();
   }, [currentPage, searchTerm]);
@@ -54,8 +60,6 @@ const AllStaff = () => {
       try {
         await axios.delete(`${baseUrl}/store/delete/${id}`);
         fetchStaff();
-
-        // Show success notification with toast after deletion
         toast.success('Staff deleted successfully!', {
           position: "top-right",
           autoClose: 3000,
@@ -64,8 +68,6 @@ const AllStaff = () => {
       } catch (error) {
         setError('Failed to delete staff. Please try again.');
         console.error('Error deleting staff:', error);
-
-        // Show error notification with toast
         toast.error('Failed to delete staff. Please try again.', {
           position: "top-right",
           autoClose: 3000,
@@ -89,7 +91,7 @@ const AllStaff = () => {
           </Link>
         </div>
 
-        <div className="search">
+        <div className="search w-50">
           <FaSearch className="search-icons" />
           <input
             type="text"
@@ -99,9 +101,12 @@ const AllStaff = () => {
           />
         </div>
         <select className="form-select custom-select text-center">
-          <option value="all">All</option>
-          <option value="business">Business</option>
-          <option value="personal">Personal</option>
+          <option value="all">Role</option>
+          <option value="">Staff Member</option>
+          <option value="">Kitchen Member</option>
+          <option value="">Store Manager</option>
+          <option value=""> Delivery Boy</option>
+
         </select>
       </div>
 
@@ -114,19 +119,19 @@ const AllStaff = () => {
       ) : (
         <table className="table mt-3">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Mobile Number</th>
-              <th>Role</th>
+            <tr >
+              <th className='text-center'>Staff Name</th>
+              <th className='text-center'>Mobile Number</th>
+              <th className='text-center'>Role</th>
 
             </tr>
           </thead>
           <tbody>
             {staff.map((staffMember, index) => (
               <tr key={`${staffMember.id}-${index}`} className="table-row">
-                <td>{staffMember.username}</td>
-                <td>{staffMember.contact}</td>
-                <td>{staffMember.role}</td>
+                <td className='text-center'>{staffMember.username}</td>
+                <td className='text-center'>{staffMember.contact}</td>
+                <td className='text-center'>{roleMapping[staffMember.role] || 'Unknown Role'}</td>
                 <td className="actions d-flex justify-content-end gap-5">
                   <button
                     className="edit-btn"
@@ -147,7 +152,7 @@ const AllStaff = () => {
         </table>
       )}
 
-      <ToastContainer /> 
+      <ToastContainer />
     </div>
   );
 };

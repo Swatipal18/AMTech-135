@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaChevronRight, FaAngleLeft } from "react-icons/fa6";
+
 
 function Categories() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -14,22 +16,33 @@ function Categories() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editCategory, setEditCategory] = useState(null);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const limit = 10;
     const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
-        fetchItems();
-    }, []);
+        fetchItems(currentPage);
+    }, [currentPage]);
 
-    const fetchItems = async () => {
+    const fetchItems = async (page) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get(`${baseUrl}/admin/categories-list`);
-            // console.log(response.data.data.categories, "Fetched Categories");
-            setItems(response.data.data.categories || []);
+            console.log(`Calling API: ${baseUrl}/admin/categories-list?page=${page}&limit=10`);
+
+            const response = await axios.get(`${baseUrl}/admin/categories-list?page=${page}&limit=10`);
+            console.log('API Response:', response.data);
+
+            if (response.data.success) {
+                setItems(response.data.data.categories || []);
+                setTotalItems(response.data.data.total || 0);
+            } else {
+                setError('No data received from server');
+            }
+
         } catch (error) {
-            console.error('Error fetching categories:', error);
+            console.error('Detailed error:', error.response || error);
             setError('Failed to fetch items. Please try again later.');
         } finally {
             setLoading(false);
@@ -117,7 +130,37 @@ function Categories() {
         }
     };
 
+    const Pagination = () => {
+        const totalPages = Math.ceil(totalItems / 10);
+        const startIndex = (currentPage - 1) * 10 + 1;
+        const endIndex = Math.min(currentPage * 10, totalItems);
 
+        return (
+            <div className="pagination-container">
+                <div className="showing-text" >
+                    Showing {startIndex}-{endIndex} Of {totalItems} Staff
+                </div>
+                <div className="pagination-controls">
+                    <button
+                        className="pagination-button"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <FaAngleLeft />
+
+                    </button>
+                    <span className="page-number" style={{ fontWeight: 'bold', backgroundColor: '#8DA9C4', color: '#0B2545', borderRadius: '50px' }}>{currentPage}</span>
+                    <button
+                        className="pagination-button"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <FaChevronRight />
+                    </button>
+                </div>
+            </div>
+        );
+    };
     return (
         <div className="page-container">
             <div className="header">
@@ -168,27 +211,31 @@ function Categories() {
             ) : items.length === 0 ? (
                 <div className="no-data">No Categories found</div>
             ) : (
-                <table className="table mt-3">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items
-                            .filter((item) => item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase())) // Fixed filter condition
-                            .map((item) => (
-                                <tr key={item._id}>
-                                    <td>{item.title}</td>
-                                    <td className="actions d-flex justify-content-end">
-                                        <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
-                                        <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <>
+                    <table className="table mt-3">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items
+                                .filter((item) => item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase())) // Fixed filter condition
+                                .map((item) => (
+                                    <tr key={item._id}>
+                                        <td>{item.title}</td>
+                                        <td className="actions d-flex justify-content-end">
+                                            <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
+                                            <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                    <Pagination />
+                </>
             )}
+
             <ToastContainer />
         </div>
     );
