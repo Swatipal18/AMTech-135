@@ -279,13 +279,16 @@ input::placeholder {
     color: inherit;
 }
 
-
+.sidebar-icon {
+    color: var(--secondary-color);
+}
 
 
 .title {
     flex-grow: 1;
     white-space: nowrap;
     font-weight: 500;
+
 }
 
 .dropdown-icon {
@@ -1497,6 +1500,175 @@ input[type="range"] {
     padding: 6px;
 }
 
+/* History Management */
+.transaction-container {
+    padding: 32px;
+    background: white;
+    min-height: 100vh;
+}
+
+.transaction-container h1 {
+    font-size: 24px;
+    font-weight: normal;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.dropdown-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+    position: relative;
+    width: 200px;
+}
+
+.dropdown-display {
+    height: 40px;
+    padding: 0 12px;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.dropdown-display span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-icon {
+    color: #666;
+}
+
+.arrow-down {
+    border: solid #666;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    margin-top: -4px;
+}
+
+.custom-dropdown select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Button Styles */
+.button-group {
+    display: flex;
+    gap: 12px;
+}
+
+.download-btn {
+    padding: 0 16px;
+    height: 40px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    color: #9ca3af;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+    background: #e5e7eb;
+}
+
+/* No Transactions Message */
+.no-transactions {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 64px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.folder-icon {
+    width: 18rem;
+    height: 10rem;
+    border-radius: 4px;
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.folder-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: none !important;
+    isolation: isolate;
+    mix-blend-mode: multiply;
+    -webkit-mask-image: url('./assets/Images/folder.png');
+    mask-image: url('./assets/Images/folder.png');
+
+}
+
+.no-transactions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+.no-transactions p {
+    color: var(--secondary-color);
+    font-size: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filter-section {
+        flex-direction: column;
+    }
+
+    .dropdown-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .custom-dropdown {
+        width: 100%;
+    }
+
+    .button-group {
+        width: 100%;
+    }
+
+    .download-btn {
+        flex: 1;
+    }
+}
+
+/* History Management */
 
 @media (max-width: 768px) {
     .sidebar-wrapper.col-auto {

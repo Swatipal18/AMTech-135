@@ -19,6 +19,7 @@ import EditItem from '../Component/Item/EditItem'
 import AllNotifications from '../Component/Notifications/AllNotifications'
 import NewNotification from '../Component/Notifications/NewNotification'
 import Sizes from '../Component/Item/Size/Sizes'
+import HistoryManagement from '../Component/history/History-Management'
 
 
 function Navbar() {
@@ -79,6 +80,10 @@ function Navbar() {
                 {
                     path: "/OrderManagement",
                     element: <OrderManagement />
+                },
+                {
+                    path: "/history",
+                    element: <HistoryManagement />
                 },
                 {
                     path: "/PreperingOrder",

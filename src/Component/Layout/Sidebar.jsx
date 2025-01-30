@@ -12,7 +12,11 @@ import { RiBarChartFill } from "react-icons/ri";
 import { RiNotification2Fill } from "react-icons/ri";
 import { FaAd } from "react-icons/fa";
 import { RiBuilding2Fill } from "react-icons/ri";
-
+import { GiWallet } from "react-icons/gi";
+import { IoSettingsSharp } from "react-icons/io5";
+import { BsFillQuestionCircleFill } from "react-icons/bs";
+import { BiBox } from "react-icons/bi";
+import { BiSolidBookmarkMinus } from "react-icons/bi";
 
 const Sidebar = ({ onToggle, children }) => {
     const [isOpen, setIsOpen] = useState(true);
@@ -30,17 +34,17 @@ const Sidebar = ({ onToggle, children }) => {
     const menuItems = [
         {
             title: 'Dashboard',
-            icon: <RiHome3Line size={20} className='m-2' />,
+            icon: <RiHome3Line size={20} className='m-2 sidebar-icon' />,
             path: '/Admin'
         },
         {
             title: 'Franchise Management',
-            icon: <Store size={20} className='m-2' />,
+            icon: <BiSolidBookmarkMinus size={20} className='m-2 sidebar-icon' />,
             path: '/franchise'
         },
         {
             title: 'Items Management',
-            icon: <RiCupLine size={20} className='m-2' />,
+            icon: <RiCupLine size={20} className='m-2 sidebar-icon' />,
             subItems: [
                 { label: 'All Items', path: '/all-items' },
                 { label: 'Add New Item', path: '/AddNewItem' },
@@ -52,7 +56,7 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Staff Management',
-            icon: <RiUserCommunityFill size={20} className='m-2' />,
+            icon: <RiUserCommunityFill size={20} className='m-2 sidebar-icon' />,
             subItems: [
                 { label: 'All Staff', path: '/AllStaff' },
                 { label: 'Add New Staff', path: '/AddStaff' }
@@ -61,7 +65,7 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Order Management',
-            icon: <RiUserStarFill size={20} className='m-2' />,
+            icon: <RiUserStarFill size={20} className='m-2 sidebar-icon' />,
             subItems: [
                 { label: 'All Orders', path: '/AllOrders' },
                 { label: 'New Orders', path: '/OrderManagement' },
@@ -71,23 +75,28 @@ const Sidebar = ({ onToggle, children }) => {
             isDropdown: true
         },
         {
+            title: 'History Management',
+            icon: <GiWallet size={20} className='m-2 sidebar-icon' />,
+            path: '/history'
+        },
+        {
             title: 'User Management',
-            icon: <HiUserGroup size={20} className='m-2' />,
+            icon: <HiUserGroup size={20} className='m-2 sidebar-icon' />,
             path: '/users'
         },
         {
             title: 'Sales Management',
-            icon: <RiBarChartFill size={20} className='m-2' />,
+            icon: <RiBarChartFill size={20} className='m-2 sidebar-icon' />,
             path: '/sales'
         },
         {
             title: 'Reports & Analytics',
-            icon: <AiFillPieChart size={20} className='m-2' />,
+            icon: <AiFillPieChart size={20} className='m-2 sidebar-icon' />,
             path: '/reports'
         },
         {
             title: 'Push Notifications',
-            icon: <RiNotification2Fill size={20} className='m-2' />,
+            icon: <RiNotification2Fill size={20} className='m-2 sidebar-icon' />,
             subItems: [
                 { label: 'All Notifications', path: '/AllNotifications' },
                 { label: 'Send  A New Notification', path: '/NewNotification' },
@@ -96,22 +105,27 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Upload Banners',
-            icon: <FaAd size={20} className='m-2' />,
+            icon: <FaAd size={20} className='m-2 sidebar-icon' />,
             path: '/banners'
         },
         {
             title: 'Business Management',
-            icon: <RiBuilding2Fill size={20} className='m-2' />,
+            icon: <RiBuilding2Fill size={20} className='m-2 sidebar-icon' />,
             path: '/business'
         },
         {
             title: 'Menu Management',
-            icon: <RiBuilding2Fill size={20} className='m-2' />,
+            icon: <BiBox size={20} className='m-2 sidebar-icon' />,
             path: '/business'
         },
         {
-            title: 'Business Management',
-            icon: <RiBuilding2Fill size={20} className='m-2' />,
+            title: 'Support',
+            icon: <BsFillQuestionCircleFill size={20} className='m-2 sidebar-icon' />,
+            path: '/business'
+        },
+        {
+            title: 'Settings',
+            icon: <IoSettingsSharp size={20} className='m-2 sidebar-icon' />,
             path: '/business'
         }
     ];

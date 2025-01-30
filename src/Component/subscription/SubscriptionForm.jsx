@@ -10,6 +10,7 @@ import Cropper from 'react-easy-crop';
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
+import imageCompression from 'browser-image-compression';
 
 function SubscriptionForm() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -31,9 +32,10 @@ function SubscriptionForm() {
         console.log(data, "Subscription Form Data");
     };
 
-    const handleImageChange = (event) => {
+    const handleImageChange = async (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxFileSizeInKB = 10240; // 10 MB in KB (10 * 1024)
         if (file) {
             if (!allowedTypes.includes(file.type)) {
                 setImageError('Only image files (JPG, PNG) are allowed!');
@@ -42,17 +44,43 @@ function SubscriptionForm() {
                 return;
             }
 
-            const fileSizeInMB = file.size / (1024 * 1024);
-            if (fileSizeInMB > 10) {
-                setImageError('File size should not exceed 10 MB.');
-                setImagePreviews(null);
-                setImageSelected(false);
-                return;
+            const fileSizeInKB = file.size / 1024;
+            console.log('Original file size:', fileSizeInKB.toFixed(2), 'KB');
+            if (fileSizeInKB <= maxFileSizeInKB) {
+                setImagePreviews(URL.createObjectURL(file));
+                setValue("images", file);
+                setImageSelected(true);
+                setImageError('');
+            } else {
+                try {
+                    const options = {
+                        maxSizeMB: 10,
+                        maxWidthOrHeight: 1024,
+                        useWebWorker: true,
+                    };
+
+                    const compressedFile = await imageCompression(file, options);
+                    const compressedFileSizeInKB = compressedFile.size / 1024;
+                    console.log('Compressed file size:', compressedFileSizeInKB.toFixed(2), 'KB');
+
+                    if (compressedFileSizeInKB > maxFileSizeInKB) {
+                        setImageError('Compressed file size should not exceed 10 MB.');
+                        setImagePreviews(null);
+                        setImageSelected(false);
+                        return;
+                    }
+                    const compressedImageURL = URL.createObjectURL(compressedFile);
+                    setImagePreviews(compressedImageURL);
+                    setValue("images", compressedFile);
+                    setImageSelected(true);
+                    setImageError('');
+                } catch (error) {
+                    console.error('Error during image compression:', error);
+                    setImageError('Error while compressing image.');
+                    setImagePreviews(null);
+                    setImageSelected(false);
+                }
             }
-            setImagePreviews(URL.createObjectURL(file));
-            setValue("images", file);
-            setImageSelected(true);
-            setImageError('');
         }
     };
     const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
