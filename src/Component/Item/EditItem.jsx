@@ -13,7 +13,7 @@ import { FiMinusCircle } from "react-icons/fi";
 
 function EditItem() {
     const { id } = useParams();
-    console.log(id);
+    // console.log(id);
     const { register, handleSubmit, setValue, reset, watch } = useForm({
         defaultValues: {
             ratings: 0,
@@ -42,6 +42,7 @@ function EditItem() {
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const handleRatingClick = (index) => {
         setRating(index + 1);
@@ -191,6 +192,10 @@ function EditItem() {
         <div className='dashboard-container'>
             <div className="col-md-12 main-content">
                 <div className="form-container">
+                    {/* <button className='edit-btn ' onclick={() => {
+                        console.log("Back Button Clicked"),
+                            navigate('/all-items')
+                    }}>back</button> */}
                     <h1 className="form-title">Add New Item</h1>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Name Field */}

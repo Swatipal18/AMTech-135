@@ -2,7 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState, useRef,useCallback } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://192.168.1.12:3000/", {
+// const socket = io("http://192.168.1.12:3000/", {
+({
   transports: ["websocket"],
 });
 
@@ -23,7 +24,7 @@ export default function PreperingOrder() {
 
     const interval = setInterval(() => {
       socket.emit("current-list", {});
-    }, 1000);
+    }, 1000000000000);
 
     return () => {
       clearInterval(interval);

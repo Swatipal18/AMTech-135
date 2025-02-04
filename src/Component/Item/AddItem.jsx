@@ -88,7 +88,6 @@ function AddItem() {
             }
 
             const fileSizeInKB = file.size / 1024;
-            console.log('Original file size:', fileSizeInKB.toFixed(2), 'KB');
             if (fileSizeInKB <= maxFileSizeInKB) {
                 setImagePreviews(URL.createObjectURL(file));
                 setValue("images", file);
@@ -97,7 +96,7 @@ function AddItem() {
             } else {
                 try {
                     const options = {
-                        maxSizeMB: 10, 
+                        maxSizeMB: 10,
                         maxWidthOrHeight: 1024,
                         useWebWorker: true,
                     };
@@ -137,6 +136,7 @@ function AddItem() {
             const blob = await base64Response.blob();
             const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
             setValue("images", croppedFile);
+            convertToBinary(croppedFile);
 
         } catch (error) {
             console.error("Error while cropping the image: ", error);
@@ -145,11 +145,38 @@ function AddItem() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
+    const handleActiveStatus = (sizeData) => {
+        if (sizeData && sizeData.length === 0) {
+            return { isActive: false, sizeData: [] };
+        } else if (sizeData && sizeData.length > 0) {
+            const validSizes = sizeData.filter(item => item.sizeId);
+            return validSizes.length === 0
+                ? { isActive: false, sizeData: [] }
+                : { isActive: true, sizeData: validSizes };
+        }
+        return { isActive: false, sizeData: [] };
+    };
     const onSubmit = async (data) => {
-
+        console.log(data)
         try {
+            const businessStatus = handleActiveStatus(data.size);
+            const personalStatus = handleActiveStatus(data.personalSize);
+
+            data.isActiveForBusiness = businessStatus.isActive;
+            data.size = businessStatus.sizeData;
+
+            data.isActiveForPersonal = personalStatus.isActive;
+            data.personalSize = personalStatus.sizeData;
+
+            const requestData = {
+                isActiveForBusiness: data.isActiveForBusiness,
+                isActiveForPersonal: data.isActiveForPersonal,
+            };
+
+
             const formData = new FormData();
-            formData.append('images', data.images)
+            formData.append('images', data.images);
+            // console.log(formData, "formData")
             const response = await axios.post(`${baseUrl}/menu/create`, data, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -162,7 +189,7 @@ function AddItem() {
                     autoClose: 1000,
                     theme: "colored",
                     style: {
-                        backgroundColor: ' green',
+                        backgroundColor: 'green',
                         color: '#000',
                     },
                 });
@@ -173,20 +200,18 @@ function AddItem() {
                 setTimeout(() => {
                     navigate('/all-items');
                 }, 1000);
-
             }
         } catch (error) {
             console.error("Error details:", error.response ? error.response.data : error);
             toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
         }
     };
-
     return (
         <div className='dashboard-container'>
             <div className="col-md-12 main-content">
                 <div className="form-container">
                     <h1 className="form-title">Add New Item</h1>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
                         {/* Name Field */}
                         <div className="row">
                             <div className="col-md-8">
@@ -194,7 +219,9 @@ function AddItem() {
                                     <label className="form-label">Name :</label>
                                     <input
                                         type='text'
+                                        name="itemName"
                                         {...register("itemName")}
+                                        // value="hello"
                                         className="form-control shadow"
                                         placeholder="e.g. Masala Tea"
                                     />
@@ -204,7 +231,9 @@ function AddItem() {
                                 <div className="mb-4">
                                     <label className="form-label">Description :</label>
                                     <textarea
+                                        name='description'
                                         {...register("description")}
+                                        // value="hello"
                                         className="form-control shadow"
                                         rows="4"
                                         style={{
@@ -222,6 +251,8 @@ function AddItem() {
                                     <label className="form-label">Ingredients :</label>
                                     <input
                                         type='text'
+                                        name="ingredients"
+                                        // value="hello"
                                         {...register("ingredients")}
                                         className="form-control shadow"
                                         placeholder="e.g. Tea, Sugar, Milk"
@@ -246,6 +277,8 @@ function AddItem() {
 
                                 <input
                                     type="hidden"
+                                    name="ratings"
+
                                     {...register("ratings", { required: true })}
                                     value={rating}
                                 />
@@ -335,7 +368,7 @@ function AddItem() {
                                                                 style={{ fontSize: "15px" }}
                                                                 className="edit-btn"
                                                                 onClick={async () => {
-                                                                    console.log("Done button clicked");
+
                                                                     await updateImagePreview();
                                                                     closeModal();
                                                                 }}
@@ -372,6 +405,7 @@ function AddItem() {
                                         type="file"
                                         className="form-control d-none"
                                         id="fileInput"
+                                        name='images'
                                         {...register("images")}
                                         onChange={handleImageChange}
                                     />
@@ -396,7 +430,7 @@ function AddItem() {
                                         <select
                                             {...register('categoryId')}
                                             className="form-control shadow"
-
+                                            name='categoryId'
                                         >
                                             <option value="">Select Any One</option>
                                             {categories.map((category) => (
@@ -412,6 +446,7 @@ function AddItem() {
                                         <select
                                             {...register(`size[${index}].sizeId`)}
                                             className="form-control shadow"
+                                            name={`size[${index}].sizeId`}
                                         >
                                             <option value="">Select Any One</option>
                                             {sizes.map((size) => (
@@ -425,6 +460,8 @@ function AddItem() {
                                         <input
                                             type="text"
                                             {...register(`size[${index}].volume`)}
+                                            name={`size[${index}].volume`}
+                                            // value="120ml"
                                             className="form-control shadow"
                                             placeholder="e.g. 60ml"
                                         />
@@ -434,7 +471,9 @@ function AddItem() {
                                         <label className="form-label">Price :</label>
                                         <input
                                             type="number"
+                                            name={`size[${index}].sizePrice`}
                                             {...register(`size[${index}].sizePrice`)}
+                                            // value="100"
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
                                         />
@@ -456,7 +495,7 @@ function AddItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
-                                            {...register(`personalSize[${index}].categoryId`)}
+                                            // {...register(`personalSize[${index}].categoryId`)}
                                             className="form-control shadow"
                                             disabled
                                         >
@@ -469,10 +508,11 @@ function AddItem() {
                                         </select>
                                     </div>
 
-                                    {/* Personal Size - Size */}
+                                    {/* Personal Size */}
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Size :</label>
                                         <select
+                                            name={`personalSize[${index}].sizeId`}
                                             {...register(`personalSize[${index}].sizeId`)}
                                             className="form-control shadow"
                                         >
@@ -488,7 +528,9 @@ function AddItem() {
                                         <label className="form-label">Volume :</label>
                                         <input
                                             type="text"
+                                            name={`personalSize[${index}].volume`}
                                             {...register(`personalSize[${index}].volume`)}
+                                            // value="120ml"
                                             className="form-control shadow"
                                             placeholder="e.g. 60ml"
                                         />
@@ -499,7 +541,9 @@ function AddItem() {
                                         <label className="form-label">Price :</label>
                                         <input
                                             type="number"
+                                            name={`personalSize[${index}].sizePrice`}
                                             {...register(`personalSize[${index}].sizePrice`)}
+                                            // value="100"
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
                                         />
@@ -516,7 +560,7 @@ function AddItem() {
                             <button type="submit" className="submit-btn">ADD ITEM</button>
                         </div>
                     </form>
-                </div>
+                </div >
             </div >
             <ToastContainer />
         </div >

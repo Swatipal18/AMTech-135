@@ -199,7 +199,7 @@ import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 // Initialize socket
-const socket = io("http://192.168.1.12:3000/", { transports: ["websocket"] });
+// const socket = io("http://192.168.1.12:3000/", { transports: ["websocket"] });
 
 function OrderManagement() {
   const [NewOrder, setNewOrder] = useState([]);
@@ -225,7 +225,7 @@ function OrderManagement() {
 
     const interval = setInterval(() => {
       socket.emit("placed-list", {});
-    }, 1000);
+    }, 10000000000);
 
     return () => {
       clearInterval(interval);

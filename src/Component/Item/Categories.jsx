@@ -38,9 +38,9 @@ function Categories() {
             setLoading(true);
             setError(null);
             const pageNumber = Math.max(Number(page), 1);
-            console.log(pageNumber, "page");
+            // console.log(pageNumber, "page");
             const limitNumber = Number(limit);
-            console.log(limitNumber, "limit");
+            // console.log(limitNumber, "limit");
 
             const response = await axios.get(`${baseUrl}/admin/categories-list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
