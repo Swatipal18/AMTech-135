@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 
 const socket_url = import.meta.env.VITE_SOCKET_URL
+console.log('socket_url: ', socket_url);
 
 const socket = io(socket_url, {
   transports: ["websocket"],
