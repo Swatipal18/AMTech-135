@@ -2,6 +2,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 /* styles.css */
 :root {
@@ -157,6 +162,7 @@ input::placeholder {
     left: 0;
     top: 0;
     display: flex;
+    z-index: 1221;
     flex-direction: column;
 }
 
@@ -227,6 +233,7 @@ input::placeholder {
     /* padding: 0.5rem; */
     scrollbar-width: none;
     -ms-overflow-style: none;
+    z-index: 10 ;
 }
 
 .sidebar-content::-webkit-scrollbar {
@@ -235,6 +242,7 @@ input::placeholder {
 
 .sidebar-wrapper {
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .main-wrapper {
@@ -262,6 +270,7 @@ input::placeholder {
     color: #f8f6f6;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border-radius: 0 18px 18px 0;
+    /* position: relative; */
 }
 
 .menu-item:hover {
@@ -880,18 +889,18 @@ input[type="range"] {
     transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 1.4em;
-        width: 1.4em;
-        left: 0.3em;
-        bottom: 0.3em;
-        background-color: white;
-        border-radius: 50px;
-        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.4);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.4em;
+    width: 1.4em;
+    left: 0.3em;
+    bottom: 0.3em;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 0px 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 
 /* .switch input:checked+.slider {
     background: #34C759;
@@ -968,6 +977,7 @@ input[type="range"] {
     transition: all 0.3s ease;
     width: 100px;
     height: 40px;
+    /* margin-right: 10px; */
 }
 
 .delete-btn:hover {
@@ -1132,7 +1142,7 @@ input[type="range"] {
 .reject-order-btn {
     background-color: #FF3B30;
     color: white;
-    padding: 10px 32px;
+    padding: 10px 15%;
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -1141,7 +1151,7 @@ input[type="range"] {
 .accept-order-btn {
     background-color: #4caf50;
     color: white;
-    padding: 10px 32px;
+    padding: 10px 15%;
     border: none;
     border-radius: 20px;
     cursor: pointer;
@@ -1242,9 +1252,9 @@ input[type="range"] {
     color: white;
     width: 100%;
     border-radius: 30px;
-    position: sticky;
+    position: sticky !important;
     z-index: 11;
-    top: 88px;
+    top: 93px;
     box-shadow: 0px -10px 20px 5px white;
 }
 
@@ -1271,11 +1281,14 @@ input[type="range"] {
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
+    gap:5px;
     height: 55px;
+    padding: 5px;
     width: 100%;
     align-items: center;
-    padding: 10px;
     border-radius: 30px;
+    position: sticky;
+  top: 113px;
     background-color: #8DA9C4;
 }
 
@@ -1284,7 +1297,7 @@ input[type="range"] {
     color: #fff;
     border: none;
     padding: 10px 0px;
-    width: 15%;
+    width: 12% !important;
     border-radius: 20px;
     cursor: pointer;
     margin-right: 10px;
@@ -1295,6 +1308,7 @@ input[type="range"] {
     gap: 10px;
     color: #123456;
     font-weight: bold;
+ 
 }
 
 .summary-details {
@@ -1304,7 +1318,7 @@ input[type="range"] {
     width: 200px;
     text-align: center;
     align-content: center;
-    height: 40px;
+    height: 45px;
     border-radius: 20px;
     cursor: pointer;
     margin-right: 10px;
@@ -1319,7 +1333,7 @@ input[type="range"] {
 }
 
 .order-table-heading {
-    padding: 10px;
+    padding: 5.4px;
     border-bottom: 2px dashed #c9c9c9;
     color: #8c9dad;
     font-size: 14px;
@@ -1348,7 +1362,8 @@ input[type="range"] {
 
 .delivery-boy-box {
     position: absolute;
-    height: 200px;
+    height: auto;
+    padding: 10px;
     width: 330px;
     border: 2px solid #EEF4ED;
     border-radius: 15px;
@@ -1391,6 +1406,11 @@ input[type="range"] {
     text-transform: uppercase;
     color: #123456;
     font-size: 14px;
+
+}
+.order-table-row-box:hover{
+    background-color: #f5f3f350;
+    cursor: pointer;
 }
 
 .box-close {
@@ -1412,7 +1432,7 @@ input[type="range"] {
 }
 
 .toggle-switch.on {
-    background-color: #34C759;
+    background-color: green;
 
 }
 
@@ -1439,6 +1459,7 @@ input[type="range"] {
 .Admin-bar {
     position: sticky;
     top: 16px;
+    z-index: 10;
 }
 
 .Prepering-order-btn {
@@ -1477,8 +1498,9 @@ input[type="range"] {
     border: none;
     color: white;
     background-color: #0B2545;
-    height: 40px;
-    padding: 5px 7px;
+    height: 46px;
+    /* padding: 8px 18px; */
+    min-width: 15%;
 
 }
 
@@ -1675,3 +1697,11 @@ input[type="range"] {
         width: 60px;
     }
 }
+
+.Sticky-HEader{
+    height: 109px;
+    width: 100px;
+    background-color: white;
+    position: fixed;
+    z-index: 5;
+  }
