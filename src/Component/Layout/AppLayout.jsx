@@ -26,14 +26,17 @@ function AppLayout() {
                 </div>
 
                 {/* Main Content */}
+                <span className='Sticky-HEader'></span>
                 <div
                     className={`main-wrapper ${sidebarOpen ? 'col-lg-9 col-md-9 col-sm-8' : 'col'}`}
                     style={{
                         marginLeft: sidebarOpen ? '300px' : '60px',
                         transition: 'margin-left 0.3s ease',
                         width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
+                        
                     }}
                 >
+                  
                     <div className='main-content p-0 mt-3 '>
                         <div className="Admin-bar mx-5">
                             <div className="toggle-container mt-0 d-flex align-items-center w-100 justify-content-between ">

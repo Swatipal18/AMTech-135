@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, Search, Store, Briefcase } from 'lucide-react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -12,15 +12,16 @@ import { RiBarChartFill } from "react-icons/ri";
 import { RiNotification2Fill } from "react-icons/ri";
 import { FaAd } from "react-icons/fa";
 import { RiBuilding2Fill } from "react-icons/ri";
-import { GiWallet } from "react-icons/gi";
-import { IoSettingsSharp } from "react-icons/io5";
-import { BsFillQuestionCircleFill } from "react-icons/bs";
-import { BiBox } from "react-icons/bi";
-import { BiSolidBookmarkMinus } from "react-icons/bi";
+import { io } from 'socket.io-client';
 
+const socket = io("http://192.168.1.12:3000/", {
+    transports: ["websocket"],
+  });
+  
 const Sidebar = ({ onToggle, children }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [length , setlenght] = useState()
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -30,21 +31,42 @@ const Sidebar = ({ onToggle, children }) => {
     const toggleDropdown = (name) => {
         setActiveDropdown(activeDropdown === name ? null : name);
     };
+ 
+    
+      useEffect(() => {
+        socket.emit("total-records", {});
+        socket.on("total-records-received", (data) => {
+            setlenght(data.data)
+        
+        });
+    
+        const interval = setInterval(() => {
+       
+            socket.emit("total-records", {});
+        }, 1000);
+        
+        return () => {
+          clearInterval(interval);
+          socket.off("");
+        };
+    
+      },[]);
 
+    
     const menuItems = [
         {
             title: 'Dashboard',
-            icon: <RiHome3Line size={20} className='m-2 sidebar-icon' />,
+            icon: <RiHome3Line size={20} className='m-2' />,
             path: '/Admin'
         },
         {
             title: 'Franchise Management',
-            icon: <BiSolidBookmarkMinus size={20} className='m-2 sidebar-icon' />,
+            icon: <Store size={20} className='m-2' />,
             path: '/franchise'
         },
         {
             title: 'Items Management',
-            icon: <RiCupLine size={20} className='m-2 sidebar-icon' />,
+            icon: <RiCupLine size={20} className='m-2' />,
             subItems: [
                 { label: 'All Items', path: '/all-items' },
                 { label: 'Add New Item', path: '/AddNewItem' },
@@ -56,7 +78,7 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Staff Management',
-            icon: <RiUserCommunityFill size={20} className='m-2 sidebar-icon' />,
+            icon: <RiUserCommunityFill size={20} className='m-2' />,
             subItems: [
                 { label: 'All Staff', path: '/AllStaff' },
                 { label: 'Add New Staff', path: '/AddStaff' }
@@ -65,38 +87,42 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Order Management',
-            icon: <RiUserStarFill size={20} className='m-2 sidebar-icon' />,
+            icon:<><div className='dot-parent'> <RiUserStarFill size={20} className='m-2 ' /> <span className={`${length > 0 ? 'red-dot' : 'red-none'}`}>.</span></div></> ,
             subItems: [
-                { label: 'All Orders', path: '/AllOrders' },
-                { label: 'New Orders', path: '/OrderManagement' },
+                { label: 'All Orders', path: '/AllOrders'  },
+                { 
+                    label: (
+                        <div className='dot-parent'>
+                            New Orders
+                            <span className={`${length > 0 ? 'red-dot-2' : 'red-none'}`}>.</span>
+                        </div>
+                    ), 
+                    path: '/OrderManagement',
+
+                  },
                 { label: 'Current Orders', path: '/PreperingOrder' },
                 { label: 'Out For Delivery Orders', path: '/Outfordelivery' }
             ],
             isDropdown: true
         },
         {
-            title: 'History Management',
-            icon: <GiWallet size={20} className='m-2 sidebar-icon' />,
-            path: '/history'
-        },
-        {
             title: 'User Management',
-            icon: <HiUserGroup size={20} className='m-2 sidebar-icon' />,
+            icon: <HiUserGroup size={20} className='m-2' />,
             path: '/users'
         },
         {
             title: 'Sales Management',
-            icon: <RiBarChartFill size={20} className='m-2 sidebar-icon' />,
+            icon: <RiBarChartFill size={20} className='m-2' />,
             path: '/sales'
         },
         {
             title: 'Reports & Analytics',
-            icon: <AiFillPieChart size={20} className='m-2 sidebar-icon' />,
+            icon: <AiFillPieChart size={20} className='m-2' />,
             path: '/reports'
         },
         {
             title: 'Push Notifications',
-            icon: <RiNotification2Fill size={20} className='m-2 sidebar-icon' />,
+            icon: <RiNotification2Fill size={20} className='m-2' />,
             subItems: [
                 { label: 'All Notifications', path: '/AllNotifications' },
                 { label: 'Send  A New Notification', path: '/NewNotification' },
@@ -105,31 +131,27 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Upload Banners',
-            icon: <FaAd size={20} className='m-2 sidebar-icon' />,
+            icon: <FaAd size={20} className='m-2' />,
             path: '/banners'
         },
         {
             title: 'Business Management',
-            icon: <RiBuilding2Fill size={20} className='m-2 sidebar-icon' />,
+            icon: <RiBuilding2Fill size={20} className='m-2' />,
             path: '/business'
         },
         {
             title: 'Menu Management',
-            icon: <BiBox size={20} className='m-2 sidebar-icon' />,
+            icon: <RiBuilding2Fill size={20} className='m-2' />,
             path: '/business'
         },
         {
-            title: 'Support',
-            icon: <BsFillQuestionCircleFill size={20} className='m-2 sidebar-icon' />,
-            path: '/business'
-        },
-        {
-            title: 'Settings',
-            icon: <IoSettingsSharp size={20} className='m-2 sidebar-icon' />,
+            title: 'Business Management',
+            icon: <RiBuilding2Fill size={20} className='m-2' />,
             path: '/business'
         }
     ];
 
+    
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
             <div className="sidebar-header">
@@ -142,12 +164,11 @@ const Sidebar = ({ onToggle, children }) => {
                             <Link to="/" className="logo ms-5">
                                 <img src="/main-logo.png" alt="Logo" />
                             </Link>
-
                         </div>
                     )}
                 </div>
             </div>
-            <div className="sidebar-content">
+            <div className={`sidebar-content  ${isOpen ? '' : 'mt-5'}`}>
                 {menuItems.map((item, index) => (
                     <div key={index}>
                         <div

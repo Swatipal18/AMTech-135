@@ -1,0 +1,223 @@
+ 
+ .over-view{
+    height: 360px;
+    border: 5px solid #8DA9C4;
+    border-radius: 30px;
+    color: #134074;
+ }
+ .over-view .date {
+    border: 3px solid #8DA9C4;
+    padding: 5px;
+    border-radius: 30px;
+ }
+ .over-view-detail{
+    position: relative;
+ }
+ .vertical-hr {
+    position: absolute;
+    width: 1px;         
+    left: 50%;
+    right: 50%;
+    transform: translate(-50% ,-50%);
+    top: 115px;
+    height:260px;       
+    background-color: #8DA9C4;  
+    border: none;     
+    margin: 0 10px;   
+  }
+  .total-sales{
+    width: 250px;
+    height: 100px;
+    /* border: 1px solid black; */
+    box-sizing: border-box;
+    word-wrap: break-word; /* For older browsers */
+  overflow-wrap: break-word; /* Modern approach */
+  white-space: normal;
+  }
+  .New-Orders{
+    height: 360px;
+    border: 5px solid #8DA9C4;
+    border-radius: 30px;
+    position: relative;
+    color: #134074;
+ }
+  
+ .high-value-users-box {
+    border-radius: 10px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    height: 360px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-bottom: 20px; */
+  }
+  
+  .header h2 {
+    font-size: 18px;
+    color: #003366;
+  }
+  
+  .all-time-btn {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #e9eff5;
+    border: none;
+    border-radius: 5px;
+    color: #003366;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .all-time-btn .calendar-icon {
+    margin-right: 5px;
+  }
+  
+  .users-table {
+    width: 100%;
+    border-spacing: 0;
+  }
+  
+  .users-table td {
+    padding: 5px 0;
+    font-size: 14px;
+    color: #003366;
+  }
+  
+  .users-table td:nth-child(1) {
+    text-align: left;
+    width: 10%;
+  }
+  
+  .users-table td:nth-child(2) {
+    text-align: left;
+    width: 60%;
+  }
+  
+  .users-table td:nth-child(3) {
+    /* text-align: right; */
+    width: 30%;
+  }
+  
+  .view-all {
+    margin-top: 10px;
+    text-align: left;
+    position: absolute;
+    bottom: 10px;
+  }
+  
+  .view-all a {
+    color: #003366;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .view-all a span {
+    margin-left: 5px;
+  }
+ 
+  .High-value-Users,
+  .Top-delivery-boys ,
+  .High-Value-Itmes,
+  .Next-day-Subscription
+  {
+    height: 360px;
+    border: 5px solid #8DA9C4;
+    border-radius: 30px;
+    color: #134074;
+    position: relative;
+  }
+
+.Admin-header-button{
+  border: none;
+  padding: 10px ;
+  background-color: #8DA9C4;
+  width: 20%;
+  border-radius: 30px;
+  color: #134074  ;
+  z-index: 10;
+}
+ 
+
+.D-header{
+  position: sticky;
+  top: 106px;
+  z-index: 10;
+}
+.Paginition-for-AllOrder{
+  position: fixed;
+  top: 90vh;
+  
+}
+.dot-parent{
+  position: relative;
+}
+
+.red-dot{
+  font-size: 57px;
+  color: red;
+  position: absolute;
+  top: -40px;
+  right: -177px;
+  border-radius: 50% !important;
+}
+.red-none{
+  display: none;
+}
+.red-dot-2{
+  font-size: 57px;
+  color: red;
+  position: absolute;
+  top: -48px;
+  right: -100px;
+  border-radius: 50% !important;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader-container{
+  height: 100vh;
+  width: 110vw;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  background-color: #0000002b;
+  align-items: center;
+ 
+  left: -150px;
+}
+.loader {
+  /* position: absolute; */
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;  
+  font-size: 30px;
+  background: radial-gradient(circle closest-side,#0B2545 94%,#0000) right/calc(200% - 1em) 100%;
+  animation: l24 1s infinite alternate linear;
+}
+.loader::before {
+  content: "135 DEGREE";
+  line-height: 1em;
+  color: #0000;
+  background: inherit;
+  background-image: radial-gradient(circle closest-side,#fff 94%,#0B2545);
+  -webkit-background-clip:text;
+          background-clip:text;
+}
+
+@keyframes l24{
+  100%{background-position: left}
+}
+
+.red{
+  background-color: #ff0000  !important;
+}
+.Yellow{
+  background-color: #ffcc00 !important;
+}
