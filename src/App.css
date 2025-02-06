@@ -21,7 +21,7 @@
     transform: translate(-50% ,-50%);
     top: 115px;
     height:260px;       
-    background-color: #8DA9C4;  
+    /* background-color: #8DA9C4;   */
     border: none;     
     margin: 0 10px;   
   }
@@ -220,4 +220,8 @@
 }
 .Yellow{
   background-color: #ffcc00 !important;
+}
+
+.custom-date-picker .MuiCalendarPicker-root {
+  background-color: lightgreen !important; /* Change the calendar's background color */
 }

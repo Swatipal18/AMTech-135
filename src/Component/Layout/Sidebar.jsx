@@ -60,9 +60,9 @@ const Sidebar = ({ onToggle, children }) => {
             path: '/Admin'
         },
         {
-            title: 'Franchise Management',
+            title: 'InvoiceHistory',
             icon: <Store size={20} className='m-2' />,
-            path: '/franchise'
+            path: '/InvoiceHistory'
         },
         {
             title: 'Items Management',

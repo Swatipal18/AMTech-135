@@ -1,10 +1,8 @@
  
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Clock, ChevronDown, LineChart } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-
 import {
   LineChart as RechartsLineChart,
   Line,

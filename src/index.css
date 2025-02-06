@@ -750,7 +750,7 @@ input[type="range"] {
 
 .add-item {
     width: 20rem;
-    height: 2.3rem;
+    height: 3.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -774,7 +774,7 @@ input[type="range"] {
     align-items: center;
     background-color: var(--backdround-color);
     border-radius: 30px;
-    padding: 0.2rem 1rem;
+    padding: 0.6rem 2rem;
     width: 800px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -1334,7 +1334,7 @@ input[type="range"] {
 
 .order-table-heading {
     padding: 5.4px;
-    border-bottom: 2px dashed #c9c9c9;
+    /* border-bottom: 2px dashed #c9c9c9; */
     color: #8c9dad;
     font-size: 14px;
     text-transform: uppercase;
@@ -1578,6 +1578,7 @@ input[type="range"] {
 
 .calendar-icon {
     color: #666;
+    z-index: 10;
 }
 
 .arrow-down {
@@ -1624,7 +1625,7 @@ input[type="range"] {
 
 /* No Transactions Message */
 .no-transactions {
-    background: #f9fafb;
+     
     border-radius: 8px;
     padding: 64px 0;
     display: flex;
@@ -1638,20 +1639,12 @@ input[type="range"] {
     height: 10rem;
     border-radius: 4px;
     position: relative;
-    margin-bottom: 16px;
+    color: #0B2545;
+    font-size: 100px;
+    /* margin-bottom: 16px; */
 }
 
-.folder-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: none !important;
-    isolation: isolate;
-    mix-blend-mode: multiply;
-    -webkit-mask-image: url('./assets/Images/folder.png');
-    mask-image: url('./assets/Images/folder.png');
 
-}
 
 .no-transactions {
     display: flex;

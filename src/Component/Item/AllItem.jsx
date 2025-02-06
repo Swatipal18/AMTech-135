@@ -52,7 +52,7 @@ const AllItem = () => {
       const response = await axios.get(`${baseUrl}/menu/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
-      console.log
+   
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
         setTotalItems(response.data.data.total || 0);

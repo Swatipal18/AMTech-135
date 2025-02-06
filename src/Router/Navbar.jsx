@@ -20,6 +20,7 @@ import AllNotifications from '../Component/Notifications/AllNotifications'
 import NewNotification from '../Component/Notifications/NewNotification'
 import Sizes from '../Component/Item/Size/Sizes'
 import HistoryManagement from '../Component/history/History-Management'
+ 
 
 
 function Navbar() {
@@ -70,6 +71,10 @@ function Navbar() {
                 {
                     path: "/EditStaff/:id",
                     element: <EditStaff />
+                },
+                {
+                    path: "/InvoiceHistory",
+                    element: <HistoryManagement />
                 },
 
                 // // Other Management Routes
