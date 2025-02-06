@@ -10,6 +10,8 @@ import Cropper from 'react-easy-crop';
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
+import imageCompression from 'browser-image-compression';
+
 
 function EditItem() {
     const { id } = useParams();
@@ -49,9 +51,10 @@ function EditItem() {
         setValue("ratings", index + 1);
     };
 
-    const handleImageChange = (event) => {
+    const handleImageChange = async (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxFileSizeInKB = 10240; // 10 MB in KB (10 * 1024)
         if (file) {
             if (!allowedTypes.includes(file.type)) {
                 setImageError('Only image files (JPG, PNG) are allowed!');
@@ -60,17 +63,42 @@ function EditItem() {
                 return;
             }
 
-            const fileSizeInMB = file.size / (1024 * 1024);
-            if (fileSizeInMB > 10) {
-                setImageError('File size should not exceed 10 MB.');
-                setImagePreviews(null);
-                setImageSelected(false);
-                return;
+            const fileSizeInKB = file.size / 1024;
+            if (fileSizeInKB <= maxFileSizeInKB) {
+                setImagePreviews(URL.createObjectURL(file));
+                setValue("images", file);
+                setImageSelected(true);
+                setImageError('');
+            } else {
+                try {
+                    const options = {
+                        maxSizeMB: 10,
+                        maxWidthOrHeight: 1024,
+                        useWebWorker: true,
+                    };
+
+                    const compressedFile = await imageCompression(file, options);
+                    const compressedFileSizeInKB = compressedFile.size / 1024;
+                    console.log('Compressed file size:', compressedFileSizeInKB.toFixed(2), 'KB');
+
+                    if (compressedFileSizeInKB > maxFileSizeInKB) {
+                        setImageError('Compressed file size should not exceed 10 MB.');
+                        setImagePreviews(null);
+                        setImageSelected(false);
+                        return;
+                    }
+                    const compressedImageURL = URL.createObjectURL(compressedFile);
+                    setImagePreviews(compressedImageURL);
+                    setValue("images", compressedFile);
+                    setImageSelected(true);
+                    setImageError('');
+                } catch (error) {
+                    console.error('Error during image compression:', error);
+                    setImageError('Error while compressing image.');
+                    setImagePreviews(null);
+                    setImageSelected(false);
+                }
             }
-            setImagePreviews(URL.createObjectURL(file));
-            setValue("images", file);
-            setImageSelected(true);
-            setImageError('');
         }
     };
     const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -92,9 +120,36 @@ function EditItem() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
+    const handleActiveStatus = (sizeData) => {
+        if (sizeData && sizeData.length === 0) {
+            return { isActive: false, sizeData: [] };
+        } else if (sizeData && sizeData.length > 0) {
+            const validSizes = sizeData.filter(item => item.sizeId);
+            return validSizes.length === 0
+                ? { isActive: false, sizeData: [] }
+                : { isActive: true, sizeData: validSizes };
+        }
+        return { isActive: false, sizeData: [] };
+    };
     const onSubmit = async (data) => {
         // console.log("Submitted Data:", data);
         try {
+
+            const businessStatus = handleActiveStatus(data.size);
+            const personalStatus = handleActiveStatus(data.personalSize);
+
+            data.isActiveForBusiness = businessStatus.isActive;
+            data.size = businessStatus.sizeData;
+
+            data.isActiveForPersonal = personalStatus.isActive;
+            data.personalSize = personalStatus.sizeData;
+
+            const requestData = {
+                isActiveForBusiness: data.isActiveForBusiness,
+                isActiveForPersonal: data.isActiveForPersonal,
+            };
+
+
             const formData = new FormData();
             formData.append('images', data.images);
             const response = await axios.put(
@@ -192,10 +247,10 @@ function EditItem() {
         <div className='dashboard-container'>
             <div className="col-md-12 main-content">
                 <div className="form-container">
-                    {/* <button className='edit-btn ' onclick={() => {
+                    <button className='edit-btn mb-4' onClick={() => {
                         console.log("Back Button Clicked"),
                             navigate('/all-items')
-                    }}>back</button> */}
+                    }}>back</button>
                     <h1 className="form-title">Add New Item</h1>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Name Field */}
@@ -346,7 +401,7 @@ function EditItem() {
                                                                 style={{ fontSize: "15px" }}
                                                                 className="edit-btn"
                                                                 onClick={async () => {
-                                                                    console.log("Done button clicked");
+
                                                                     await updateImagePreview();
                                                                     closeModal();
                                                                 }}
@@ -383,6 +438,7 @@ function EditItem() {
                                         type="file"
                                         className="form-control d-none"
                                         id="fileInput"
+                                        name='images'
                                         {...register("images")}
                                         onChange={handleImageChange}
                                     />

@@ -428,7 +428,7 @@ function AddItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
-                                            {...register('categoryId', defaultValue = "")}
+                                            {...register('categoryId', { defaultValue: '' })}
                                             className="form-control shadow"
                                             name='categoryId'
                                         >
@@ -542,7 +542,7 @@ function AddItem() {
                                         <input
                                             type="number"
                                             name={`personalSize[${index}].sizePrice`}
-                                            {...register(`personalSize[${index}].sizePrice`)}
+                                            {...register(`personalSize[${index}].sizePrice`,)}
                                             // value="100"
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"

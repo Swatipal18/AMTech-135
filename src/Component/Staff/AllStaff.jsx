@@ -38,7 +38,7 @@ const AllStaff = () => {
       console.error('Error fetching staff details:', error);
       toast.error('Failed to fetch staff details. Please try again.', {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 2000,
         theme: "colored",
       });
     } finally {
@@ -111,7 +111,9 @@ const AllStaff = () => {
       </div>
 
       {loading ? (
-        <div className="loading">Loading...</div>
+        <div className="loader-container d-flex justify-content-center">
+          <div className="loader"></div>
+        </div>
       ) : error ? (
         <div className="error-message">{error}</div>
       ) : staff.length === 0 ? (

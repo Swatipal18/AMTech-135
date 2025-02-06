@@ -183,7 +183,12 @@ function AddStaff() {
                                         <label className="form-label">E-Mail Address :</label>
                                         <input
                                             type="email"
-                                            {...register("email")}
+                                            {...register("email", {
+                                                pattern: {
+                                                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                                    message: 'Invalid email address',
+                                                }
+                                            })}
                                             className="form-control shadow"
                                             placeholder="e.g. ABCD@example.com"
                                         />

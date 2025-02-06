@@ -159,7 +159,9 @@ function Sizes() {
             )}
 
             {loading ? (
-                <div className="loading">Loading...</div>
+                <div className="loader-container d-flex justify-content-center">
+                    <div className="loader"></div>
+                </div>
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (

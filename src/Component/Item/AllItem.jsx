@@ -196,7 +196,7 @@ const AllItem = () => {
     return (
       <div className="pagination-container">
         <div className="showing-text">
-          Showing {startIndex}-{endIndex} Of {totalItems} Categories
+          Showing {startIndex}-{endIndex} Of {totalItems} Items
         </div>
         <div className="pagination-controls">
           <button
@@ -261,7 +261,9 @@ const AllItem = () => {
 
       {
         loading ? (
-          <div className="loading" > Loading...</div>
+          <div className="loader-container d-flex justify-content-center">
+            <div className="loader"></div>
+          </div>
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : (

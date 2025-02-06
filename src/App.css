@@ -189,20 +189,6 @@
    border-radius: 50% !important;
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
- /* HTML: <div class="loader"></div> */
  .loader-container {
    height: 100vh;
    width: 100%;
@@ -214,15 +200,22 @@
    left: 150px;
  }
 
- /* HTML: <div class="loader"></div> */
- /* HTML: <div class="loader"></div> */
+ .loader::before {
+   content: "135 DEGREE";
+   line-height: 1em;
+   color: #0000;
+   background: inherit;
+   background-image: radial-gradient(circle closest-side, #fff 94%, #0B2545);
+   -webkit-background-clip: text;
+   background-clip: text;
+ }
+
  .loader {
    width: 25px;
    aspect-ratio: 1;
    border-radius: 50%;
    animation: l5 1s infinite linear alternate;
  }
-
  @keyframes l5 {
    0% {
      box-shadow: 30px 0 #000, -30px 0 #0002;

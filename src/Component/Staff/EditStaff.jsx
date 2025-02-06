@@ -25,6 +25,8 @@ function EditStaff() {
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [loading, setLoading] = useState(true);
+
 
     const roleMapping = {
         "Staff Member": 1,
@@ -39,10 +41,8 @@ function EditStaff() {
             setLoading(true);
             const response = await axios.get(`${baseUrl}/store/details/${id}`);
             const staffData = response.data.data;
-
-            // Set form data, including role mapping if necessary
             if (staffData.role) {
-                staffData.role = roles[staffData.role - 1]; // Assuming the role is a number, convert it to the string
+                staffData.role = roles[staffData.role - 1]; 
             }
 
             reset(staffData); // Reset the form with the fetched data
@@ -66,7 +66,7 @@ function EditStaff() {
 
     useEffect(() => {
         fetchStaffDetails();
-    }, [id]);
+    }, []);
 
     const submitData = async (data) => {
         try {
@@ -159,6 +159,11 @@ function EditStaff() {
             <div className="row">
                 <div className="col-md-12 main-content">
                     <div className="form-container">
+                        <button className='edit-btn mb-4' onClick={() => {
+                            console.log("Back Button Clicked"),
+                                navigate('/AllStaff')
+                        }}>back</button>
+
                         <h1 className="form-title">Edit Staff</h1>
                         <form onSubmit={handleSubmit(submitData)}>
                             <div className="row">
