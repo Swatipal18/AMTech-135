@@ -1,143 +1,351 @@
-import React from "react";
-// import "./AllOrder.css";
+// import { Button, colors, Pagination, TextField, Modal, Box } from "@mui/material";
+import React, { useEffect, useState, useCallback } from "react";
+import { io } from "socket.io-client";
+// const socket_url = ''
+const socket_url = import.meta.env.VITE_SOCKET_URL
+const socket = io(socket_url, {
+    transports: ["websocket"],
+});
 
 const AllOrder = () => {
-  const tableHeadings = [
-    "User Name",
-    "Date",
-    "Items",
-    "Received Time",
-    "Delivered Time",
-    "Est. Delivery Time",
-    "Total Amount",
-  ];
+    const [allorder, setAllorder] = useState([]);
+    const [loading, setLoading] = useState(false); // ✅ Loader state
+    const [itemprice, setitemprice] = useState({
+        TotalSales: 0,
+        TotalOrders: 0,
+    });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [dateRange, setDateRange] = useState({
+        firstDate: "",
+        lastDate: "",
+    });
 
-  const tableData = [
-    {
-      userName: "AMTech Design",
-      date: "1 Jan 2025",
-      items: 5,
-      receivedTime: "10:00 AM",
-      deliveredTime: "10:20 AM",
-      estimatedDeliveryTime: "20 Minutes",
-      totalAmount: "₹250",
-    },
-    {
-      userName: "John Doe",
-      date: "2 Jan 2025",
-      items: 3,
-      receivedTime: "11:00 AM",
-      deliveredTime: "11:30 AM",
-      estimatedDeliveryTime: "30 Minutes",
-      totalAmount: "₹150",
-    },
-    {
-      userName: "Jane Smith",
-      date: "3 Jan 2025",
-      items: 8,
-      receivedTime: "1:00 PM",
-      deliveredTime: "1:45 PM",
-      estimatedDeliveryTime: "45 Minutes",
-      totalAmount: "₹400",
-    },
-    {
-      userName: "Tech Solutions",
-      date: "4 Jan 2025",
-      items: 10,
-      receivedTime: "9:00 AM",
-      deliveredTime: "9:40 AM",
-      estimatedDeliveryTime: "40 Minutes",
-      totalAmount: "₹500",
-    },
-  ];
 
-  return (
-    <div className="order-container">
-      {/* Filter Bar */}
-      <div className="order-filters">
-        
-      <select
-            className="prepering-all-drop-down text-center"
-          >
-            <option value="all">All</option>
-            <option value="Prepared">Today</option>
-            <option value="Prepared">Last 7 days</option>
-            <option value="Prepared">Custom</option>
-          </select>
-     
-          <select
-            className="prepering-all-drop-down text-center"
-          >
-            <option value="all">All Users</option>
-            <option value="Prepared">Business</option>
-            <option value="Prepared">Individual</option>
-          </select>
-          <select
-            className="prepering-all-drop-down text-center"
-          >
-            <option value="all">All</option>
-            <option value="Prepared">Min Delivery Time</option>
-            <option value="Prepared">max Delivery Time</option>
-          </select>
-          <select
-            className="prepering-all-drop-down text-center"
-          >
-            <option value="all">All</option>
-            <option value="Prepared">Perks</option>
-            <option value="Prepared">Upi</option>
-          </select>
-     
-        <div className="order-summary">
-          <span className="summary-details">Total Sales ₹10,000</span>
-          <span className="summary-details">Total Orders 2,500</span>
-        </div>
-      </div>
+    const [dropdownValues, setDropdownValues] = useState({
+        dateFilter: "all",
+        userType: "all",
+        minTime: "all",
+        paymentMethod: "all",
+    });
 
-      {/* Table */}
-      <table className="order-table">
-        <thead>
-          <tr>
-            {/* {tableHeadings.map((heading, index) => ( */}
-              <th  className="order-table-heading text-start">
-              User Name
-              </th>
-              <th  className="order-table-heading ">
-              Date
-              </th>
-              <th  className="order-table-heading">
-              Items
-              </th>
-              <th  className="order-table-heading ">
-              Received Time
-              </th>
-              <th  className="order-table-heading ">
-              Delivered Time
-              </th>
-              <th  className="order-table-heading ">
-              Est. Delivery Time
-              </th>
-              <th  className="order-table-heading ">
-              Total Amount
-              </th>
-            {/* ))} */}
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((row, index) => (
-            <tr key={index} className="order-table-row">
-              <td className="fw-bold text-start">{row.userName}</td>
-              <td className="fw-bold ">{row.date}</td>
-              <td className="fw-bold ">{row.items}</td>
-              <td className="fw-bold ">{row.receivedTime}</td>
-              <td className="fw-bold ">{row.deliveredTime}</td>
-              <td className="fw-bold ">{row.estimatedDeliveryTime}</td>
-              <td className="fw-bold ">{row.totalAmount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 10;
+
+    useEffect(() => {
+        setLoading(true);
+        socket.emit("complete-list", {});
+        socket.on("all-order-complete-list-response", (data) => {
+            setAllorder(data.data);
+            setLoading(false);
+            setitemprice({
+                TotalSales: data.totalSales,
+                TotalOrders: data.totalOrders,
+            });
+        });
+        return () => {
+            socket.off("all-order-complete-list-response");
+        };
+    }, []);
+
+    const handlePageChange = useCallback((event, value) => {
+        setPage(value);
+    }, []);
+
+    useEffect(() => {
+        const filters = {
+            page: page,
+            limit: 10,
+        };
+
+        setLoading(true);
+        if (dropdownValues.dateFilter !== "all") {
+            if (dropdownValues.dateFilter === "today") {
+                filters.dateRange = "Today";
+            } else if (dropdownValues.dateFilter === "last7days") {
+                filters.dateRange = "Last 7 days";
+            } else if (dropdownValues.dateFilter === "custom") {
+                filters.selectedStartDate = dateRange.firstDate;
+                filters.selectedEndDate = dateRange.lastDate;
+            }
+        }
+
+        if (dropdownValues.userType !== "all") {
+            filters.userType =
+                dropdownValues.userType === "business" ? "BusinessUser" : "User";
+        }
+
+        if (dropdownValues.minTime !== "all") {
+            if (dropdownValues.minTime === "minDelivery") {
+                filters.minTime = 5;
+            } else if (dropdownValues.minTime === "maxDelivery") {
+                filters.maxTime = 20;
+            }
+        }
+
+        if (dropdownValues.paymentMethod !== "all") {
+            filters.paymentMethod =
+                dropdownValues.paymentMethod === "perks" ? "Perks" : "UPI";
+        }
+        socket.emit("complete-list", filters)
+        const handleOrderResponse = (Allorders) => {
+            setAllorder(Allorders.data);
+            setLoading(false);
+        };
+
+        socket.on("all-order-complete-list-response", handleOrderResponse);
+        return () => {
+            socket.off("all-order-complete-list-response", handleOrderResponse);
+        };
+    }, [dropdownValues, page]);
+
+    const convertToIST = (utcTime) => {
+        const options = {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "long",
+            day: "2-digit",
+            hour12: true,
+        };
+        return new Intl.DateTimeFormat("en-IN", options).format(new Date(utcTime));
+    };
+
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        if (name === "dateFilter" && value === "custom") {
+            setIsModalOpen(true);
+        } else {
+            setDropdownValues((prevValues) => ({
+                ...prevValues,
+                [name]: value,
+            }));
+        }
+    };
+    const handleDateChange = (event) => {
+        const { name, value } = event.target;
+        setDateRange((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setDropdownValues((prevValues) => ({
+            ...prevValues,
+            dateFilter: "all",
+        }));
+    };
+
+    const applyCustomDateFilter = () => {
+        setIsModalOpen(false);
+        setDropdownValues((prevValues) => ({
+            ...prevValues,
+            dateFilter: "custom",
+        }));
+    };
+
+
+    return (
+        <>
+            <div className="order-container">
+                <div className="order-filters">
+                    <select
+                        name="dateFilter"
+                        className="prepering-all-drop-down text-center"
+                        onChange={handleChange}
+                        value={dropdownValues.dateFilter}
+                    >
+                        <option value="all">All</option>
+                        <option value="today">Today</option>
+                        <option value="last7days">Last 7 days</option>
+                        <option value="custom">Custom</option>
+                    </select>
+
+                    <select
+                        name="userType"
+                        className="prepering-all-drop-down text-center"
+                        onChange={handleChange}
+                        value={dropdownValues.userType}
+                    >
+                        <option value="all">All Users</option>
+                        <option value="business">Business</option>
+                        <option value="individual">Individual</option>
+                    </select>
+                    <select
+                        name="minTime"
+                        className="prepering-all-drop-down text-center"
+                        onChange={handleChange}
+                        value={dropdownValues.minTime}
+                    >
+                        <option value="all">All</option>
+                        <option value="minDelivery">Min Delivery Time</option>
+                        <option value="maxDelivery">Max Delivery Time</option>
+                    </select>
+                    <select
+                        name="paymentMethod"
+                        className="prepering-all-drop-down text-center"
+                        onChange={handleChange}
+                        value={dropdownValues.paymentMethod}
+                    >
+                        <option value="all">All</option>
+                        <option value="perks">Perks</option>
+                        <option value="upi">UPI</option>
+                    </select>
+                    <div className="order-summary">
+                        <span className="summary-details">
+                            Total Sales {itemprice.TotalSales}
+                        </span>
+                        <span className="summary-details">
+                            Total Orders {itemprice.TotalOrders}
+                        </span>
+                    </div>
+                </div>
+
+                {loading && (
+                    <div className="loader-container d-flex justify-content-center">
+                        <div className="loader"></div>
+                    </div>
+                )}
+
+                {!loading && (
+                    <table className="order-table">
+                        <thead>
+                            <tr>
+                                <th className="order-table-heading text-start">User Name</th>
+                                <th className="order-table-heading">Date</th>
+                                <th className="order-table-heading">Payment Method</th>
+                                <th className="order-table-heading">Items</th>
+                                <th className="order-table-heading">Received Time</th>
+                                <th className="order-table-heading">Delivered Time</th>
+                                <th className="order-table-heading">Est. Delivery Time</th>
+                                <th className="order-table-heading">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {allorder.map((row, index) => (
+                                <tr key={index} className="order-table-row">
+                                    <td className="fw-bold text-start">
+                                        {row.businessName === "Unknown"
+                                            ? row.userFirstName + " " + row.userLastName
+                                            : row.businessName}
+                                    </td>
+                                    <td className="fw-bold">{convertToIST(row.createdAt)}</td>
+                                    <td className="fw-bold">{row.paymentMethod}</td>
+                                    <td className="fw-bold">{row.items.length}</td>
+                                    <td className="fw-bold">
+                                        {convertToIST(row.orderReceivedTime)}
+                                    </td>
+                                    <td className="fw-bold">
+                                        {convertToIST(row.deliveryEndTime)}
+                                    </td>
+                                    <td className="fw-bold">
+                                        {row.timeTaken.minutes.toFixed(2)}&nbsp;&nbsp;Min
+                                    </td>
+                                    <td className="fw-bold">{row.totalAmount}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
+            <Modal
+                open={isModalOpen}
+                onClose={handleModalClose}
+                sx={{
+                    display: "flex",
+
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backdropFilter: "blur(5px)", // Blurred background effect
+                    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent overlay
+                }}
+            >
+                <Box
+                    sx={{
+                        width: 500,
+                        bgcolor: "white",
+                        p: 3,
+                        borderRadius: 2,
+                        boxShadow: 24,
+                        textAlign: "center",
+                    }}
+                >
+                    <h2 style={{ marginBottom: "10px", color: "#0B2545" }}>Select Date Range</h2>
+                    <div className="d-flex gap-5">
+                        <TextField
+                            type="date"
+                            label="First Date"
+                            name="firstDate"
+                            value={dateRange.firstDate}
+                            onChange={handleDateChange}
+                            fullWidth
+                            margin="normal"
+                            // Trigger the date picker on click
+                            sx={{
+                                '& input': {
+                                    color: 'black',
+                                },
+                            }}
+                        />
+                        <TextField
+                            type="date"
+                            label="Last Date"
+                            name="lastDate"
+                            value={dateRange.lastDate}
+                            onChange={handleDateChange}
+                            fullWidth
+                            margin="normal"
+                            // Trigger the date picker on click
+                            sx={{
+                                '& input': {
+                                    color: 'black',
+                                },
+                            }}
+                        />
+
+                    </div>
+                    <Box display="flex" justifyContent="space-between" mt={2}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={applyCustomDateFilter}
+                            sx={{ borderRadius: "8px", textTransform: "none" }}
+                        >
+                            Apply
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleModalClose}
+                            sx={{ borderRadius: "8px", textTransform: "none" }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+
+            <Pagination
+                count={Math.ceil(allorder.length / rowsPerPage)}
+                onChange={handlePageChange}
+                variant="outlined"
+                sx={{
+                    "& .MuiPaginationItem-root": {
+                        color: "white",
+                        borderColor: "#0B2545",
+                        backgroundColor: "blue",
+                        "&:hover": {
+                            backgroundColor: "blue",
+                            borderColor: "#0B2545",
+                        },
+                    },
+                }}
+                className="Paginition-for-AllOrder"
+            />
+        </>
+    );
 };
 
 export default AllOrder;

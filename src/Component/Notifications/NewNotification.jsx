@@ -152,7 +152,7 @@ function NewNotification() {
                                         className="form-select form-control shadow"
                                         style={{
                                             width: '400px',
-                                            color: sends === "" ? '#8DA9C4 ' : 'inherit'  // Red when empty
+                                            color: sends === "" ? '#8DA9C4 ' : 'inherit'  
                                         }}
                                         value={sends}
                                         onChange={(e) => setSends(e.target.value)}

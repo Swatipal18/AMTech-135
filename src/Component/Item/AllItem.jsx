@@ -52,7 +52,7 @@ const AllItem = () => {
       const response = await axios.get(`${baseUrl}/menu/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
-      console.log
+      console.log(response.data);
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
         setTotalItems(response.data.data.total || 0);
@@ -115,19 +115,78 @@ const AllItem = () => {
   const handleEdit = (id) => {
     navigate(`/EditItem/${id}`);
   };
-  const handleCheckboxChange = (itemId, type) => {
+
+  const handleCheckboxChange = (itemId, type, item) => {
+    // Prevent toggling if status is already active (green)
+    if ((type === 'business' && item.isActiveForBusiness) ||
+      (type === 'personal' && item.isActiveForPersonal)) {
+      Swal.fire({
+        title: 'Not Allowed',
+        text: `Cannot deactivate ${type} status once it is active.`,
+        icon: 'info',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
+    // Check if trying to toggle business status
+    if (type === 'business' && !item.isActiveForBusiness) {
+      if (!item.size || item.size.length === 0) {
+        Swal.fire({
+          title: 'Action Required',
+          text: 'Please edit the item and add size information before activating business status.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      if (!item.businessFields || Object.keys(item.businessFields).length === 0) {
+        Swal.fire({
+          title: 'Action Required',
+          text: 'Business fields are empty. Please edit the item and fill in required business information.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+    }
+
+    // Check if trying to toggle personal status
+    if (type === 'personal' && !item.isActiveForPersonal) {
+      if (!item.size || item.size.length === 0) {
+        Swal.fire({
+          title: 'Action Required',
+          text: 'Please edit the item and add size information before activating personal status.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+
+      if (!item.personalFields || Object.keys(item.personalFields).length === 0) {
+        Swal.fire({
+          title: 'Action Required',
+          text: 'Personal fields are empty. Please edit the item and fill in required personal information.',
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        return;
+      }
+    }
+
+    // Only allow toggling from false to true
     setCheckedItems(prevState => ({
       ...prevState,
       [itemId]: {
         ...prevState[itemId],
-        [type]: !prevState[itemId]?.[type], // Toggle the checked value
+        [type]: true, // Only allow setting to true
       }
     }));
   };
-
   const getCategoryTitle = (categoryId) => {
     const category = categories.find(c => c._id === categoryId);
-    return category ? category.title : 'Unknown';
+    return category ? category.title : 'Not Found';
   };
   const Pagination = () => {
     const totalPages = Math.ceil(totalItems / limit);
@@ -179,7 +238,7 @@ const AllItem = () => {
     <div className="page-container">
       <div className="header">
         <div className="add-item ">
-          <FaPlus className="plus-icon" />
+          <FaPlus className="plus-icon me-3" />
           <Link className="text-decoration-none text-white" to="/AddNewItem"> Add Item</Link>
         </div>
 
@@ -234,31 +293,40 @@ const AllItem = () => {
                       ))}
                     </td>
                     <td>
-                      <label className="switch">
+                      <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
                         <input
                           type="checkbox"
                           checked={checkedItems[item._id]?.business || false}
-                          onChange={() => handleCheckboxChange(item._id, 'business')}
-                          style={{
-                            backgroundColor: item.size.length === 0 ? 'red' : '',
-                          }}
+                          onChange={() => handleCheckboxChange(item._id, 'business', item)}
+                          disabled={item.isActiveForBusiness}
                         />
-                        <span className="slider"></span>
+                        <span
+                          className="slider"
+                          style={{
+                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
+                            cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
+                          }}
+                        ></span>
                       </label>
                     </td>
                     <td>
-                      <label className="switch">
+                      <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
                         <input
                           type="checkbox"
-                          checked={checkedItems[item._id]?.personalSize || false}
-                          onChange={() => handleCheckboxChange(item._id, 'personalSize')}
-                          style={{
-                            backgroundColor: item.personalSize.length === 0 ? 'red' : '',
-                          }}
+                          checked={checkedItems[item._id]?.personal || false}
+                          onChange={() => handleCheckboxChange(item._id, 'personal', item)}
+                          disabled={item.isActiveForPersonal}
                         />
-                        <span className="slider"></span>
+                        <span
+                          className="slider"
+                          style={{
+                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
+                            cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
+                          }}
+                        ></span>
                       </label>
                     </td>
+
                     <td className="actions d-flex justify-content-around">
                       <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                         EDIT

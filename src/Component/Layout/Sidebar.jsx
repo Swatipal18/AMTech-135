@@ -147,7 +147,7 @@ const Sidebar = ({ onToggle, children }) => {
                     )}
                 </div>
             </div>
-            <div className="sidebar-content">
+            <div className={`sidebar-content ${isOpen ? '' : 'mt-5'}`} >
                 {menuItems.map((item, index) => (
                     <div key={index}>
                         <div

@@ -428,7 +428,7 @@ function AddItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
-                                            {...register('categoryId')}
+                                            {...register('categoryId', defaultValue = "")}
                                             className="form-control shadow"
                                             name='categoryId'
                                         >
