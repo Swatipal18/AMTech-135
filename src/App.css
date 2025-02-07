@@ -23,7 +23,6 @@
    transform: translate(-50%, -50%);
    top: 115px;
    height: 260px;
-   /* background-color: #8DA9C4;   */
    border: none;
    margin: 0 10px;
  }
@@ -31,12 +30,9 @@
  .total-sales {
    width: 250px;
    height: 100px;
-   /* border: 1px solid black; */
    box-sizing: border-box;
    word-wrap: break-word;
-   /* For older browsers */
    overflow-wrap: break-word;
-   /* Modern approach */
    white-space: normal;
  }
 
@@ -189,15 +185,27 @@
    border-radius: 50% !important;
  }
 
+ /* HTML: <div class="loader"></div> */
  .loader-container {
    height: 100vh;
-   width: 100%;
+   width: 130vw;
    position: fixed;
    top: 0;
    z-index: 1;
    background-color: #0000002b;
    align-items: center;
-   left: 150px;
+
+   left: -150px;
+ }
+
+ .loader {
+   /* position: absolute; */
+   width: fit-content;
+   font-weight: bold;
+   font-family: monospace;
+   font-size: 30px;
+   background: radial-gradient(circle closest-side, #0B2545 94%, #0000) right/calc(200% - 1em) 100%;
+   animation: l24 1s infinite alternate linear;
  }
 
  .loader::before {
@@ -210,30 +218,21 @@
    background-clip: text;
  }
 
- .loader {
-   width: 25px;
-   aspect-ratio: 1;
-   border-radius: 50%;
-   animation: l5 1s infinite linear alternate;
- }
- @keyframes l5 {
-   0% {
-     box-shadow: 30px 0 #000, -30px 0 #0002;
-     background: #000
-   }
-
-   33% {
-     box-shadow: 30px 0 #000, -30px 0 #0002;
-     background: #0002
-   }
-
-   66% {
-     box-shadow: 30px 0 #0002, -30px 0 #000;
-     background: #0002
-   }
-
+ @keyframes l24 {
    100% {
-     box-shadow: 30px 0 #0002, -30px 0 #000;
-     background: #000
+     background-position: left
    }
+ }
+
+ .red {
+   background-color: #ff0000 !important;
+ }
+
+ .Yellow {
+   background-color: #ffcc00 !important;
+ }
+
+ .custom-date-picker .MuiCalendarPicker-root {
+   background-color: lightgreen !important;
+   /* Change the calendar's background color */
  }

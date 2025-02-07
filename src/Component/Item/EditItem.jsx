@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { GrUploadOption, GrClose } from "react-icons/gr";
@@ -120,36 +120,19 @@ function EditItem() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-    const handleActiveStatus = (sizeData) => {
-        if (sizeData && sizeData.length === 0) {
-            return { isActive: false, sizeData: [] };
-        } else if (sizeData && sizeData.length > 0) {
-            const validSizes = sizeData.filter(item => item.sizeId);
-            return validSizes.length === 0
-                ? { isActive: false, sizeData: [] }
-                : { isActive: true, sizeData: validSizes };
-        }
-        return { isActive: false, sizeData: [] };
-    };
+
     const onSubmit = async (data) => {
-        // console.log("Submitted Data:", data);
         try {
-
-            const businessStatus = handleActiveStatus(data.size);
-            const personalStatus = handleActiveStatus(data.personalSize);
-
-            data.isActiveForBusiness = businessStatus.isActive;
-            data.size = businessStatus.sizeData;
-
-            data.isActiveForPersonal = personalStatus.isActive;
-            data.personalSize = personalStatus.sizeData;
-
-            const requestData = {
-                isActiveForBusiness: data.isActiveForBusiness,
-                isActiveForPersonal: data.isActiveForPersonal,
+            // Prepare the submission data
+            const submitData = {
+                ...data,
+                isActiveForBusiness: data.size.some(item => item.sizeId),
+                isActiveForPersonal: data.personalSize.some(item => item.sizeId),
+                size: data.size || [{ sizeId: "", volume: "", sizePrice: "" }],
+                personalSize: data.personalSize || [{ sizeId: "", volume: "", sizePrice: "" }]
             };
 
-
+            // Create FormData instance
             const formData = new FormData();
             formData.append('images', data.images);
             const response = await axios.put(
@@ -159,7 +142,7 @@ function EditItem() {
             );
 
             if (response.data.success) {
-                toast.success(response.data.message || "Item added successfully!", {
+                toast.success(response.data.message || "Item updated successfully!", {
                     position: "top-right",
                     autoClose: 1000,
                     theme: "colored",
@@ -168,7 +151,7 @@ function EditItem() {
                         color: '#000',
                     },
                 });
-                reset();
+                // reset();
                 setRating(0);
                 setImagePreviews(null);
 
@@ -184,35 +167,40 @@ function EditItem() {
 
     const addPersonalVariant = () => {
         const personalSizeArray = watch("personalSize") || [];
-        personalSizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
-        setValue("personalSize", personalSizeArray);
+        setValue("personalSize", [
+            ...personalSizeArray,
+            { sizeId: "", volume: "", sizePrice: "" }
+        ]);
     };
 
     const addBusinessVariant = () => {
         const sizeArray = watch("size") || [];
-        sizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
-        setValue("size", sizeArray);
+        setValue("size", [
+            ...sizeArray,
+            { sizeId: "", volume: "", sizePrice: "" }
+        ]);
     };
 
     const fetchItemDetails = async () => {
         try {
             const response = await axios.get(`${baseUrl}/menu/details/${id}`);
             const ItemData = response.data.data;
-            if (ItemData.images) {
-                setImagePreviews(ItemData.images);
-            } else {
-                setImagePreviews(null);
-            }
 
-            setRating(ItemData.ratings || 0);
+            // Ensure we always have at least one empty size entry
+            const defaultSize = [{ sizeId: "", volume: "", sizePrice: "" }];
+
             reset({
                 ...ItemData,
                 ratings: ItemData.ratings || 0,
                 images: ItemData.images || null,
-                size: ItemData.size || [{ sizeId: "", volume: "", sizePrice: "" }],
-                personalSize: ItemData.personalSize || [{ sizeId: "", volume: "", sizePrice: "" }],
+                size: ItemData.size?.length > 0 ? ItemData.size : defaultSize,
+                personalSize: ItemData.personalSize?.length > 0 ? ItemData.personalSize : defaultSize,
             });
 
+            if (ItemData.images) {
+                setImagePreviews(ItemData.images);
+            }
+            setRating(ItemData.ratings || 0);
         } catch (err) {
             console.error("Error fetching staff details:", err);
             setError("Failed to load staff details. Please try again.");
@@ -228,10 +216,13 @@ function EditItem() {
 
     const fetchData = async () => {
         try {
-            const category = await axios.get(`${baseUrl}/admin/categories-list`);
-            setCategories(category.data.data.categories);
-            const sizes = await axios.get(`${baseUrl}/size/list`);
-            setSizes(sizes.data.data.sizes);
+            const [categoryResponse, sizesResponse] = await Promise.all([
+                axios.get(`${baseUrl}/admin/categories-list`),
+                axios.get(`${baseUrl}/size/list`)
+            ]);
+
+            setCategories(categoryResponse.data.data.categories);
+            setSizes(sizesResponse.data.data.sizes);
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error("Failed to load categories and sizes.");
@@ -247,11 +238,13 @@ function EditItem() {
         <div className='dashboard-container'>
             <div className="col-md-12 main-content">
                 <div className="form-container">
-                    <button className='edit-btn mb-4' onClick={() => {
-                        console.log("Back Button Clicked"),
-                            navigate('/all-items')
-                    }}>back</button>
-                    <h1 className="form-title">Add New Item</h1>
+                    <button
+                        className='edit-btn mb-4'
+                        onClick={() => navigate('/all-items')}
+                    >
+                        back
+                    </button>
+                    <h1 className="form-title">Edit Item</h1>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* Name Field */}
                         <div className="row">
@@ -337,13 +330,11 @@ function EditItem() {
                                             </div>
 
                                             {isModalOpen && (
-                                                <div
-                                                    className="modal-overlay"
-                                                    onClick={(e) => {
-                                                        if (e.target === e.currentTarget) {
-                                                            closeModal();
-                                                        }
-                                                    }}
+                                                <div className="modal-overlay" onClick={(e) => {
+                                                    if (e.target === e.currentTarget) {
+                                                        closeModal();
+                                                    }
+                                                }}
                                                 >
                                                     <div
                                                         className="modal-div"
@@ -456,8 +447,8 @@ function EditItem() {
                         {/* Business Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Business Menu Variants</h3>
-                            {watch("size").map((_, index) => (
-                                <div key={index} className="row" >
+                            {(watch("size") || []).map((_, index) => (
+                                <div key={index} className="row">
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
@@ -515,10 +506,11 @@ function EditItem() {
                                 + ADD VARIANT
                             </button>
                         </div>
+
                         {/* Personal Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Personal Menu Variants</h3>
-                            {watch("personalSize").map((_, index) => (
+                            {(watch("personalSize") || []).map((_, index) => (
                                 <div key={index} className="row">
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>

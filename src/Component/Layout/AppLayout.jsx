@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
-
+    const navigator = useNavigate();
     // Function to handle sidebar state
     const handleSidebarState = (isOpen) => {
         setSidebarOpen(isOpen);
@@ -13,6 +13,9 @@ function AppLayout() {
     const handleToggle = () => {
         setIsOn((prev) => !prev);
     };
+    const logOut = () => {
+        navigator('/');
+    }
 
 
     return (
@@ -55,13 +58,13 @@ function AppLayout() {
                                             src="/src//assets//Images/admin.png"
                                             alt="images"
                                             height={"40px"}
-                                            style={{border:'3px solid #0B2545', borderRadius:'50%', objectFit:'cover', }}
+                                            style={{ border: '3px solid #0B2545', borderRadius: '50%', objectFit: 'cover', }}
                                         />
                                     </div>
                                     <div className="">
                                         <span className='fs-5'>Hello</span>,<span className="fs-5 fw-bold" style={{ color: "#0B2545" }}>Rahul Sharma!</span>
                                         <div className="">
-                                            <button className="logout">LOGOUT </button>
+                                            <button className="logout " onClick={logOut}>LOGOUT </button>
                                         </div>
                                     </div>
                                 </div>

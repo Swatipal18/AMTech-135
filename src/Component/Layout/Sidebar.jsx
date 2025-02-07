@@ -116,17 +116,17 @@ const Sidebar = ({ onToggle, children }) => {
         {
             title: 'Menu Management',
             icon: <BiBox size={20} className='m-2 sidebar-icon' />,
-            path: '/business'
+            path: '/menu'
         },
         {
             title: 'Support',
             icon: <BsFillQuestionCircleFill size={20} className='m-2 sidebar-icon' />,
-            path: '/business'
+            path: '/support'
         },
         {
             title: 'Settings',
             icon: <IoSettingsSharp size={20} className='m-2 sidebar-icon' />,
-            path: '/business'
+            path: '/settings'
         }
     ];
 

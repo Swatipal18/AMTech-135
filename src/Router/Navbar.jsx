@@ -20,6 +20,15 @@ import AllNotifications from '../Component/Notifications/AllNotifications'
 import NewNotification from '../Component/Notifications/NewNotification'
 import Sizes from '../Component/Item/Size/Sizes'
 import HistoryManagement from '../Component/history/History-Management'
+import Franchise from '../Component/franchise/Franchise'
+import Users from '../Component/UsersManagement/Users'
+import Sales from '../Component/SalesManagement/Sales'
+import ReportsAnalytics from '../Component/ReportsAnalytics/ReportsAnalytics'
+import UploadBanners from '../Component/UploadBanners/UploadBanners'
+import BusinessManagement from '../Component/BusinessManagement/BusinessManagement'
+import MenuManagement from '../Component/MenuManagement/MenuManagement'
+import Support from '../Component/Support/Support'
+import Settings from '../Component/Settings/Settings'
 
 
 function Navbar() {
@@ -73,10 +82,10 @@ function Navbar() {
                 },
 
                 // // Other Management Routes
-                // {
-                //     path: "/franchise",
-                //     element: <FranchiseManagement />
-                // },
+                {
+                    path: "/franchise",
+                    element: <Franchise />
+                },
                 {
                     path: "/OrderManagement",
                     element: <OrderManagement />
@@ -101,18 +110,18 @@ function Navbar() {
                     path: "/Subscription",
                     element: <SubscriptionForm />
                 },
-                // {
-                //     path: "/users",
-                //     element: <UserManagement />
-                // },
-                // {
-                //     path: "/sales",
-                //     element: <SalesManagement />
-                // },
-                // {
-                //     path: "/reports",
-                //     element: <ReportsAnalytics />
-                // },
+                {
+                    path: "/users",
+                    element: <Users />
+                },
+                {
+                    path: "/sales",
+                    element: <Sales />
+                },
+                {
+                    path: "/reports",
+                    element: <ReportsAnalytics />
+                },
                 {
                     path: "/AllNotifications",
                     element: <AllNotifications />
@@ -121,14 +130,27 @@ function Navbar() {
                     path: "/NewNotification",
                     element: <NewNotification />
                 },
-                // {
-                //     path: "/banners",
-                //     element: <UploadBanners />
-                // },
-                // {
-                //     path: "/business",
-                //     element: <BusinessManagement />
-                // }
+                {
+                    path: "/banners",
+                    element: <UploadBanners />
+                },
+                {
+                    path: "/business",
+                    element: <BusinessManagement />
+                },
+                {
+                    path: "/menu",
+                    element: <MenuManagement />
+                },
+                {
+                    path: "/support",
+                    element: <Support />
+                },
+                {
+                    path: "/settings",
+                    element: <Settings />
+                },
+
             ]
         }
 
