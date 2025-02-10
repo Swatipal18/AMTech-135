@@ -89,6 +89,14 @@ select option {
         transform: translateY(-50%);
     }
 
+    input[type="text"] {
+        color: rgb(250, 248, 248) !important;
+        margin-left: 10px;
+    }
+
+    .form-control {
+        border: none !important;
+    }
 }
 
 input {
