@@ -135,7 +135,7 @@ function NewNotification() {
                                             placeholder="Write A Message Here..."
                                         />
                                     </div>
-                                    {/* Email Field */}
+                                    {/* Target Field */}
                                     <div className="mb-4">
                                         <label className="form-label">Target Link :</label>
                                         <input

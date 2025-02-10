@@ -7,11 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
-// import { FaArrowsAlt } from "react-icons/fa";
+import { FaArrowsAlt } from "react-icons/fa";
 
-function Users() {
-    const baseUrl = import.meta.env.VITE_API_URL;
-    const [items, setItems] = useState([]);
+function AllBanners() {
     const [search, setSearch] = useState('');
     const [role, setRole] = useState('all');
     const [loading, setLoading] = useState(true);
@@ -20,36 +18,6 @@ function Users() {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const limit = 10;
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTerm]);
-
-    const fetchItems = async (page, search) => {
-        try {
-            setLoading(true);
-            setError(null);
-            const pageNumber = Math.max(Number(page), 1);
-            const limitNumber = Number(limit);
-            const response = await axios.get(`${baseUrl}/admin-business/list`, {
-                params: { page: pageNumber, limit: limitNumber, search: search || '' }
-            });
-            // console.log(response.data);
-            if (response.data?.data?.menuItems) {
-                setItems(response.data.data.menuItems || []);
-                setTotalItems(response.data.data.total || 0);
-            } else {
-                setError('No Users found.');
-            }
-        } catch (error) {
-            setError('Failed to fetch items. Please try again later.');
-            console.error('Error fetching items:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    useEffect(() => {
-        fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
     const selectRole = (event) => {
         setRole(event.target.value);
     };
@@ -112,7 +80,7 @@ function Users() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`${baseUrl}admin-business/delete/${_id}`);
+                await axios.delete(`${baseUrl}/menu/delete/${_id}`);
                 fetchItems();
                 toast.success('Item deleted successfully!', {
                     position: "top-right",
@@ -132,7 +100,7 @@ function Users() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/EditUser/${id}`);
+        navigate(`/EditItem/${id}`);
     };
 
     return (
@@ -140,30 +108,24 @@ function Users() {
             <div className="header">
                 <div className="add-item ">
                     <FaPlus className="plus-icon me-2" />
-                    <Link className="text-decoration-none text-white" to="/NewUser"> Add New User</Link>
+                    <Link className="text-decoration-none text-white" to="/NewBanner"> Add New Banner</Link>
                 </div>
 
-                <div className="search w-50 ms-3">
+                <div className="search w-50">
                     <FaSearch className="search-icons" />
                     <input
                         type="search"
-                        placeholder="Search By User Name"
+                        placeholder="Search By Target"
                         value={search}
                         onChange={searchName}
                     />
                 </div>
-                <div className='d-flex justify-content-end '>
-                    <select className="form-select  custom-select text-center" onChange={selectRole}>
-                        <option value="all">All</option>
-                        <option value="business">Business</option>
-                        <option value="personal">Personal</option>
-                    </select>
-                    <select className="form-select  custom-select text-center" onChange={selectRole}>
-                        <option value="all">All</option>
-                        <option value="business">Business</option>
-                        <option value="personal">Personal</option>
-                    </select>
-                </div>
+
+                <select className="form-select  custom-select text-center" onChange={selectRole}>
+                    <option value="all">All</option>
+                    <option value="business">Business</option>
+                    <option value="personal">Personal</option>
+                </select>
             </div >
             {
                 // loading ? (
@@ -171,31 +133,27 @@ function Users() {
                 //         <div className="loader"></div>
                 //     </div>
                 // ) :
-                    // error ? (
-                    //     <div className="error-message">{error}</div>
-                    // ) :
-                    (
-                        <>
-                            <table className="table mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Type</th>
-                                        <th>Registered</th>
-                                        <th>Device Type </th>
-                                        <th>Perks</th>
-                                        <th>Orders</th>
-                                        <th>Total Spend</th>
-                                        <th>Status</th>
+                error ? (
+                    <div className="error-message">{error}</div>
+                ) : (
+                    <>
+                        <table className="table mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Banner</th>
+                                    <th>Status</th>
+                                    <th>Published </th>
+                                    <th>Clicks</th>
+                                    <th>Target</th>
 
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    {items.map((item, index) => (
+                                {/* {items.map((item, index) => (
                                         <tr key={`${item._id}-${index}`} className="table-row">
-                                            <td>{ }</td>
+                                        <td><FaArrowsAlt/></td>
                                             <td>{item.itemName}</td>
                                             <td>{getCategoryTitle(item.categoryId)}</td>
                                             <td className="rating">
@@ -242,7 +200,7 @@ function Users() {
                                                     ></span>
                                                 </label>
                                             </td>
-
+    
                                             <td className="actions d-flex justify-content-around">
                                                 <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                                                     EDIT
@@ -252,15 +210,15 @@ function Users() {
                                                 </button>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <Pagination />
-                        </>
-                    )}
+                                    ))} */}
+                            </tbody>
+                        </table>
+                        <Pagination />
+                    </>
+                )}
             <ToastContainer />
         </div>
     )
 }
 
-export default Users
+export default AllBanners

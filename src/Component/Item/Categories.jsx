@@ -184,13 +184,13 @@ function Categories() {
                 <div className="search">
                     <FaSearch className="search-icons" />
                     <input
-                        type="text"
+                        type="search"
                         placeholder="Search By Category Name"
                         value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                            handleSearch(e.target.value);
-                        }}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        handleSearch(e.target.value);
+                    }}
                     />
                 </div>
             </div>

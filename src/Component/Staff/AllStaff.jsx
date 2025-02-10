@@ -94,7 +94,7 @@ const AllStaff = () => {
         <div className="search w-50">
           <FaSearch className="search-icons" />
           <input
-            type="text"
+            type="search"
             placeholder="Search By Staff Name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

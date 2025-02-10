@@ -40,9 +40,9 @@ const AllItem = () => {
   }, [currentPage, searchTerm]);
 
   // Debounced search
-  const handleSearch = debounce((search) => {
-    fetchItems(currentPage, search);
-  }, 500);
+  // const handleSearch = debounce((search) => {
+  //   fetchItems(currentPage, search);
+  // }, 500);
   const fetchItems = async (page, search) => {
     try {
       setLoading(true);

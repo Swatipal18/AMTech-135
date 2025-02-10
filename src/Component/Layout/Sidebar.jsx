@@ -82,8 +82,19 @@ const Sidebar = ({ onToggle, children }) => {
         {
             title: 'User Management',
             icon: <HiUserGroup size={20} className='m-2 sidebar-icon' />,
-            path: '/users'
+            subItems: [
+                { label: 'All Users', path: '/users' },
+                { label: 'New Users', path: '/NewUser' },
+                // { label: 'Current Orders', path: '/PreperingOrder' },
+                // { label: 'Out For Delivery Orders', path: '/Outfordelivery' }
+            ],
+            isDropdown: true
         },
+        // {
+        //     title: 'User Management',
+        //     icon: <HiUserGroup size={20} className='m-2 sidebar-icon' />,
+        //     path: '/users'
+        // },
         {
             title: 'Sales Management',
             icon: <RiBarChartFill size={20} className='m-2 sidebar-icon' />,
@@ -106,7 +117,11 @@ const Sidebar = ({ onToggle, children }) => {
         {
             title: 'Upload Banners',
             icon: <FaAd size={20} className='m-2 sidebar-icon' />,
-            path: '/banners'
+            subItems: [
+                { label: 'All banners', path: '/AllBanners' },
+                { label: 'New Banners', path: '/NewBanner' },
+            ],
+            isDropdown: true
         },
         {
             title: 'Business Management',
@@ -139,7 +154,7 @@ const Sidebar = ({ onToggle, children }) => {
                     </button>
                     {isOpen && (
                         <div className='mt-3 mx-2'>
-                            <Link to="/" className="logo ms-5">
+                            <Link to="/admin" className="logo ms-5">
                                 <img src="/main-logo.png" alt="Logo" />
                             </Link>
 

@@ -130,7 +130,7 @@ function Sizes() {
                 <div className="search">
                     <FaSearch className="search-icons" />
                     <input
-                        type="text"
+                        type="search"
                         placeholder="Search By Size Name"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}

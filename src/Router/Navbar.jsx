@@ -1,6 +1,5 @@
 import React from 'react'
 import Login from '../Login'
-import Sidebar from '../Component/Layout/Sidebar'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Admin from '../Component/Dashboard/Admin'
 import AppLayout from '../Component/Layout/AppLayout'
@@ -24,11 +23,14 @@ import Franchise from '../Component/franchise/Franchise'
 import Users from '../Component/UsersManagement/Users'
 import Sales from '../Component/SalesManagement/Sales'
 import ReportsAnalytics from '../Component/ReportsAnalytics/ReportsAnalytics'
-import UploadBanners from '../Component/UploadBanners/UploadBanners'
+import AllBanners from '../Component/UploadBanners/AllBanners'
 import BusinessManagement from '../Component/BusinessManagement/BusinessManagement'
 import MenuManagement from '../Component/MenuManagement/MenuManagement'
 import Support from '../Component/Support/Support'
 import Settings from '../Component/Settings/Settings'
+import NewBanner from '../Component/UploadBanners/NewBanner'
+import NewUser from '../Component/UsersManagement/NewUser'
+import EditUser from '../Component/UsersManagement/EditUser'
 
 
 function Navbar() {
@@ -66,8 +68,6 @@ function Navbar() {
                     path: "/sizes",
                     element: <Sizes />
                 },
-
-                // Staff Management Routes
                 {
                     path: "/AllStaff",
                     element: <AllStaff />
@@ -80,8 +80,6 @@ function Navbar() {
                     path: "/EditStaff/:id",
                     element: <EditStaff />
                 },
-
-                // // Other Management Routes
                 {
                     path: "/franchise",
                     element: <Franchise />
@@ -115,6 +113,14 @@ function Navbar() {
                     element: <Users />
                 },
                 {
+                    path: "/NewUser",
+                    element: <NewUser />
+                },
+                {
+                    path: "/EditUser/:id",
+                    element: <EditUser />
+                },
+                {
                     path: "/sales",
                     element: <Sales />
                 },
@@ -131,8 +137,12 @@ function Navbar() {
                     element: <NewNotification />
                 },
                 {
-                    path: "/banners",
-                    element: <UploadBanners />
+                    path: "/AllBanners",
+                    element: <AllBanners />
+                },
+                {
+                    path: "/NewBanner",
+                    element: <NewBanner />
                 },
                 {
                     path: "/business",

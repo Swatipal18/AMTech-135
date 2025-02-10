@@ -120,21 +120,40 @@ function EditItem() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-
+    const handleActiveStatus = (sizeData) => {
+        if (sizeData && sizeData.length === 0) {
+            return { isActive: false, sizeData: [] };
+        } else if (sizeData && sizeData.length > 0) {
+            const validSizes = sizeData.filter(item => item.sizeId);
+            return validSizes.length === 0
+                ? { isActive: false, sizeData: [] }
+                : { isActive: true, sizeData: validSizes };
+        }
+        return { isActive: false, sizeData: [] };
+    };  
     const onSubmit = async (data) => {
+        // Prepare the submission data
+        console.log(data)
         try {
-            // Prepare the submission data
-            const submitData = {
-                ...data,
-                isActiveForBusiness: data.size.some(item => item.sizeId),
-                isActiveForPersonal: data.personalSize.some(item => item.sizeId),
-                size: data.size || [{ sizeId: "", volume: "", sizePrice: "" }],
-                personalSize: data.personalSize || [{ sizeId: "", volume: "", sizePrice: "" }]
+            const businessStatus = handleActiveStatus(data.size);
+            const personalStatus = handleActiveStatus(data.personalSize);
+
+            data.isActiveForBusiness = businessStatus.isActive;
+            data.size = businessStatus.sizeData;
+
+            data.isActiveForPersonal = personalStatus.isActive;
+            data.personalSize = personalStatus.sizeData;
+
+            const requestData = {
+                isActiveForBusiness: data.isActiveForBusiness,
+                isActiveForPersonal: data.isActiveForPersonal,
             };
 
-            // Create FormData instance
+
             const formData = new FormData();
             formData.append('images', data.images);
+            // console.log(formData, "formData")
+
             const response = await axios.put(
                 `${baseUrl}/menu/update/${id}`,
                 data,
@@ -245,7 +264,7 @@ function EditItem() {
                         back
                     </button>
                     <h1 className="form-title">Edit Item</h1>
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
                         {/* Name Field */}
                         <div className="row">
                             <div className="col-md-8">
@@ -253,7 +272,9 @@ function EditItem() {
                                     <label className="form-label">Name :</label>
                                     <input
                                         type='text'
+                                        name="itemName"
                                         {...register("itemName")}
+                                        // value="hello"
                                         className="form-control shadow"
                                         placeholder="e.g. Masala Tea"
                                     />
@@ -263,7 +284,9 @@ function EditItem() {
                                 <div className="mb-4">
                                     <label className="form-label">Description :</label>
                                     <textarea
+                                        name='description'
                                         {...register("description")}
+                                        // value="hello"
                                         className="form-control shadow"
                                         rows="4"
                                         style={{
@@ -281,6 +304,8 @@ function EditItem() {
                                     <label className="form-label">Ingredients :</label>
                                     <input
                                         type='text'
+                                        name="ingredients"
+                                        // value="hello"
                                         {...register("ingredients")}
                                         className="form-control shadow"
                                         placeholder="e.g. Tea, Sugar, Milk"
@@ -305,6 +330,8 @@ function EditItem() {
 
                                 <input
                                     type="hidden"
+                                    name="ratings"
+
                                     {...register("ratings", { required: true })}
                                     value={rating}
                                 />
@@ -330,11 +357,13 @@ function EditItem() {
                                             </div>
 
                                             {isModalOpen && (
-                                                <div className="modal-overlay" onClick={(e) => {
-                                                    if (e.target === e.currentTarget) {
-                                                        closeModal();
-                                                    }
-                                                }}
+                                                <div
+                                                    className="modal-overlay"
+                                                    onClick={(e) => {
+                                                        if (e.target === e.currentTarget) {
+                                                            closeModal();
+                                                        }
+                                                    }}
                                                 >
                                                     <div
                                                         className="modal-div"
@@ -452,9 +481,9 @@ function EditItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
-                                            {...register('categoryId')}
+                                            {...register('categoryId', { defaultValue: '' })}
                                             className="form-control shadow"
-
+                                            name='categoryId'
                                         >
                                             <option value="">Select Any One</option>
                                             {categories.map((category) => (
@@ -470,6 +499,7 @@ function EditItem() {
                                         <select
                                             {...register(`size[${index}].sizeId`)}
                                             className="form-control shadow"
+                                            name={`size[${index}].sizeId`}
                                         >
                                             <option value="">Select Any One</option>
                                             {sizes.map((size) => (
@@ -483,6 +513,8 @@ function EditItem() {
                                         <input
                                             type="text"
                                             {...register(`size[${index}].volume`)}
+                                            name={`size[${index}].volume`}
+                                            // value="120ml"
                                             className="form-control shadow"
                                             placeholder="e.g. 60ml"
                                         />
@@ -492,7 +524,9 @@ function EditItem() {
                                         <label className="form-label">Price :</label>
                                         <input
                                             type="number"
+                                            name={`size[${index}].sizePrice`}
                                             {...register(`size[${index}].sizePrice`)}
+                                            // value="100"
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
                                         />
@@ -506,7 +540,6 @@ function EditItem() {
                                 + ADD VARIANT
                             </button>
                         </div>
-
                         {/* Personal Menu Variants */}
                         <div className="variants-section">
                             <h3 className="variants-title">Personal Menu Variants</h3>
@@ -515,7 +548,7 @@ function EditItem() {
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Category :</label>
                                         <select
-                                            {...register(`personalSize[${index}].categoryId`)}
+                                            // {...register(`personalSize[${index}].categoryId`)}
                                             className="form-control shadow"
                                             disabled
                                         >
@@ -528,10 +561,11 @@ function EditItem() {
                                         </select>
                                     </div>
 
-                                    {/* Personal Size - Size */}
+                                    {/* Personal Size */}
                                     <div className="col-md-3 mb-3">
                                         <label className="form-label">Size :</label>
                                         <select
+                                            name={`personalSize[${index}].sizeId`}
                                             {...register(`personalSize[${index}].sizeId`)}
                                             className="form-control shadow"
                                         >
@@ -547,7 +581,9 @@ function EditItem() {
                                         <label className="form-label">Volume :</label>
                                         <input
                                             type="text"
+                                            name={`personalSize[${index}].volume`}
                                             {...register(`personalSize[${index}].volume`)}
+                                            // value="120ml"
                                             className="form-control shadow"
                                             placeholder="e.g. 60ml"
                                         />
@@ -558,7 +594,9 @@ function EditItem() {
                                         <label className="form-label">Price :</label>
                                         <input
                                             type="number"
-                                            {...register(`personalSize[${index}].sizePrice`)}
+                                            name={`personalSize[${index}].sizePrice`}
+                                            {...register(`personalSize[${index}].sizePrice`,)}
+                                            // value="100"
                                             className="form-control shadow"
                                             placeholder="₹ e.g. 100"
                                         />
