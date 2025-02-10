@@ -263,9 +263,9 @@ const AllOrder = () => {
 >
   <Box
     sx={{
-      width: 500,
-      bgcolor: "white",
-      p: 3,
+      width: 600,
+      bgcolor: "#8DA9C4",
+      p: 5,
       borderRadius: 2,
       boxShadow: 24,
       textAlign: "center",
@@ -319,7 +319,7 @@ const AllOrder = () => {
         variant="contained"
         color="primary"
         onClick={applyCustomDateFilter}
-        sx={{ borderRadius: "8px", textTransform: "none" }}
+        sx={{ borderRadius: "8px", textTransform: "none" , width:200 }}
       >
         Apply
       </Button>

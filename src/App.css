@@ -134,7 +134,9 @@
     color: #134074;
     position: relative;
   }
-
+.btn-container{
+  background-color: white;
+}
 .Admin-header-button{
   border: none;
   padding: 10px ;
@@ -144,17 +146,20 @@
   color: #134074  ;
   z-index: 10;
 }
- 
-
 .D-header{
   position: sticky;
   top: 106px;
   z-index: 10;
 }
+
 .Paginition-for-AllOrder{
   position: fixed;
   top: 90vh;
-  
+}
+.Pagination-for-AllOrder .MuiPaginationItem-root {
+  color: white;
+  border-color: #0B2545;
+  background-color: blue !important; /* Using !important to ensure styles take precedence */
 }
 .dot-parent{
   position: relative;
@@ -162,11 +167,6 @@
 
 .red-dot{
   font-size: 57px;
-  color: red;
-  position: absolute;
-  top: -40px;
-  right: -177px;
-  border-radius: 50% !important;
 }
 .red-none{
   display: none;
@@ -180,22 +180,22 @@
   border-radius: 50% !important;
 }
 
-/* HTML: <div class="loader"></div> */
 .loader-container{
   height: 100vh;
-  width: 110vw;
+  width: 100%;
   position: fixed;
   top: 0;
   z-index: 1;
   background-color: #0000002b;
-  align-items: center;
+  left: -0px;
  
-  left: -150px;
 }
 .loader {
-  /* position: absolute; */
   width: fit-content;
   font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
   font-family: monospace;  
   font-size: 30px;
   background: radial-gradient(circle closest-side,#0B2545 94%,#0000) right/calc(200% - 1em) 100%;
@@ -216,10 +216,14 @@
 }
 
 .red{
-  background-color: #ff0000  !important;
+  background-color: #ff000085  !important;
+  /* opacity: 50%; */
+  color: red !important;
 }
 .Yellow{
-  background-color: #ffcc00 !important;
+  background-color: #ffcc0084 !important;
+  /* opacity: 50%; */
+  color: yellow;
 }
 
 .custom-date-picker .MuiCalendarPicker-root {

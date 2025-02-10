@@ -1609,19 +1609,17 @@ input[type="range"] {
 .download-btn {
     padding: 0 16px;
     height: 40px;
-    background: #f3f4f6;
+    background-color: var(--backdround-color);
     border: none;
     border-radius: 6px;
-    color: #9ca3af;
+    color: white;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-.download-btn:hover {
-    background: #e5e7eb;
-}
+ 
 
 /* No Transactions Message */
 .no-transactions {

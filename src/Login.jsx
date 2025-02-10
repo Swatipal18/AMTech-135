@@ -12,7 +12,6 @@ const Login = () => {
     const { register, handleSubmit, reset } = useForm();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     const onSubmit = async (data) => {
         setLoading(true);
 
