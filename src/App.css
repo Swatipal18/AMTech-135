@@ -208,7 +208,7 @@
  }
 
  .loader::before {
-   content: "135 DEGREE";
+   content: "135 DEGREES";
    line-height: 1em;
    color: #0000;
    background: inherit;

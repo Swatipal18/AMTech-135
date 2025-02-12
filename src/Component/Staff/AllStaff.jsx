@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaPlus, FaSearch, FaAngleLeft, FaChevronRight } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
@@ -12,9 +12,14 @@ const AllStaff = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const itemsPerPage = 10;
+  const limit = 10;
   const navigate = useNavigate();
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
 
   const roleMapping = {
     1: "Staff Member",
@@ -23,16 +28,24 @@ const AllStaff = () => {
     4: "Delivery Boy",
   };
   useEffect(() => {
-    fetchStaff();
+    fetchStaff(currentPage, searchTerm);
   }, [currentPage, searchTerm]);
 
-  const fetchStaff = async () => {
+  const fetchStaff = async (page, search) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${baseUrl}/store/list`);
-      const staffData = response.data.data.users;
-      setStaff(staffData || []);
+      const pageNumber = Math.max(Number(page), 1);
+      const limitNumber = Number(limit);
+      const response = await axios.get(`${baseUrl}/store/list`, {
+        params: { page: pageNumber, limit: limitNumber, search: search || '' }
+      });
+      if (response.data?.data?.users) {
+        setStaff(response.data.data.users || []);
+        setTotalItems(response.data.data.totalItems || 0);
+      } else {
+        setError('No staff found.');
+      }
     } catch (error) {
       setError('Failed to fetch staff details. Please try again.');
       console.error('Error fetching staff details:', error);
@@ -46,7 +59,7 @@ const AllStaff = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (_id) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "This action cannot be undone!",
@@ -58,7 +71,7 @@ const AllStaff = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`${baseUrl}/store/delete/${id}`);
+        await axios.delete(`${baseUrl}/store/delete/${_id}`);
         fetchStaff();
         toast.success('Staff deleted successfully!', {
           position: "top-right",
@@ -80,7 +93,50 @@ const AllStaff = () => {
   const handleEdit = (id) => {
     navigate(`/editstaff/${id}`);
   };
+  const Pagination = () => {
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (currentPage - 1) * limit + 1;
+    const endIndex = Math.min(currentPage * limit, totalItems);
 
+    return (
+      <div className="pagination-container">
+        <div className="showing-text">
+          Showing {startIndex}-{endIndex} Of {totalItems} Items
+        </div>
+        <div className="pagination-controls">
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <FaAngleLeft />
+          </button>
+          <span
+            style={{
+              fontWeight: 'bold',
+              backgroundColor: '#8DA9C4',
+              color: '#0B2545',
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {currentPage}
+          </span>
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="page-container">
       <div className="header">
@@ -117,41 +173,45 @@ const AllStaff = () => {
       ) : error ? (
         <div className="error-message">{error}</div>
       ) : staff.length === 0 ? (
-        <div className="no-data">No items found</div>
+        <div className="no-data no-data mt-4 text-center text-danger fw-bold fs-4">No Staff Found</div>
       ) : (
-        <table className="table mt-3">
-          <thead>
-            <tr >
-              <th className='text-center'>Staff Name</th>
-              <th className='text-center'>Mobile Number</th>
-              <th className='text-center'>Role</th>
+        <>
 
-            </tr>
-          </thead>
-          <tbody>
-            {staff.map((staffMember, index) => (
-              <tr key={`${staffMember.id}-${index}`} className="table-row">
-                <td className='text-center'>{staffMember.username}</td>
-                <td className='text-center'>{staffMember.contact}</td>
-                <td className='text-center'>{roleMapping[staffMember.role] || 'Unknown Role'}</td>
-                <td className="actions d-flex justify-content-end gap-5">
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEdit(staffMember._id)}
-                  >
-                    EDIT
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(staffMember._id)}
-                  >
-                    DELETE
-                  </button>
-                </td>
+          <table className="table mt-3">
+            <thead>
+              <tr >
+                <th className='text-center'>Staff Name</th>
+                <th className='text-center'>Mobile Number</th>
+                <th className='text-center'>Role</th>
+
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {staff.map((staffMember, index) => (
+                <tr key={`${staffMember.id}-${index}`} className="table-row">
+                  <td className='text-center'>{staffMember.username}</td>
+                  <td className='text-center'>{staffMember.contact}</td>
+                  <td className='text-center'>{roleMapping[staffMember.role] || 'Unknown Role'}</td>
+                  <td className="actions d-flex justify-content-end gap-5">
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(staffMember._id)}
+                    >
+                      EDIT
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(staffMember._id)}
+                    >
+                      DELETE
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination />
+        </>
       )}
 
       <ToastContainer />

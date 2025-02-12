@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
-// import { FaArrowsAlt } from "react-icons/fa";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
 
 function Users() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -16,14 +16,35 @@ function Users() {
     const [role, setRole] = useState('all');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedUserData, setSelectedUserData] = useState(null);
+    const [loadingDetails, setLoadingDetails] = useState(false);
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const limit = 10;
+    const navigate = useNavigate();
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm]);
 
+
+    useEffect(() => {
+        fetchItems(currentPage, searchTerm);
+    }, [currentPage, searchTerm]);
+
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    };
+    // Convert role number to text
+    const getRoleText = (roleNumber) => {
+        const role = Number(roleNumber);
+        if (role === 0) return "Business";
+        if (role === 1) return "Personal";
+        return roleNumber;
+    };
     const fetchItems = async (page, search) => {
         try {
             setLoading(true);
@@ -33,9 +54,8 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
             });
-            // console.log(response.data);
-            if (response.data?.data?.menuItems) {
-                setItems(response.data.data.menuItems || []);
+            if (response.data?.data?.businessList) {
+                setItems(response.data.data.businessList || []);
                 setTotalItems(response.data.data.total || 0);
             } else {
                 setError('No Users found.');
@@ -47,14 +67,9 @@ function Users() {
             setLoading(false);
         }
     };
-    useEffect(() => {
-        fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
+
     const selectRole = (event) => {
         setRole(event.target.value);
-    };
-    const searchName = (event) => {
-        setSearch(event.target.value);
     };
     const Pagination = () => {
         const totalPages = Math.ceil(totalItems / limit);
@@ -112,7 +127,7 @@ function Users() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`${baseUrl}admin-business/delete/${_id}`);
+                await axios.delete(`${baseUrl}/admin-business/delete/${_id}`);
                 fetchItems();
                 toast.success('Item deleted successfully!', {
                     position: "top-right",
@@ -120,9 +135,9 @@ function Users() {
                     theme: "colored",
                 });
             } catch (error) {
-                setError('Failed to delete item. Please try again.');
-                console.error('Error deleting item:', error);
-                toast.error('Failed to delete item. Please try again.', {
+                setError('Failed to delete user. Please try again.');
+                console.error('Error deleting user:', error);
+                toast.error('Failed to delete user. Please try again.', {
                     position: "top-right",
                     autoClose: 3000,
                     theme: "colored",
@@ -133,6 +148,21 @@ function Users() {
 
     const handleEdit = (id) => {
         navigate(`/EditUser/${id}`);
+    };
+
+    const handleInfoClick = async (userId) => {
+        try {
+            setLoadingDetails(true);
+            setShowModal(true);
+            const response = await axios.get(`${baseUrl}/admin-business/details/${userId}`);
+            console.log(response.data);
+            setSelectedUserData(response.data.data);
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            toast.error('Failed to fetch user details');
+        } finally {
+            setLoadingDetails(false);
+        }
     };
 
     return (
@@ -148,8 +178,10 @@ function Users() {
                     <input
                         type="search"
                         placeholder="Search By User Name"
-                        value={search}
-                        onChange={searchName}
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                        }}
                     />
                 </div>
                 <div className='d-flex justify-content-end '>
@@ -166,100 +198,269 @@ function Users() {
                 </div>
             </div >
             {
-                // loading ? (
-                //     <div className="loader-container d-flex justify-content-center">
-                //         <div className="loader"></div>
-                //     </div>
-                // ) :
-                    // error ? (
-                    //     <div className="error-message">{error}</div>
-                    // ) :
-                    (
-                        <>
-                            <table className="table mt-3">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Type</th>
-                                        <th>Registered</th>
-                                        <th>Device Type </th>
-                                        <th>Perks</th>
-                                        <th>Orders</th>
-                                        <th>Total Spend</th>
-                                        <th>Status</th>
+                loading ? (
+                    <div className="loader-container d-flex justify-content-center">
+                        <div className="loader"></div>
+                    </div>
+                ) :
+                    items.length === 0 ? (
+                        <div className="no-data mt-4 text-center text-danger fw-bold fs-4 ">No User Found</div>
+                    ) :
+                        error ? (
+                            <div className="error-message">{error}</div>
+                        ) :
+                            (
+                                <>
+                                    <table className="table mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Registered</th>
+                                                <th>Device Type </th>
+                                                <th>Perks</th>
+                                                <th>Orders</th>
+                                                <th>Total Spend</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            {items.map((item, index) => (
+
+                                                <tr key={`${item._id}-${index}`} className="table-row">
+                                                    <td>{item.ownerName}</td>
+                                                    <td>{getRoleText(item.role)}</td>
+                                                    <td>{formatDate(item.createdAt)}</td>
+                                                    <td>{item.deviceType}</td>
+                                                    <td>&#8377;  {item.availablePerks}</td>
+                                                    <td>{item.totalOrder}</td>
+                                                    <td>&#8377;  {item.totalSpend}</td>
+                                                    <td>
+                                                        <label className={`switch ${item.isActive ? 'disabled' : ''}`}>
+                                                            <input
+                                                                type="checkbox"
+                                                            // checked={checkedItems[item._id]?.business || false}
+                                                            // onChange={() => handleCheckboxChange(item._id, 'business', item)}
+                                                            // disabled={item.isActiveForBusiness}
+                                                            />
+                                                            <span
+                                                                className="slider"
+                                                                style={{
+                                                                    backgroundColor: item.isActive ? '#ff0000' : '#4CAF50',
+                                                                    cursor: item.isActive ? 'not-allowed' : 'pointer'
+                                                                }}
+                                                            ></span>
+                                                        </label>
+                                                    </td>
+                                                    <td className="actions d-flex justify-content-around">
+                                                        <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
+                                                            EDIT
+                                                        </button>
+                                                        <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                                                            DELETE
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button className='btn' onClick={() => handleInfoClick(item._id)}>
+                                                            <HiOutlineInformationCircle className='fs-3' />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
 
 
-                                    </tr>
-                                </thead>
-                                <tbody>
+                                        {showModal && (
+                                            <>
+                                                <div
+                                                    className={`modal-slide-backdrop ${showModal ? 'show' : ''}`}
+                                                    onClick={() => setShowModal(false)}
+                                                />
+                                                <div className={`modal-slide ${showModal ? 'show' : ''}`}>
+                                                    <div className="modal-slide-header">
+                                                        <h5 className="m-0">
+                                                            {selectedUserData?.businessUser ? 'Business Information' : 'Personal Information'}
+                                                        </h5>
+                                                        <button
+                                                            className="modal-slide-close text-danger fs-2"
+                                                            onClick={() => setShowModal(false)}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </div>
+                                                    <div className="modal-slide-body">
+                                                        {loadingDetails ? (
+                                                            <div className="text-center p-4">
+                                                                <div className="spinner-border text-primary" role="status">
+                                                                    <span className="visually-hidden">Loading...</span>
+                                                                </div>
+                                                            </div>
+                                                        ) : selectedUserData ? (
+                                                            <div className="row g-3">
+                                                                {/* Conditional rendering based on user type */}
+                                                                {selectedUserData.businessUser ? (
+                                                                    // Business User Content
+                                                                    <>
+                                                                        {/* Images Section */}
+                                                                        <div className="col-12">
+                                                                            <div className="info-card">
+                                                                                <div className="card-body">
+                                                                                    <h3 className="card-title text-center">Business Images</h3>
+                                                                                    <div className="d-flex flex-wrap gap-3 mt-3">
+                                                                                        {selectedUserData.businessUser.images?.map((image, index) => (
+                                                                                            <div key={index} style={{ width: '200px', height: '150px' }}>
+                                                                                                <img
+                                                                                                    src={`${baseUrl}/${image}`}
+                                                                                                    alt={`Business ${index + 1}`}
+                                                                                                    className="img-fluid rounded"
+                                                                                                    style={{
+                                                                                                        width: '100%',
+                                                                                                        height: '100%',
+                                                                                                        objectFit: 'cover',
+                                                                                                        transition: 'transform 0.3s ease',
+                                                                                                        cursor: 'pointer'
+                                                                                                    }}
+                                                                                                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+                                                                                                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                                                                                                />
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
 
-                                    {items.map((item, index) => (
-                                        <tr key={`${item._id}-${index}`} className="table-row">
-                                            <td>{ }</td>
-                                            <td>{item.itemName}</td>
-                                            <td>{getCategoryTitle(item.categoryId)}</td>
-                                            <td className="rating">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <span
-                                                        key={star}
-                                                        className={`star ${star <= (item.ratings || 0) ? 'filled' : 'empty'}`}
-                                                    >
-                                                        ★
-                                                    </span>
-                                                ))}
-                                            </td>
-                                            <td>
-                                                <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedItems[item._id]?.business || false}
-                                                        onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                                                        disabled={item.isActiveForBusiness}
-                                                    />
-                                                    <span
-                                                        className="slider"
-                                                        style={{
-                                                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
-                                                            cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
-                                                        }}
-                                                    ></span>
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedItems[item._id]?.personal || false}
-                                                        onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                                                        disabled={item.isActiveForPersonal}
-                                                    />
-                                                    <span
-                                                        className="slider"
-                                                        style={{
-                                                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
-                                                            cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
-                                                        }}
-                                                    ></span>
-                                                </label>
-                                            </td>
+                                                                        {/* Business Information */}
+                                                                        <div className="col-md-6">
+                                                                            <div className="info-card">
+                                                                                <div className="card-body fs-6">
+                                                                                    <h6 className="card-title text-center">Basic Information</h6>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Business Name:</strong>
+                                                                                        <span>{selectedUserData.businessUser.businessName}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Owner Name:</strong>
+                                                                                        <span>{selectedUserData.businessUser.ownerName}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Ocupant:</strong>
+                                                                                        <span>{selectedUserData.businessUser.ocupant}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
 
-                                            <td className="actions d-flex justify-content-around">
-                                                <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
-                                                    EDIT
-                                                </button>
-                                                <button className="delete-btn" onClick={() => handleDelete(item._id)}>
-                                                    DELETE
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            <Pagination />
-                        </>
-                    )}
+                                                                        {/* Contact Information */}
+                                                                        <div className="col-md-6">
+                                                                            <div className="info-card">
+                                                                                <div className="card-body">
+                                                                                    <h3 className="card-title text-center">Contact Information</h3>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Contact:</strong>
+                                                                                        <span>{selectedUserData.businessUser.contact}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Address:</strong>
+                                                                                        <span>{selectedUserData.businessUser.address}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    // Normal User Content
+                                                                    <>
+                                                                        {/* Personal User Image */}
+                                                                        {selectedUserData.normalUser.profileImage && (
+                                                                            <div className="col-12">
+                                                                                <div className="info-card">
+                                                                                    <div className="card-body">
+                                                                                        <h3 className="card-title text-center">Profile Image</h3>
+                                                                                        <div className="d-flex justify-content-center mt-3">
+                                                                                            <div style={{ width: '200px', height: '200px' }}>
+                                                                                                <img
+                                                                                                    src={`${selectedUserData.normalUser.profileImage}`}
+                                                                                                    alt="Profile"
+                                                                                                    className="img-fluid rounded-circle"
+                                                                                                    style={{
+                                                                                                        width: '100%',
+                                                                                                        height: '100%',
+                                                                                                        objectFit: 'cover'
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Personal Information */}
+                                                                        <div className="col-md-6">
+                                                                            <div className="info-card">
+                                                                                <div className="card-body">
+                                                                                    <h6 className="card-title text-center">Personal Information</h6>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>First Name:</strong>
+                                                                                        <span>{selectedUserData.normalUser.firstName}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Last Name:</strong>
+                                                                                        <span>{selectedUserData.normalUser.lastName}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Contact:</strong>
+                                                                                        <span>{selectedUserData.normalUser.contact}</span>
+                                                                                    </div>
+                                                                                    <div className="info-field mb-2">
+                                                                                        <strong>Address:</strong>
+                                                                                        <span>{selectedUserData.normalUser.address}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </>
+                                                                )}
+
+                                                                {/* Account Status - Common for both types */}
+                                                                <div className="col-md-6">
+                                                                    <div className="info-card">
+                                                                        <div className="card-body">
+                                                                            <h6 className="card-title text-center">Account Status</h6>
+                                                                            <div className="info-field mb-2">
+                                                                                <strong>Status:</strong>
+                                                                                <span className={`badge ${selectedUserData.businessUser?.isActive || selectedUserData.normalUser?.isActive ? 'bg-success' : 'bg-danger'} ms-2 fs-6 text-white`}>
+                                                                                    {selectedUserData.businessUser?.isActive || selectedUserData.normalUser?.isActive ? 'Active' : 'Inactive'}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div className="info-field mb-2">
+                                                                                <strong>Created At:</strong>
+                                                                                <span>
+                                                                                    {formatDate(selectedUserData.businessUser?.createdAt || selectedUserData.normalUser?.createdAt)}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-center p-4">
+                                                                <p>No data available</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </>
+                                        )}
+                                    </table>
+                                    <Pagination />
+                                </>
+                            )
+            }
             <ToastContainer />
-        </div>
+        </div >
     )
 }
 

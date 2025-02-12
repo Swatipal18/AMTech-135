@@ -143,7 +143,7 @@ function EditUser() {
                     <div className="form-container">
                         <button className='edit-btn mb-4' onClick={() => {
                             console.log("Back Button Clicked"),
-                                navigate('/Users')
+                            navigate('/Users')
                         }}>back</button>
 
                         <h1 className="form-title">Edit New User</h1>

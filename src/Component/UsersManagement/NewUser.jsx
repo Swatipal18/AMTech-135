@@ -58,9 +58,6 @@ function NewUser() {
                     },
                 });
                 reset();
-                setRating(0);
-                setImagePreviews("");
-
                 setTimeout(() => {
                     navigate('/Users');
                 }, 1000);
@@ -179,7 +176,7 @@ function NewUser() {
                                                     className="form-control"
                                                     placeholder="Business Name"
                                                     {...register('businessName')}
-                                                    value="Business"
+                                                    value="Business2"
                                                 />
                                             </div>
 
@@ -253,7 +250,7 @@ function NewUser() {
                                     {/* Business-only Fields */}
                                     {userType === 'business' && (
                                         <div className='d-flex d-inline'>
-                                            <div className="mb-4 w-25">
+                                            <div className="mb-4 w-50">
                                                 <label className="form-label">Property Type:</label>
                                                 <select
                                                     className="form-select form-control shadow"
@@ -265,7 +262,7 @@ function NewUser() {
                                                     <option value="llp">LLP</option>
                                                 </select>
                                             </div>
-                                            <div className="mb-4 w-25 ms-3">
+                                            <div className="mb-4 w-50 ms-3">
                                                 <label className="form-label">Occupant Type:</label>
                                                 <select
                                                     className="form-select form-control shadow"
@@ -276,7 +273,7 @@ function NewUser() {
                                                     <option value="residential">Residential</option>
                                                 </select>
                                             </div>
-                                            <div className="mb-4 w-25 ms-3">
+                                            <div className="mb-4 w-50 ms-3">
                                                 <label className="form-label">GST Number:</label>
                                                 <input
                                                     type="text"

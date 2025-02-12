@@ -23,11 +23,6 @@ function Categories() {
         setCurrentPage(1);
     }, [searchTerm]);
 
-    // Debounced search
-    const handleSearch = debounce((search) => {
-        fetchItems(currentPage, search);
-    }, 500);
-
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
     }, [currentPage, searchTerm]);
@@ -187,10 +182,9 @@ function Categories() {
                         type="search"
                         placeholder="Search By Category Name"
                         value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
-                        handleSearch(e.target.value);
-                    }}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                        }}
                     />
                 </div>
             </div>
@@ -217,7 +211,7 @@ function Categories() {
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (
-                <div className="no-data">No Categories found</div>
+                <div className="no-data mt-4 text-center text-danger fw-bold fs-4 ">No Categories found</div>
             ) : (
                 <>
                     <table className="table mt-3">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaPlus, FaSearch, FaChevronRight, FaAngleLeft } from "react-icons/fa";
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
@@ -14,27 +14,44 @@ function Sizes() {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editSize, setEditSize] = useState(null);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const limit = 10;
     const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
-        fetchItems();
-    }, []);
+        setCurrentPage(1);
+    }, [searchTerm]);
 
-    const fetchItems = async () => {
+    useEffect(() => {
+        fetchItems(currentPage, searchTerm);
+    }, [currentPage, searchTerm]);
+    const fetchItems = async (page, search) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await axios.get(`${baseUrl}/size/list`);
-            setItems(response.data.data.sizes || []);
+            const pageNumber = Math.max(Number(page), 1);
+            const limitNumber = Number(limit);
+            const response = await axios.get(`${baseUrl}/size/list`, {
+                params: { page: pageNumber, limit: limitNumber, search: search || '' }
+            });
+            if (response.data?.data?.sizes) {
+                setItems(response.data.data.sizes || []);
+                setTotalItems(response.data.data.total || 0);
+            } else {
+                setError('No data received from server');
+                toast.error('No data received from server');
+            }
         } catch (error) {
             console.error('Error fetching sizes:', error);
             setError('Failed to fetch items. Please try again later.');
+            toast.error('Failed to fetch items. Please try again later.');
+
         } finally {
             setLoading(false);
         }
     };
-
+    // Handle adding Size
     const handleAddSize = async (data) => {
         if (!data.size.trim()) {
             alert("Please enter a size name.");
@@ -42,15 +59,15 @@ function Sizes() {
         }
 
         try {
-            const response = await axios.post(`${baseUrl}/size/create`, { size: data.size });
+            await axios.post(`${baseUrl}/size/create`, { size: data.size });
             setShowModal(false);
-            fetchItems();
+            fetchItems(currentPage, searchTerm);
         } catch (error) {
-            console.error('Error adding size:', error);
-            setError('Failed to add size. Please try again.');
+            setError('Failed to add Category. Please try again.');
+            toast.error('Failed to add Category.');
         }
     };
-
+    // Handle deleting Size
     const handleDelete = async (_id) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -63,7 +80,7 @@ function Sizes() {
         if (result.isConfirmed) {
             try {
                 await axios.delete(`${baseUrl}/size/delete/${_id}`);
-                fetchItems();
+                fetchItems(currentPage, searchTerm);
                 toast.success('Item deleted successfully!', {
                     position: "top-right",
                     autoClose: 1000,
@@ -71,7 +88,6 @@ function Sizes() {
                 });
             } catch (error) {
                 setError('Failed to delete item. Please try again.');
-                console.error('Error deleting item:', error);
                 toast.error('Failed to delete item. Please try again.', {
                     position: "top-right",
                     autoClose: 3000,
@@ -81,6 +97,7 @@ function Sizes() {
         }
     };
 
+    // Handle editing category
     const handleEdit = (item) => {
         setEditSize(item);
         setShowModal(true);
@@ -114,7 +131,51 @@ function Sizes() {
             handleAddSize(data);
         }
     };
+    const Pagination = () => {
+        const totalPages = Math.ceil(totalItems / limit);
+        
+        const startIndex = (currentPage - 1) * limit + 1;
+        const endIndex = Math.min(currentPage * limit, totalItems);
 
+        return (
+            <div className="pagination-container">
+                <div className="showing-text">
+                    Showing {startIndex}-{endIndex} Of {totalItems} Categories
+                </div>
+                <div className="pagination-controls">
+                    <button
+                        className='pagination-button'
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <FaAngleLeft />
+                    </button>
+                    <span
+                        style={{
+                            fontWeight: 'bold',
+                            backgroundColor: '#8DA9C4',
+                            color: '#0B2545',
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        {currentPage}
+                    </span>
+                    <button
+                        className='pagination-button'
+                        onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <FaChevronRight />
+                    </button>
+                </div>
+            </div>
+        );
+    };
     return (
         <div className="page-container">
             <div className="header">
@@ -165,28 +226,31 @@ function Sizes() {
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (
-                <div className="no-data">No Size found</div>
+                <div className="no-data mt-4 text-center text-danger fw-bold fs-4 ">No Size found</div>
             ) : (
-                <table className="table mt-3">
-                    <thead>
-                        <tr>
-                            <th>Size</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items
-                            .filter((item) => item.size && item.size.toLowerCase().includes(searchTerm.toLowerCase()))
-                            .map((item) => (
-                                <tr key={item._id} >
-                                    <td>{item.size}</td>
-                                    <td className="actions d-flex justify-content-end">
-                                        <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
-                                        <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </table>
+                <>
+                    <table className="table mt-3">
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {items
+                                .filter((item) => item.size && item.size.toLowerCase().includes(searchTerm.toLowerCase()))
+                                .map((item) => (
+                                    <tr key={item._id} >
+                                        <td>{item.size}</td>
+                                        <td className="actions d-flex justify-content-end">
+                                            <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
+                                            <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                    <Pagination />
+                </>
             )}
             <ToastContainer />
         </div>

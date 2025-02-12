@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import debounce from 'lodash.debounce';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
 
 const AllItem = () => {
@@ -14,7 +13,6 @@ const AllItem = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
   const [role, setRole] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -22,9 +20,7 @@ const AllItem = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const limit = 10;
   const navigate = useNavigate();
-  const searchName = (event) => {
-    setSearch(event.target.value);
-  };
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -38,11 +34,7 @@ const AllItem = () => {
     fetchItems(currentPage, searchTerm);
     fetchCategories();
   }, [currentPage, searchTerm]);
-
-  // Debounced search
-  // const handleSearch = debounce((search) => {
-  //   fetchItems(currentPage, search);
-  // }, 500);
+  // Fetch items from API
   const fetchItems = async (page, search) => {
     try {
       setLoading(true);
@@ -52,7 +44,7 @@ const AllItem = () => {
       const response = await axios.get(`${baseUrl}/menu/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
-      console.log(response.data);
+
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
         setTotalItems(response.data.data.total || 0);
@@ -76,8 +68,7 @@ const AllItem = () => {
         setError('Failed to fetch categories.');
       }
     } catch (error) {
-      setError('Error fetching categories.');
-      console.error('Error fetching categories:', error);
+      setError('Error fetching Items.');
     }
   };
 
@@ -94,7 +85,7 @@ const AllItem = () => {
     if (result.isConfirmed) {
       try {
         await axios.delete(`${baseUrl}/menu/delete/${_id}`);
-        fetchItems();
+        fetchItems(currentPage, searchTerm);
         toast.success('Item deleted successfully!', {
           position: "top-right",
           autoClose: 1000,
@@ -247,8 +238,10 @@ const AllItem = () => {
           <input
             type="search"
             placeholder="Search By Item Name"
-            value={search}
-            onChange={searchName}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
           />
         </div>
 
@@ -264,86 +257,89 @@ const AllItem = () => {
           <div className="loader-container d-flex justify-content-center">
             <div className="loader"></div>
           </div>
-        ) : error ? (
-          <div className="error-message">{error}</div>
-        ) : (
-          <>
-            <table className="table mt-3">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Category</th>
-                  <th>Rating</th>
-                  <th>Business</th>
-                  <th>Personal</th>
-                </tr>
-              </thead>
-              <tbody>
-
-                {items.map((item, index) => (
-                  <tr key={`${item._id}-${index}`} className="table-row">
-                    <td>{item.itemName}</td>
-                    <td>{getCategoryTitle(item.categoryId)}</td>
-                    <td className="rating">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={`star ${star <= (item.ratings || 0) ? 'filled' : 'empty'}`}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </td>
-                    <td>
-                      <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
-                        <input
-                          type="checkbox"
-                          checked={checkedItems[item._id]?.business || false}
-                          onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                          disabled={item.isActiveForBusiness}
-                        />
-                        <span
-                          className="slider"
-                          style={{
-                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
-                            cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
-                          }}
-                        ></span>
-                      </label>
-                    </td>
-                    <td>
-                      <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
-                        <input
-                          type="checkbox"
-                          checked={checkedItems[item._id]?.personal || false}
-                          onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                          disabled={item.isActiveForPersonal}
-                        />
-                        <span
-                          className="slider"
-                          style={{
-                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
-                            cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
-                          }}
-                        ></span>
-                      </label>
-                    </td>
-
-                    <td className="actions d-flex justify-content-around">
-                      <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
-                        EDIT
-                      </button>
-                      <button className="delete-btn" onClick={() => handleDelete(item._id)}>
-                        DELETE
-                      </button>
-                    </td>
+        ) : items.length === 0 ? (
+          <div className="no-data mt-4 text-center text-danger fw-bold fs-4 ">No Items Found</div>
+        ) :
+          error ? (
+            <div className="error-message">{error}</div>
+          ) : (
+            <>
+              <table className="table mt-3">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Rating</th>
+                    <th>Business</th>
+                    <th>Personal</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination />
-          </>
-        )}
+                </thead>
+                <tbody>
+
+                  {items.map((item, index) => (
+                    <tr key={`${item._id}-${index}`} className="table-row">
+                      <td>{item.itemName}</td>
+                      <td>{getCategoryTitle(item.categoryId)}</td>
+                      <td className="rating">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={`star ${star <= (item.ratings || 0) ? 'filled' : 'empty'}`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </td>
+                      <td>
+                        <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={checkedItems[item._id]?.business || false}
+                            onChange={() => handleCheckboxChange(item._id, 'business', item)}
+                            disabled={item.isActiveForBusiness}
+                          />
+                          <span
+                            className="slider"
+                            style={{
+                              backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
+                              cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
+                            }}
+                          ></span>
+                        </label>
+                      </td>
+                      <td>
+                        <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={checkedItems[item._id]?.personal || false}
+                            onChange={() => handleCheckboxChange(item._id, 'personal', item)}
+                            disabled={item.isActiveForPersonal}
+                          />
+                          <span
+                            className="slider"
+                            style={{
+                              backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
+                              cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
+                            }}
+                          ></span>
+                        </label>
+                      </td>
+
+                      <td className="actions d-flex justify-content-around">
+                        <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
+                          EDIT
+                        </button>
+                        <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                          DELETE
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Pagination />
+            </>
+          )}
       <ToastContainer />
     </div >
   );

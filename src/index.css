@@ -26,6 +26,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 select option {
@@ -40,7 +41,7 @@ select option {
 
 /* login */
 .bg-logoImg {
-    height: 775px !important;
+    height: 100vh !important;
     background-image: url("./assets/Images/DeliveryPerson.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -1762,4 +1763,105 @@ input[type="range"] {
     background-color: white;
     position: fixed;
     z-index: 5;
+}
+
+
+.modal-slide {
+    border: 2px solid #0B2545 !important;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    bottom: 0;
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    transition: right 0.3s ease-in-out;
+    z-index: 1050;
+    height: 100vh;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+.modal-slide.show {
+    right: 0;
+}
+
+.modal-slide-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal-slide-backdrop.show {
+    opacity: 1;
+}
+
+.modal-slide-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-slide-body {
+    padding: 1.5rem;
+}
+
+.modal-slide-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.modal-slide-close:hover {
+    color: #343a40;
+}
+
+.info-card {
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-card .card-body {
+    padding: 1.25rem;
+}
+
+.info-card .card-title {
+    color: #495057;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.info-field {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: baseline;
+}
+
+.info-field strong {
+    min-width: 120px;
+    color: #6c757d;
+}
+
+.info-field span {
+    color: #212529;
 }
