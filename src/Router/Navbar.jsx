@@ -32,6 +32,8 @@ import NewBanner from '../Component/UploadBanners/NewBanner'
 import NewUser from '../Component/UsersManagement/NewUser'
 import EditUser from '../Component/UsersManagement/EditUser'
 import AllSubscriptions from '../Component/subscription/AllSubscriptions'
+import ActiveSubscription from '../Component/subscription/ActiveSubscription'
+import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm'
 
 
 function Navbar() {
@@ -112,6 +114,14 @@ function Navbar() {
                 {
                     path: "/AllSubscriptions",
                     element: <AllSubscriptions />
+                },
+                {
+                    path: "/ActiveSubscription",
+                    element: <ActiveSubscription />
+                },
+                {
+                    path: "/EditSubscriptionForm/:id",
+                    element: <EditSubscriptionForm />
                 },
                 {
                     path: "/users",

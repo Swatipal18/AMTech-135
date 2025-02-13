@@ -130,7 +130,7 @@ function EditItem() {
                 : { isActive: true, sizeData: validSizes };
         }
         return { isActive: false, sizeData: [] };
-    };  
+    };
     const onSubmit = async (data) => {
         // Prepare the submission data
         console.log(data)
@@ -258,10 +258,10 @@ function EditItem() {
             <div className="col-md-12 main-content">
                 <div className="form-container">
                     <button
-                        className='edit-btn mb-4'
+                        className='edit-btn mb-4 fs-6'
                         onClick={() => navigate('/all-items')}
                     >
-                        back
+                        Back
                     </button>
                     <h1 className="form-title">Edit Item</h1>
                     <form method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">

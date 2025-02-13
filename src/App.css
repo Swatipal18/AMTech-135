@@ -11,9 +11,9 @@
    border-radius: 30px;
  }
 
- .over-view-detail {
-   position: relative;
- }
+ /* .over-tables tr {
+   border-bottom: 3px solid #ccc !important;
+ } */
 
  .vertical-hr {
    position: absolute;

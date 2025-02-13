@@ -20,7 +20,7 @@ const AllItem = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const limit = 10;
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -301,7 +301,7 @@ const AllItem = () => {
                           <span
                             className="slider"
                             style={{
-                              backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
+                              backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#FF3B30',
                               cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
                             }}
                           ></span>
@@ -318,7 +318,7 @@ const AllItem = () => {
                           <span
                             className="slider"
                             style={{
-                              backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
+                              backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30',
                               cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
                             }}
                           ></span>

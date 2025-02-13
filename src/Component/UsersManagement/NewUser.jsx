@@ -37,14 +37,13 @@ function NewUser() {
             // const formData = new FormData();
             // formData.append('images', data.images);
             // console.log(formData, "formData")
-            const response = await axios.post(`${baseUrl}/admin-business/create`, data);
-            // response me  header  add karna  hoga  jab image ka  code  ho jayega
-            // ,{
-            //     headers: {
-            //         "Content-Type": "multipart/form-data"
-            //     }
-            // }
-
+            const response = await axios.post(`${baseUrl}/admin-business/create`, data
+                , {
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
             console.log('response: ', response.data.data);
 
             if (response.data.success) {

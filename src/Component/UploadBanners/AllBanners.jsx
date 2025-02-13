@@ -177,7 +177,7 @@ function AllBanners() {
                                                     <span
                                                         className="slider"
                                                         style={{
-                                                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
+                                                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#FF3B30',
                                                             cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
                                                         }}
                                                     ></span>
@@ -194,7 +194,7 @@ function AllBanners() {
                                                     <span
                                                         className="slider"
                                                         style={{
-                                                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
+                                                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30',
                                                             cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
                                                         }}
                                                     ></span>

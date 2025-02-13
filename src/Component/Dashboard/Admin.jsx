@@ -63,68 +63,68 @@ const Admin = () => {
     { name: "Jan 5", value: 42000 },
   ];
   const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            grid: {
-              display: false, // Hide vertical grid lines
-            },
-            ticks: {
-              color: "#9CA3AF", // Light gray for x-axis labels
-            },
-          },
-          y: {
-            grid: {
-              color: "#E5E7EB", // Light gray for horizontal grid lines
-            },
-            ticks: {
-              color: "#9CA3AF", // Light gray for y-axis labels
-              stepSize: 20, // Fixed y-axis step
-            },
-            beginAtZero: true,
-          },
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false, // Hide vertical grid lines
         },
-        plugins: {
-          legend: {
-            display: false, // Hide legend
-          },
-          tooltip: {
-            enabled: true,
-            backgroundColor: "#002D5B",
-            titleColor: "#FFFFFF",
-            bodyColor: "#FFFFFF",
-          },
+        ticks: {
+          color: "#9CA3AF", // Light gray for x-axis labels
         },
-      };
+      },
+      y: {
+        grid: {
+          color: "#E5E7EB", // Light gray for horizontal grid lines
+        },
+        ticks: {
+          color: "#9CA3AF", // Light gray for y-axis labels
+          stepSize: 20, // Fixed y-axis step
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hide legend
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#002D5B",
+        titleColor: "#FFFFFF",
+        bodyColor: "#FFFFFF",
+      },
+    },
+  };
   const url = useNavigate();
   const maindata = {
-        labels: ["01", "02", "03", "04", "05", "06"],
-        datasets: [
-          {
-            label: "Total Orders",
-            data: [30, 50, 40, 70, 60, 80],
-            backgroundColor: "#002D5B", // Dark blue
-            borderRadius: 5, // Rounded bar corners
-            barPercentage: 0.6, // Adjust bar width
-          },
-        ],
-      };
+    labels: ["01", "02", "03", "04", "05", "06"],
+    datasets: [
+      {
+        label: "Total Orders",
+        data: [30, 50, 40, 70, 60, 80],
+        backgroundColor: "#002D5B", // Dark blue
+        borderRadius: 5, // Rounded bar corners
+        barPercentage: 0.6, // Adjust bar width
+      },
+    ],
+  };
   return (
     <>
       <div className="main-deshboard-container">
         <div className="D-header">
           <div className="btn-container d-flex justify-content-around">
-            <button className="Admin-header-button"  onClick={()=>url("/AddNewItem")}> + New Item</button>
-            <button className="Admin-header-button" onClick={()=>url("/AddStaff")}>+ New Staff</button>
-            <button className="Admin-header-button" onClick={()=>url("/OrderManagement")}>Order Managment</button>
-            <button className="Admin-header-button" onClick={()=>url("#")}>Customer</button>
+            <button className="Admin-header-button" onClick={() => url("/AddNewItem")}> + New Item</button>
+            <button className="Admin-header-button" onClick={() => url("/AddStaff")}>+ New Staff</button>
+            <button className="Admin-header-button" onClick={() => url("/OrderManagement")}>Order Managment</button>
+            <button className="Admin-header-button" onClick={() => url("#")}>Customer</button>
           </div>
         </div>
         <div className="Deshboard-main-content mt-4">
           <div className="First-line-container row d-flex justify-content-around">
             <div className="over-view col-6">
-              <div className="over-view-header d-flex justify-content-around mt-4 align-items-center">
+              <div className="over-view-header d-flex justify-content-around mt-4 align-items-center border-bottom pb-4 bg-transparent">
                 <div className="Headername">
                   <h3 className="fw-bold">Overview</h3>
                 </div>
@@ -132,45 +132,51 @@ const Admin = () => {
                   <input type="date" />
                 </div>
               </div>
-              <hr />
-              <div className="over-view-detail d-flex flex-column justify-content-around ">
-                <div className="row d-flex justify-content-around">
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Sales</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>500,00,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                  <hr className="vertical-hr p-0" />
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Orders</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>100,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                </div>
-                <hr />
-                <div className="row d-flex justify-content-around ">
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">
-                      Total Users <span>(b)</span>
-                    </h2>
-                    <h2 className="fs-3">
-                      ₹ <b>10,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                  <hr className="vertical-hr p-0" />
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Users</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>7000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                </div>
+              <div className="">
+                <table className="table table-auto " >
+                  <tbody className="">
+                    <tr className="border-bottom  total-sales " >
+                      <td className=" border-end text-center">
+                        <div style={{ color: "#134074", fontSize: "3opx" }} className="fs-4 fw-bold">
+                          <h3 className=" over-view-detail  text-lg font-semibold mb-2">Total Sales</h3>
+                          <div className="text-2xl font-bold">₹ <b>500,00,000</b></div>
+                          <div className="text-sm fs-6">
+                            since last weak 10% ↑
+                          </div>
+                        </div>
+                      </td>
+                      <td className="border-bottom text-center">
+                        <div style={{ color: "#134074", fontSize: "3opx" }} className="fs-4 fw-bold">
+                          <h3 className="text-lg font-semibold mb-2">Total Orders</h3>
+                          <div className="text-2xl font-bold">₹ <b>10,000</b></div>
+                          <div className="text-sm fs-6">
+                            since last weak 10% ↑
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr className="border-bottom  total-sales " >
+                      <td className="border-end text-center">
+                        <div style={{ color: "#134074", fontSize: "3opx" }} className="fs-4 fw-bold">
+                          <h3 className="text-lg font-semibold mb-2">Total Users (b)</h3>
+                          <div className="text-2xl font-bold">₹ <b>10,000</b></div>
+                          <div className="text-sm fs-6">
+                            since last weak 10% ↑
+                          </div>
+                        </div>
+                      </td>
+                      <td className="text-center">
+                        <div style={{ color: "#134074", fontSize: "3opx" }} className="fs-4 fw-bold">
+                          <h3 className="text-lg font-semibold mb-2">Total Users</h3>
+                          <div className="text-2xl font-bold">₹ <b>7000</b></div>
+                          <div className="text-sm fs-6">
+                            since last weak 10% ↑
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
             <div className="New-Orders col-5">
@@ -184,7 +190,7 @@ const Admin = () => {
                   </div>
                 </div>
                 {/* <hr /> */}
-                <table className="users-table">
+                <table className="users-table ">
                   <thead>
                     <tr>
                       <th>No</th>
@@ -327,7 +333,7 @@ const Admin = () => {
           </div>
           <div className="Fourth-line-container row d-flex justify-content-around mt-5">
             <div className="High-value-Users col-6">
-            <div className="high-value-users-box">
+              <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">High Value Orders</h3>
@@ -364,7 +370,7 @@ const Admin = () => {
               </div>
             </div>
             <div className="Top-delivery-boys col-5">
-            <div className="high-value-users-box">
+              <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">Top 5 delivery Boy</h3>
@@ -404,11 +410,11 @@ const Admin = () => {
 
           <div className="Second-line-container row d-flex justify-content-center">
             <div className="Total-Order-Chart col-11">
-            <div style={{ width: "100%", height: "300px", padding: "20px" }}>
-         <h4 style={{ color: "#4B5563" }}>Total Orders</h4>
-         <p style={{ color: "#9CA3AF", fontSize: "12px" }}>from 1-6 Dec, 2020</p>
-         <Bar data={maindata} options={options} />
-       </div>
+              <div style={{ width: "100%", height: "300px", padding: "20px" }}>
+                <h4 style={{ color: "#4B5563" }}>Total Orders</h4>
+                <p style={{ color: "#9CA3AF", fontSize: "12px" }}>from 1-6 Dec, 2020</p>
+                <Bar data={maindata} options={options} />
+              </div>
             </div>
           </div>
         </div>

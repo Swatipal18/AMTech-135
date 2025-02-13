@@ -42,7 +42,7 @@ function EditStaff() {
             const response = await axios.get(`${baseUrl}/store/details/${id}`);
             const staffData = response.data.data;
             if (staffData.role) {
-                staffData.role = roles[staffData.role - 1]; 
+                staffData.role = roles[staffData.role - 1];
             }
 
             reset(staffData); // Reset the form with the fetched data
@@ -159,10 +159,10 @@ function EditStaff() {
             <div className="row">
                 <div className="col-md-12 main-content">
                     <div className="form-container">
-                        <button className='edit-btn mb-4' onClick={() => {
+                        <button className='edit-btn mb-4 fs-6' onClick={() => {
                             console.log("Back Button Clicked"),
                                 navigate('/AllStaff')
-                        }}>back</button>
+                        }}>Back</button>
 
                         <h1 className="form-title">Edit Staff</h1>
                         <form onSubmit={handleSubmit(submitData)}>

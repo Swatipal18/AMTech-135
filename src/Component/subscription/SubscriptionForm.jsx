@@ -1,23 +1,22 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 import { GrUploadOption, GrClose } from "react-icons/gr";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
-import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
-import Cropper from 'react-easy-crop';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import { applyCropZoomRotation } from "../../../utils/getCroppedImg";
+import Cropper from "react-easy-crop";
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
-import imageCompression from 'browser-image-compression';
+import imageCompression from "browser-image-compression";
 
 function SubscriptionForm() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [imagePreviews, setImagePreviews] = useState("");
-    const [imageError, setImageError] = useState('');
-    const [rating, setRating] = useState(0);
-    const [categories, setCategories] = useState([]);
+    const [imageError, setImageError] = useState("");
+    const [ratings, setRating] = useState(0);
     const [sizes, setSizes] = useState([]);
     const [imageSelected, setImageSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,32 +24,79 @@ function SubscriptionForm() {
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-    const [businessVariants, setBusinessVariants] = useState([{}]);
-    const { register, handleSubmit, setValue, reset, watch } = useForm()
+    const { register, handleSubmit, setValue, reset, watch } = useForm();
+    const [isOpenTime, setisOpenTime] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [selectedPeriods, setSelectedPeriods] = useState([]);
+    const [selectedtimePeriods, setSelectedtimePeriods] = useState([]);
+    const [itemname, setitemname] = useState("");
+    const [sizeId, setsizeId] = useState("");
+    const volume = useRef();
+    const sizePrice = useRef();
+    const navigate = useNavigate()
 
     const onSubmit = async (data) => {
-        console.log(data, "Subscription Form Data");
+        const updatedData = {
+            ...data,
+            timings: selectedtimePeriods,
+            itemName: itemname,
+            size: {
+                sizeId: sizeId,
+                volume: volume.current.value,
+                sizePrice: sizePrice.current.value,
+            },
+            period: selectedPeriods,
+            price: sizePrice.current.value
+        };
+        console.log('updatedData: ', updatedData);
+        try {
+            const response = await axios.post(`${baseUrl}/subscription/create`,
+                updatedData,
+            );
+
+            if (response.data.success) {
+                toast.success(response.data.message || "Item added successfully!", {
+                    position: "top-right",
+                    autoClose: 1000,
+                    theme: "colored",
+                    style: {
+                        backgroundColor: 'green',
+                        color: '#000',
+                    },
+                });
+                reset();
+                setRating(0);
+                setImagePreviews("");
+
+                setTimeout(() => {
+                    navigate('/AllSubscriptions');
+                }, 1000);
+            }
+        } catch (error) {
+            console.error("Error details:", error.response ? error.response.data : error);
+            toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
+        }
     };
 
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
         const maxFileSizeInKB = 10240; // 10 MB in KB (10 * 1024)
         if (file) {
             if (!allowedTypes.includes(file.type)) {
-                setImageError('Only image files (JPG, PNG) are allowed!');
+                setImageError("Only image files (JPG, PNG) are allowed!");
                 setImagePreviews(null);
                 setImageSelected(false);
                 return;
             }
 
             const fileSizeInKB = file.size / 1024;
-            console.log('Original file size:', fileSizeInKB.toFixed(2), 'KB');
+            console.log("Original file size:", fileSizeInKB.toFixed(2), "KB");
             if (fileSizeInKB <= maxFileSizeInKB) {
                 setImagePreviews(URL.createObjectURL(file));
                 setValue("images", file);
                 setImageSelected(true);
-                setImageError('');
+                setImageError("");
             } else {
                 try {
                     const options = {
@@ -61,10 +107,14 @@ function SubscriptionForm() {
 
                     const compressedFile = await imageCompression(file, options);
                     const compressedFileSizeInKB = compressedFile.size / 1024;
-                    console.log('Compressed file size:', compressedFileSizeInKB.toFixed(2), 'KB');
+                    console.log(
+                        "Compressed file size:",
+                        compressedFileSizeInKB.toFixed(2),
+                        "KB"
+                    );
 
                     if (compressedFileSizeInKB > maxFileSizeInKB) {
-                        setImageError('Compressed file size should not exceed 10 MB.');
+                        setImageError("Compressed file size should not exceed 10 MB.");
                         setImagePreviews(null);
                         setImageSelected(false);
                         return;
@@ -73,10 +123,10 @@ function SubscriptionForm() {
                     setImagePreviews(compressedImageURL);
                     setValue("images", compressedFile);
                     setImageSelected(true);
-                    setImageError('');
+                    setImageError("");
                 } catch (error) {
-                    console.error('Error during image compression:', error);
-                    setImageError('Error while compressing image.');
+                    console.error("Error during image compression:", error);
+                    setImageError("Error while compressing image.");
                     setImagePreviews(null);
                     setImageSelected(false);
                 }
@@ -88,13 +138,19 @@ function SubscriptionForm() {
     }, []);
     const updateImagePreview = async () => {
         try {
-            const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
+            const croppedImage = await applyCropZoomRotation(
+                imagePreviews,
+                crop,
+                zoom,
+                rotation
+            );
             setImagePreviews(croppedImage);
             const base64Response = await fetch(croppedImage);
             const blob = await base64Response.blob();
-            const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
+            const croppedFile = new File([blob], "cropped_image.jpg", {
+                type: "image/jpeg",
+            });
             setValue("images", croppedFile);
-
         } catch (error) {
             console.error("Error while cropping the image: ", error);
         }
@@ -104,124 +160,49 @@ function SubscriptionForm() {
     };
     const handleRatingClick = (index) => {
         setRating(index + 1);
-        setValue("rating", index + 1);
+        setValue("ratings", index + 1);
     };
 
-    // Component for variant section with Period dropdown
-    const VariantSection = ({ title, indexKey }) => {
-        const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-        const [selectedPeriods, setSelectedPeriods] = useState([]);
-
-        // Close dropdown when clicking outside
-        useEffect(() => {
-            const handleClickOutside = (event) => {
-                if (!event.target.closest('.period-dropdown')) {
-                    setIsDropdownOpen(false);
-                }
-            };
-
-            document.addEventListener('click', handleClickOutside);
-            return () => document.removeEventListener('click', handleClickOutside);
-        }, []);
-
-        const handlePeriodSelect = (period) => {
-            const updatedPeriods = selectedPeriods.includes(period)
-                ? selectedPeriods.filter(p => p !== period)
-                : [...selectedPeriods, period];
-            setSelectedPeriods(updatedPeriods);
-            setValue(`${indexKey}.period`, updatedPeriods);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (!event.target.closest(".period-dropdown")) {
+                setIsDropdownOpen(false);
+            }
         };
 
-        return (
-            <div className="variants-section">
-                <h3 className="variants-titles">{title}</h3>
-                {businessVariants.map((variant, index) => (
-                    <div className="row" key={`${indexKey}-${variant.id}-${index}`}>
-                        <div className="col-md-3 mb-3">
-                            <label className="form-label">Period :</label>
-                            <div className="period-dropdown position-relative">
-                                <div
-                                    className="form-control shadow d-flex justify-content-between align-items-center"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsDropdownOpen(!isDropdownOpen);
-                                    }}
-                                    style={{
-                                        cursor: 'pointer',
-                                        paddingRight: '30px',
-                                        backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
-                                        backgroundRepeat: 'no-repeat',
-                                        backgroundPosition: 'right 10px center',
-                                        backgroundSize: '16px'
-                                    }}
-                                >
-                                    {selectedPeriods.length > 0 ? selectedPeriods.join(', ') : 'Select'}
-                                </div>
-                                {isDropdownOpen && (
-                                    <div className="position-absolute bg-white border rounded shadow-sm w-100 mt-1" style={{ zIndex: 1000 }}>
-                                        <div
-                                            className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePeriodSelect('Weekly');
-                                            }}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="me-2"
-                                                checked={selectedPeriods.includes('Weekly')}
-                                                onChange={() => { }}
-                                            />
-                                            <span>Weekly</span>
-                                        </div>
-                                        <div
-                                            className="p-2 cursor-pointer hover-bg-light d-flex align-items-center"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePeriodSelect('Monthly');
-                                            }}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="me-2"
-                                                checked={selectedPeriods.includes('Monthly')}
-                                                onChange={() => { }}
-                                            />
-                                            <span>Monthly</span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="col-md-3 mb-3">
-                            <label className="form-label">Size :</label>
-                            <select {...register(`${indexKey}[${index}].sizeId`)} className="form-control shadow">
-                                <option value="">Select Any One</option>
-                                {sizes.map((size) => (
-                                    <option key={size._id} value={size._id}>{size.size}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="col-md-3 mb-3">
-                            <label className="form-label">Volume :</label>
-                            <input type='text' {...register(`${indexKey}[${index}].volume`)} className="form-control shadow" placeholder="e.g. 60ml" />
-                        </div>
-                        <div className="col-md-3 mb-3">
-                            <label className="form-label">Price :</label>
-                            <input type='text' {...register(`${indexKey}[${index}].price`)} className="form-control shadow" placeholder="₹ e.g. 100" />
-                        </div>
-                        <div className="col-md-3 mb-3">
-                            <label className="form-label">Timings :</label>
-                            <input type='text' {...register(`${indexKey}[${index}].timings`)} className="form-control shadow" placeholder="e.g. 9:00 AM to 10:00 AM" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
+    }, []);
+    const handlePeriodSelect = (period) => {
+        const updatedPeriods = selectedPeriods.includes(period)
+            ? selectedPeriods.filter((p) => p !== period)
+            : [...selectedPeriods, period];
+        setSelectedPeriods(updatedPeriods);
+    };
+    const handletimePeriodSelect = (period) => {
+        const updatedPeriods = selectedtimePeriods.includes(period)
+            ? selectedtimePeriods.filter((p) => p !== period)
+            : [...selectedtimePeriods, period];
+        setSelectedtimePeriods(updatedPeriods);
     };
 
+    useEffect(() => {
+
+        const fetchData = async () => {
+            try {
+                const sizes = await axios.get(`${baseUrl}/size/list`);
+                setSizes(sizes.data.data.sizes);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast.error("Failed to load categories and sizes.");
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
-        <div className='dashboard-container'>
+        <div className="dashboard-container">
             <div className="col-md-12 main-content">
                 <div className="form-container">
                     <h1 className="form-title">Add New Subscription</h1>
@@ -231,19 +212,34 @@ function SubscriptionForm() {
                                 {/* Name Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Name :</label>
-                                    <input type="text" {...register("itemName")} className="form-control shadow" placeholder="e.g. Masala Tea" />
+                                    <input
+                                        type="text"
+                                        onChange={(e) => setitemname(e.target.value)}
+                                        className="form-control shadow"
+                                        placeholder="e.g. Masala Tea"
+                                    />
                                 </div>
 
                                 {/* Description Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Description :</label>
-                                    <textarea {...register("description")} className="form-control shadow" rows="4" placeholder="Write a short description about this item..." />
+                                    <textarea
+                                        {...register("description")}
+                                        className="form-control shadow"
+                                        rows="4"
+                                        placeholder="Write a short description about this item..."
+                                    />
                                 </div>
 
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Ingredients :</label>
-                                    <input type="text" {...register("ingredients")} className="form-control shadow" placeholder="e.g. Masala Tea" />
+                                    <input
+                                        type="text"
+                                        {...register("ingredients")}
+                                        className="form-control shadow"
+                                        placeholder="e.g. Masala Tea"
+                                    />
                                 </div>
 
                                 {/* Rating */}
@@ -253,13 +249,16 @@ function SubscriptionForm() {
                                         {[...Array(5)].map((_, index) => (
                                             <span
                                                 key={index}
-                                                className={`rating-stars ${index < rating ? "selected" : ""}`}
+                                                className={`rating-stars ${index < ratings ? "selected" : ""
+                                                    }`}
                                                 onClick={() => handleRatingClick(index)}
-                                            >★</span>
+                                            >
+                                                ★
+                                            </span>
                                         ))}
                                     </div>
                                 </div>
-                                <input type="hidden" {...register("ratings")} value={rating} />
+                                <input type="hidden" {...register("ratings")} value={ratings} />
                             </div>
 
                             {/* Image Upload Section */}
@@ -276,7 +275,11 @@ function SubscriptionForm() {
                                                     src={imagePreviews}
                                                     alt="Uploaded Preview"
                                                     className="img-thumbnail cursor-pointer"
-                                                    style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                    style={{
+                                                        width: "200px",
+                                                        height: "200px",
+                                                        objectFit: "cover",
+                                                    }}
                                                     onClick={() => setIsModalOpen(true)}
                                                 />
                                             </div>
@@ -295,7 +298,7 @@ function SubscriptionForm() {
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <button
-                                                            type='button'
+                                                            type="button"
                                                             onClick={closeModal}
                                                             className="close-button"
                                                         >
@@ -313,32 +316,59 @@ function SubscriptionForm() {
                                                             onCropComplete={onCropComplete}
                                                         />
                                                         <div className="crop-controls">
-                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    " style={{ width: "180px", fontSize: "15px" }}>
+                                                            <div
+                                                                className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    "
+                                                                style={{ width: "180px", fontSize: "15px" }}
+                                                            >
                                                                 <label className="form-labels me-2">Zoom</label>
                                                                 <button
                                                                     type="button"
                                                                     className="btn btn-sm border-0 "
-                                                                    onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                    onClick={() =>
+                                                                        setZoom((prev) => Math.max(1, prev - 0.1))
+                                                                    }
                                                                 >
-                                                                    <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                    <FiMinusCircle
+                                                                        style={{
+                                                                            color: "#000080",
+                                                                            fontSize: "18px",
+                                                                        }}
+                                                                    />
                                                                 </button>
                                                                 <span className="mx-2">{zoom.toFixed(1)}x</span>
                                                                 <button
                                                                     type="button"
                                                                     className="btn btn-sm border-0"
-                                                                    onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                    onClick={() =>
+                                                                        setZoom((prev) => Math.min(3, prev + 0.1))
+                                                                    }
                                                                 >
-                                                                    <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                    <GoPlusCircle
+                                                                        style={{
+                                                                            color: "#000080",
+                                                                            fontSize: "18px",
+                                                                        }}
+                                                                    />
                                                                 </button>
                                                             </div>
-                                                            <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  " style={{ width: "130px", fontSize: "15px" }} >
+                                                            <div
+                                                                className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  "
+                                                                style={{ width: "130px", fontSize: "15px" }}
+                                                            >
                                                                 <label className="form-labels">Rotation</label>
                                                                 <button
                                                                     type="button"
                                                                     className="btn btn-sm  mx-2 border-0"
-                                                                    onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                                    onClick={() =>
+                                                                        setRotation((prev) => (prev + 90) % 360)
+                                                                    }
                                                                 >
-                                                                    <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                                    <FaArrowRotateRight
+                                                                        style={{
+                                                                            color: "#000080",
+                                                                            fontSize: "17px",
+                                                                        }}
+                                                                    />
                                                                 </button>
                                                             </div>
                                                             <button
@@ -394,19 +424,214 @@ function SubscriptionForm() {
                                         Select File
                                     </button>
                                 </div>
-                                {imageError && <div className="text-danger mt-2">{imageError}</div>}
+                                {imageError && (
+                                    <div className="text-danger mt-2">{imageError}</div>
+                                )}
                             </div>
                         </div>
 
                         {/* Variants Section */}
-                        <VariantSection indexKey="businessVariants" />
+
+                        <div className="row" >
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Category :</label>
+                                <select
+                                    {...register("category")}
+                                    className="form-control shadow"
+                                    name="category"
+                                >
+                                    <option>Select Any One</option>
+                                    <option>Regular</option>
+                                    <option>jain</option>
+                                </select>
+                            </div>
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Size :</label>
+                                <select
+                                    className="form-control shadow"
+                                    value={sizeId} // सही सेलेक्टेड वैल्यू दिखाने के लिए
+                                    onChange={(e) => setsizeId(e.target.value)} // सेलेक्ट होने पर स्टेट अपडेट होगा
+                                >
+                                    <option value="">Select Any One</option>
+                                    {sizes.map((size) => (
+                                        <option key={size._id} value={size._id}>
+                                            {size.size}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Volume :</label>
+                                <input
+                                    type="text"
+                                    // onChange={(e)=>setvolume(e.target.value)}
+                                    className="form-control shadow"
+                                    placeholder="e.g. 60ml"
+                                    ref={volume}
+                                />
+                            </div>
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Price :</label>
+                                <input
+                                    type="text"
+                                    ref={sizePrice}
+                                    className="form-control shadow"
+                                    placeholder="₹ e.g. 100"
+                                />
+                            </div>
+
+                            {/* ----------------------------   timing  ----------------------------    */}
+                            <div className="col-md-3 mb-3">
+                                <label className="form-label">Period :</label>
+                                <div className="period-dropdown position-relative">
+                                    <div
+                                        className="form-control shadow d-flex justify-content-between align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsDropdownOpen(!isDropdownOpen);
+                                        }}
+                                    >
+                                        {selectedPeriods.length > 0
+                                            ? selectedPeriods.join(",")
+                                            : "Select"}
+                                    </div>
+                                    {isDropdownOpen && (
+                                        <div
+                                            className="position-absolute bg-white border rounded shadow-sm w-100 mt-1"
+                                            style={{ zIndex: 1000 }}
+                                        >
+                                            <div
+                                                className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePeriodSelect("Weekly");
+                                                }}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="me-2"
+                                                    checked={selectedPeriods.includes("Weekly")}
+                                                    onChange={() => { }}
+
+                                                />
+                                                <span>Weekly</span>
+                                            </div>
+                                            <div
+                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePeriodSelect("Monthly");
+                                                }}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="me-2"
+                                                    checked={selectedPeriods.includes("Monthly")}
+                                                    onChange={() => { }}
+                                                />
+                                                <span>Monthly</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="col-md-3 mb-3">
+                                <h5>Timing : </h5>
+                                <div
+                                    className="position-absolute bg-white border rounded shadow-sm w-25 mt-1"
+                                    style={{ zIndex: 1000 }}
+                                >
+                                    <div
+                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handletimePeriodSelect("9 AM TO 10:00 AM");
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="me-2"
+                                            checked={selectedtimePeriods.includes("9 AM TO 10:00 AM")}
+                                            onChange={() => { }}
+                                        />
+                                        <span>9 AM TO 10:00 AM</span>
+                                    </div>
+                                    <div
+                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handletimePeriodSelect("10:00 AM TO 11:00 AM");
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="me-2"
+                                            checked={selectedtimePeriods.includes(
+                                                "10:00 AM TO 11:00 AM"
+                                            )}
+                                            onChange={() => { }}
+                                        />
+                                        <span>10:00 AM TO 11:00 AM</span>
+                                    </div>
+                                    <div
+                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handletimePeriodSelect("1:30 AM TO 2:30 AM");
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="me-2"
+                                            checked={selectedtimePeriods.includes("1:30 AM TO 2:30 AM")}
+                                            onChange={() => { }}
+                                        />
+                                        <span>1:30 AM TO 2:30 AM</span>
+                                    </div>
+                                    <div
+                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handletimePeriodSelect("3:00 AM TO 4:00 AM");
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="me-2"
+                                            checked={selectedtimePeriods.includes("3:00 AM TO 4:00 AM")}
+                                            onChange={() => { }}
+                                        />
+                                        <span>3:00 AM TO 4:00 AM</span>
+                                    </div>
+                                    <div
+                                        className="p-2 cursor-pointer hover-bg-light d-flex align-items-center"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handletimePeriodSelect("4:00 AM TO 5:00 AM");
+                                        }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            className="me-2"
+                                            checked={selectedtimePeriods.includes("4:00 AM TO 5:00 AM")}
+                                            {...register("itemName")}
+                                            onChange={() => { }}
+                                        />
+                                        <span>4:00 AM TO 5:00 AM</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="mt-4">
-                            <button type="submit" className="submit-btn">ADD Subscription</button>
+                            <button type="submit" className="submit-btn">
+                                ADD Subscription
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

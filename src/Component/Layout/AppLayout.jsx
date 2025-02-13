@@ -23,7 +23,7 @@ function AppLayout() {
             <div className='row p-0'>
                 {/* Sidebar */}
                 <div
-                    className={`sidebar-wrapper ${sidebarOpen ? 'col-lg-3 col-md-3 col-sm-4' : 'col-auto'}`}
+                    className={`sidebar-wrapper ${sidebarOpen ? 'col-lg-3 col-md-3 col-sm-4 ' : 'col-auto'}`}
                 >
                     <Sidebar onToggle={handleSidebarState} />
                 </div>
@@ -46,14 +46,14 @@ function AppLayout() {
                                 <div className='d-flex align-items-center  store-status'>
                                     <p style={{ marginTop: "9%" }}>STORE STATUS </p> &nbsp;
                                     <div
-                                        className={`toggle-switch ${isOn ? "on" : "off"}`}
+                                        className={`ms-2 toggle-switch ${isOn ? "on" : "off"}`}
                                         onClick={handleToggle}
                                     >
                                         <div className="toggle-knob"></div>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                    <div className=" mx-2">
+                                    <div className=" mx-2 ">
                                         <img
                                             src="/src//assets//Images/admin.png"
                                             alt="images"
@@ -61,9 +61,9 @@ function AppLayout() {
                                             style={{ border: '3px solid #0B2545', borderRadius: '50%', objectFit: 'cover', }}
                                         />
                                     </div>
-                                    <div className="">
+                                    <div className=" ">
                                         <span className='fs-5'>Hello</span>,<span className="fs-5 fw-bold" style={{ color: "#0B2545" }}>Rahul Sharma!</span>
-                                        <div className="">
+                                        <div className="mt-1">
                                             <button className="logout " onClick={logOut}>LOGOUT </button>
                                         </div>
                                     </div>

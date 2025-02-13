@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
 
-function AllSubscriptions() {
+function ActiveSubscription() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -90,10 +90,11 @@ function AllSubscriptions() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/EditSubscriptionForm/${id}`);
+        navigate(`/EditItem/${id}`);
     };
 
     const handleCheckboxChange = (itemId, type, item) => {
+        // Prevent toggling if status is already active (green)
         if ((type === 'business' && item.isActiveForBusiness) ||
             (type === 'personal' && item.isActiveForPersonal)) {
             Swal.fire({
@@ -104,6 +105,8 @@ function AllSubscriptions() {
             });
             return;
         }
+
+        // Check if trying to toggle business status
         if (type === 'business' && !item.isActiveForBusiness) {
             if (!item.size || item.size.length === 0) {
                 Swal.fire({
@@ -125,6 +128,8 @@ function AllSubscriptions() {
                 return;
             }
         }
+
+        // Check if trying to toggle personal status
         if (type === 'personal' && !item.isActiveForPersonal) {
             if (!item.size || item.size.length === 0) {
                 Swal.fire({
@@ -146,14 +151,17 @@ function AllSubscriptions() {
                 return;
             }
         }
+
+        // Only allow toggling from false to true
         setCheckedItems(prevState => ({
             ...prevState,
             [itemId]: {
                 ...prevState[itemId],
-                [type]: true,
+                [type]: true, // Only allow setting to true
             }
         }));
     };
+
     const Pagination = () => {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
@@ -203,16 +211,17 @@ function AllSubscriptions() {
     return (
         <div className="page-container">
             <div className="header">
-                <div className="add-item ">
-                    <FaPlus className="plus-icon me-3" />
-                    <Link className="text-decoration-none text-white" to="/Subscription"> Add Subscription</Link>
-                </div>
+                <select className="form-select custom-select text-center" onChange={selectRole}>
+                    <option value="all">All</option>
+                    <option value="business">Business</option>
+                    <option value="personal">Personal</option>
+                </select>
 
                 <div className="search w-50">
                     <FaSearch className="search-icons" />
                     <input
                         type="search"
-                        placeholder="Search By Item Name"
+                        placeholder="Search By User"
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -242,12 +251,15 @@ function AllSubscriptions() {
                             <table className="table mt-3">
                                 <thead>
                                     <tr>
-                                        <th>Item</th>
-                                        <th>Category</th>
-                                        <th>Rating</th>
+                                        <th>User</th>
+                                        <th>Subscription</th>
                                         <th>Period</th>
-                                        <th>Business</th>
-                                        <th>Personal</th>
+                                        <th>Subscription On</th>
+                                        <th>Total</th>
+                                        <th>Remaining</th>
+                                        <th>Delivered</th>
+                                        <th>Postponed</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -257,58 +269,17 @@ function AllSubscriptions() {
                                             <td>{item.itemName}</td>
                                             <td>{item.category}</td>
                                             <td>{item.period}</td>
-                                            <td className="rating">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <span
-                                                        key={star}
-                                                        className={`star ${star <= (item.ratings || 0) ? 'filled' : 'empty'}`}
-                                                    >
-                                                        ★
-                                                    </span>
-                                                ))}
-                                            </td>
-                                            <td>
-                                                <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedItems[item._id]?.business || false}
-                                                        onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                                                        disabled={item.isActiveForBusiness}
-                                                    />
-                                                    <span
-                                                        className="slider"
-                                                        style={{
-                                                            backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#FF3B30',
-                                                            cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
-                                                        }}
-                                                    ></span>
-                                                </label>
-                                            </td>
-                                            <td>
-                                                <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedItems[item._id]?.personal || false}
-                                                        onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                                                        disabled={item.isActiveForPersonal}
-                                                    />
-                                                    <span
-                                                        className="slider"
-                                                        style={{
-                                                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30',
-                                                            cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
-                                                        }}
-                                                    ></span>
-                                                </label>
-                                            </td>
-
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            
                                             <td className="actions d-flex justify-content-around">
                                                 <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                                                     EDIT
                                                 </button>
-                                                <button className="delete-btn" onClick={() => handleDelete(item._id)}>
-                                                    DELETE
-                                                </button>
+
                                             </td>
                                         </tr>
                                     ))}
@@ -322,4 +293,4 @@ function AllSubscriptions() {
     );
 }
 
-export default AllSubscriptions
+export default ActiveSubscription

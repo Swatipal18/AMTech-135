@@ -12,7 +12,6 @@ import { HiOutlineInformationCircle } from "react-icons/hi2";
 function Users() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [items, setItems] = useState([]);
-    const [search, setSearch] = useState('');
     const [role, setRole] = useState('all');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -247,7 +246,7 @@ function Users() {
                                                             <span
                                                                 className="slider"
                                                                 style={{
-                                                                    backgroundColor: item.isActive ? '#ff0000' : '#4CAF50',
+                                                                    backgroundColor: item.isActive ? '#FF3B30' : '#4CAF50',
                                                                     cursor: item.isActive ? 'not-allowed' : 'pointer'
                                                                 }}
                                                             ></span>

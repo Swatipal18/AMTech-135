@@ -12,6 +12,7 @@ import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import imageCompression from 'browser-image-compression';
 function EditUser() {
+    const { id } = useParams();
     const baseUrl = import.meta.env.VITE_API_URL;
     const [userType, setUserType] = useState('business');
     const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -141,10 +142,10 @@ function EditUser() {
             <div className="row">
                 <div className="col-md-12 main-content">
                     <div className="form-container">
-                        <button className='edit-btn mb-4' onClick={() => {
+                        <button className='edit-btn mb-4 fs-6' onClick={() => {
                             console.log("Back Button Clicked"),
-                            navigate('/Users')
-                        }}>back</button>
+                                navigate('/Users')
+                        }}>Back</button>
 
                         <h1 className="form-title">Edit New User</h1>
                         <form onSubmit={handleSubmit(onSubmit)}>
