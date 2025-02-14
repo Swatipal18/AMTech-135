@@ -204,7 +204,7 @@
 // export default OrderManagement;
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 // Initialize socket
@@ -213,12 +213,23 @@ const socket_url =  import.meta.env.VITE_SOCKET_URL
 const socket = io(socket_url, { transports: ["websocket"] });
 
 function OrderManagement() {
-  const [NewOrder, setNewOrder] = useState([]);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [toggleCheckbox, settoggleCheckbox] = useState(false);
   const [loading, setLoading] = useState(false); // ✅ Loader state
   const tone = new Audio("/Audios/new-order-store-admin.mp3");
+  const [NewOrder, setNewOrder] = useState([]);
+  const prevOrderLength = useRef(0);
+  
+  useEffect(() => {
+    if (NewOrder.length > prevOrderLength.current) {
+      tone.play().catch((error) => {
+        console.error("Audio play error:", error);
+      });
+    }
+    prevOrderLength.current = NewOrder.length;
+  }, [NewOrder]); // जब भी NewOrder बदलेगा, चेक होगा
+  
   useEffect(() => {
     const interval = setInterval(() => {
       if (NewOrder.length > 0) {
@@ -227,9 +238,10 @@ function OrderManagement() {
         });
       }
     }, 10000);
-
+  
     return () => clearInterval(interval);
-  }, [NewOrder.length > 0]);
+  }, [NewOrder.length]); // हर 10 सेकंड में ऑर्डर चेक होगा
+  
 
   const convertToIST = (utcTime) => {
     const options = {
@@ -346,6 +358,7 @@ function OrderManagement() {
                   type="checkbox"
                   onClick={() => settoggleCheckbox(!toggleCheckbox)}
                 />
+                &nbsp;
                 Select
               </label>
             </span>

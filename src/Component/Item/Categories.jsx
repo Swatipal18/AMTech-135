@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
+import { FaCirclePlus } from 'react-icons/fa6';
 
 function Categories() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -177,7 +178,7 @@ function Categories() {
         <div className="page-container">
             <div className="header">
                 <div className="add-item" onClick={() => { setShowModal(true); setEditCategory(null); reset(); }}>
-                    <FaPlus className="plus-icon" />
+                    <FaCirclePlus color='plus-icon' />
                     <span className="text-white">Add New Category</span>
                 </div>
 
@@ -215,7 +216,7 @@ function Categories() {
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (
-                <div className="no-data">No Categories found</div>
+                <div className="no-data mt-3">No Categories found</div>
             ) : (
                 <>
                     <table className="table mt-3">

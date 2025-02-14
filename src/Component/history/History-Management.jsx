@@ -172,11 +172,12 @@ function HistoryManagement() {
     <>
       <div className="transaction-container">
         <h1>Transaction history</h1>
-        <div className="filter-section">
+      <div className="header ">
+      <div className="filter-section">
           <div className="dropdown-group">
             {/* Statement Period Dropdown */}
             <div className="custom-dropdown">
-              <label className="form-label fs-6">Statement period</label>
+         
               <div
                 className="dropdown-display w-100"
                 style={{ backgroundColor: "#0B2545", color: "white" }}
@@ -230,7 +231,7 @@ function HistoryManagement() {
             </div>
             {/* Transaction Category Dropdown */}
             <div className="custom-dropdown">
-              <label className="form-label fs-6">Transaction category</label>
+              
               <div
                 className="dropdown-display"
                 style={{ backgroundColor: "#0B2545", color: "white" }}
@@ -259,7 +260,7 @@ function HistoryManagement() {
             </div>
             {/* UserType Dropdown */}
             <div className="custom-dropdown">
-              <label className="form-label fs-6">UserType</label>
+             
               <div
                 className="dropdown-display"
                 style={{ backgroundColor: "#0B2545", color: "white" }}
@@ -287,7 +288,7 @@ function HistoryManagement() {
               </select>
             </div>
           </div>
-          <div className="button-group mt-4">
+          <div className="button-group ">
             <button className="download-btn" onClick={DownloadCSV}>
               Download CSV <FaFileCsv />
             </button>
@@ -301,9 +302,10 @@ function HistoryManagement() {
             </button>
           </div>
         </div>
+      </div>
 
         {Invoice.length > 0 && (
-          <table className="order-table">
+          <table className="order-table mt-3">
             <thead>
               <tr>
                 <th
@@ -367,6 +369,7 @@ function HistoryManagement() {
           justifyContent: "center",
           backdropFilter: "blur(5px)",
           backgroundColor: "rgba(0, 0, 0, 0.3)",
+          zIndex:"878978977"
         }}
       >
         <Box

@@ -20,6 +20,8 @@ import AllNotifications from '../Component/Notifications/AllNotifications'
 import NewNotification from '../Component/Notifications/NewNotification'
 import Sizes from '../Component/Item/Size/Sizes'
 import HistoryManagement from '../Component/history/History-Management'
+import AllSubscriptions from '../Component/subscription/AllSubscription'
+import EditSubscriptionForm from '../Component/subscription/EditSubscription'
  
 
 
@@ -105,6 +107,14 @@ function Navbar() {
                 {
                     path: "/Subscription",
                     element: <SubscriptionForm />
+                },
+                {
+                    path: "/EditSubscription/:id",
+                    element: <EditSubscriptionForm />
+                },
+                {
+                    path: "/All-Subscription",
+                    element: <AllSubscriptions />
                 },
                 // {
                 //     path: "/users",

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FaCirclePlus } from 'react-icons/fa6';
 
 function Sizes() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -118,12 +119,12 @@ function Sizes() {
     return (
         <div className="page-container">
             <div className="header">
-                <div className="add-item" onClick={() => {
+                <div className="add-item  " onClick={() => {
                     setShowModal(true);
                     setEditSize(null);
                     reset();
                 }}>
-                    <FaPlus className="plus-icon" />
+                <FaCirclePlus color='plus-icon' />
                     <span className="text-white">Add New Size</span>
                 </div>
 
@@ -163,7 +164,7 @@ function Sizes() {
             ) : error ? (
                 <div className="error-message">{error}</div>
             ) : items.length === 0 ? (
-                <div className="no-data">No Size found</div>
+                <div className="no-data mt-3">No Size found</div>
             ) : (
                 <table className="table mt-3">
                     <thead>

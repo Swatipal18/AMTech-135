@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, Search, Store, Briefcase } from 'lucide-react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { RiHome3Line } from "react-icons/ri";
 import { RiCupLine } from "react-icons/ri";
 import { RiUserCommunityFill } from "react-icons/ri";
@@ -10,7 +10,7 @@ import { HiUserGroup } from "react-icons/hi";
 import { AiFillPieChart } from "react-icons/ai";
 import { RiBarChartFill } from "react-icons/ri";
 import { RiNotification2Fill } from "react-icons/ri";
-import { FaAd } from "react-icons/fa";
+import { FaAd, FaFileInvoice } from "react-icons/fa";
 import { RiBuilding2Fill } from "react-icons/ri";
 import { io } from 'socket.io-client';
 
@@ -22,7 +22,7 @@ const Sidebar = ({ onToggle, children }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [length , setlenght] = useState()
-
+    const location = useLocation();
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
         onToggle && onToggle(!isOpen);
@@ -61,7 +61,7 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'InvoiceHistory',
-            icon: <Store size={20} className='m-2' />,
+            icon:<FaFileInvoice size={20} className='m-2'/>  ,
             path: '/InvoiceHistory'
         },
         {
@@ -72,7 +72,8 @@ const Sidebar = ({ onToggle, children }) => {
                 { label: 'Add New Item', path: '/AddNewItem' },
                 { label: 'Categories', path: '/categories' },
                 { label: 'Sizes', path: '/sizes' },
-                { label: 'Subscriptions', path: '/Subscription' }
+                { label: 'Subscriptions', path: '/Subscription' },
+                { label: ' All Subscriptions', path: '/All-Subscription' },
             ],
             isDropdown: true
         },
@@ -105,6 +106,7 @@ const Sidebar = ({ onToggle, children }) => {
             ],
             isDropdown: true
         },
+       
         {
             title: 'User Management',
             icon: <HiUserGroup size={20} className='m-2' />,
@@ -154,25 +156,29 @@ const Sidebar = ({ onToggle, children }) => {
     
     return (
         <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-            <div className="sidebar-header">
-                <div className="header-content">
-                    <button className="menu-btn" onClick={toggleSidebar}>
-                        <Menu size={24} />
-                    </button>
-                    {isOpen && (
-                        <div className='mt-3 mx-2'>
-                            <Link to="/" className="logo ms-5">
-                                <img src="/main-logo.png" alt="Logo" />
-                            </Link>
-                        </div>
-                    )}
-                </div>
+        <div className="sidebar-header">
+            <div className="header-content">
+                <button className="menu-btn" onClick={toggleSidebar}>
+                    <Menu size={24} />
+                </button>
+                {isOpen && (
+                    <div className='mt-3 mx-2'>
+                        <Link to="/" className="logo ms-5">
+                            <img src="/main-logo.png" alt="Logo" />
+                        </Link>
+                    </div>
+                )}
             </div>
-            <div className={`sidebar-content  ${isOpen ? '' : 'mt-5'}`}>
-                {menuItems.map((item, index) => (
-                    <div key={index}>
+        </div>
+        <div className={`sidebar-content ${isOpen ? '' : 'mt-5'}`}>
+            {menuItems.map((item, index) => {
+                const isActive = location.pathname === item.path; // Check if the item is active
+
+                return (
+                    <div key={index}  style={{marginRight:`${isOpen ? '' : '10px'}`}}>
                         <div
-                            className="menu-item"
+                            className={`menu-item ${isActive ? 'active' : ''}` }
+                            style={{borderRadius:`${item.isDropdown && activeDropdown === item.title && isOpen  ? '0px 15px 0px 0px' : '0px 15px 15px 0px'}`}}
                             onClick={() => item.isDropdown && toggleDropdown(item.title)}
                         >
                             {item.isDropdown ? (
@@ -193,30 +199,34 @@ const Sidebar = ({ onToggle, children }) => {
                                 </>
                             ) : (
                                 <Link to={item.path} className="menu-link text-white text-decoration-none w-100 d-flex align-items-center">
-                                    <span className="icon">{item.icon}</span>
+                                    <span className="icon ">{item.icon}</span>
                                     {isOpen && <span className="title">{item.title}</span>}
                                 </Link>
                             )}
                         </div>
                         {item.isDropdown && activeDropdown === item.title && isOpen && (
-                            <div className="submenu">
-                                {item.subItems.map((subItem, subIndex) => (
-                                    <Link
-                                        key={subIndex}
-                                        to={subItem.path}
-                                        className="submenu-item text-white text-decoration-none"
-                                    >
-                                        <span>{subItem.label}</span>
-                                        <ChevronRight size={16} className="chevron-icon" />
-                                    </Link>
-                                ))}
+                            <div className="submenu rounded">
+                                {item.subItems.map((subItem, subIndex) => {
+                                    const isSubActive = location.pathname === subItem.path; // Check if the sub-item is active
+                                    return (
+                                        <Link
+                                            key={subIndex}
+                                            to={subItem.path}
+                                            className={`submenu-item text-white text-decoration-none ${isSubActive ? 'active' : ''}`}
+                                        >
+                                            <span>{subItem.label}</span>
+                                            <ChevronRight size={16} className="chevron-icon" />
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
-                ))}
-            </div>
+                );
+            })}
         </div>
-    );
+    </div>
+);
 };
 
 export default Sidebar;

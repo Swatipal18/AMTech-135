@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Clock, ChevronDown, LineChart } from "lucide-react";
 import { Bar } from "react-chartjs-2";
+
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -113,15 +114,16 @@ const Admin = () => {
     <>
       <div className="main-deshboard-container">
         <div className="D-header">
-          <div className="btn-container d-flex justify-content-around">
+          <div className="btn-container d-flex justify-content-around gap-5">
             <button className="Admin-header-button"  onClick={()=>url("/AddNewItem")}> + New Item</button>
+            <button className="Admin-header-button"  onClick={()=>url("#")}> + New Store</button>
             <button className="Admin-header-button" onClick={()=>url("/AddStaff")}>+ New Staff</button>
             <button className="Admin-header-button" onClick={()=>url("/OrderManagement")}>Order Managment</button>
             <button className="Admin-header-button" onClick={()=>url("#")}>Customer</button>
           </div>
         </div>
         <div className="Deshboard-main-content mt-4">
-          <div className="First-line-container row d-flex justify-content-around">
+          <div className="First-line-container row d-flex justify-content-around mt-5">
             <div className="over-view col-6">
               <div className="over-view-header d-flex justify-content-around mt-4 align-items-center">
                 <div className="Headername">
@@ -213,11 +215,57 @@ const Admin = () => {
               </div>
             </div>
           </div>
+
+          <div className="mx-3">
+
+    <div className="Top-delivery-boys col-12 mt-5 ">
+            <div className="high-value-users-box">
+                <div className="over-view-header d-flex justify-content-around  align-items-center">
+                  <div className="Headername">
+                    <h3 className="fw-bold">Today Subscription</h3>
+                  </div>
+                  <div className="date">
+                    <input type="date" />
+                  </div>
+                </div>
+                <table className="users-table">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Customer Name</th>
+                      <th>Item name</th>
+                      <th>Time Slot</th>
+                      <th>Time Slot</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {HighValueItem.slice(0, 5).map((user, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}.</td>
+                        <td>{user.name}</td>
+                        <td>{user.name}</td>
+                        <td>{user.value}</td>
+                        <td>{user.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div
+                  className="view-all"
+                  onClick={() => url("/OrderManagement")}
+                  style={{ cursor: "pointer" }}
+                >
+                  View All {"->"}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="Second-line-container row d-flex justify-content-around mt-5">
             <div className="Next-day-Subscription col-6">
               <div className="over-view-header d-flex justify-content-around mt-4 align-items-center">
                 <div className="Headername">
-                  <h3 className="fw-bold">New Day Subscription</h3>
+                  <h3 className="fw-bold">Next Day Subscription</h3>
                 </div>
                 <div className="date">
                   <input type="date" />

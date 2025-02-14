@@ -41,7 +41,7 @@ function AppLayout() {
                         <div className="Admin-bar mx-5">
                             <div className="toggle-container mt-0 d-flex align-items-center w-100 justify-content-between ">
                                 <div className='d-flex align-items-center  store-status'>
-                                    <p style={{ marginTop: "9%" }}>STORE STATUS </p> &nbsp;
+                                    <p style={{ marginTop: "9%" }}>STORE STATUS </p> &nbsp;&nbsp;&nbsp;
                                     <div
                                         className={`toggle-switch ${isOn ? "on" : "off"}`}
                                         onClick={handleToggle}

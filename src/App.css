@@ -53,6 +53,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
     /* margin-bottom: 20px; */
   }
   
@@ -136,6 +139,9 @@
   }
 .btn-container{
   background-color: white;
+  box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+-webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+-moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
 }
 .Admin-header-button{
   border: none;
@@ -145,6 +151,8 @@
   border-radius: 30px;
   color: #134074  ;
   z-index: 10;
+  /* display: flex; */
+ 
 }
 .D-header{
   position: sticky;
@@ -167,10 +175,17 @@
 
 .red-dot{
   font-size: 57px;
+  color: red;
+  position: absolute;
+  top: -42px;
+  left: 200px;
+  border-radius: 50% !important;
 }
 .red-none{
   display: none;
 }
+
+
 .red-dot-2{
   font-size: 57px;
   color: red;
@@ -202,7 +217,7 @@
   animation: l24 1s infinite alternate linear;
 }
 .loader::before {
-  content: "135 DEGREE";
+  content: "135 DEGREES";
   line-height: 1em;
   color: #0000;
   background: inherit;
@@ -216,9 +231,9 @@
 }
 
 .red{
-  background-color: #ff000085  !important;
-  /* opacity: 50%; */
+  background-color: #ff3a3080  !important;
   color: red !important;
+
 }
 .Yellow{
   background-color: #ffcc0084 !important;
@@ -228,4 +243,15 @@
 
 .custom-date-picker .MuiCalendarPicker-root {
   background-color: lightgreen !important; /* Change the calendar's background color */
+}
+
+.disable{
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.menu-item.active, 
+.submenu-item.active {
+    background-color: #0B2545 !important;
+    /* border-radius: 5px; */
 }

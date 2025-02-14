@@ -277,12 +277,6 @@ export default function PreperingOrder() {
           <h1 className="text-center">
             {currentOrders.length === 0 ? "No Preparing Order Found" : ""}
           </h1>
-
-          {/* {loading && (
-            <div className="loader-container d-flex justify-content-center">
-              <div className="loader"></div>
-            </div>
-          )} */}
           <div className="order-list">
             {currentOrders.map((v, i) => (
               <div className="order-card" key={`received-${i}`}>
@@ -300,13 +294,15 @@ export default function PreperingOrder() {
                     className="Checkbox"
                     type="checkbox"
                     checked={selectedOrders.includes(v._id)}
-                    onChange={() => handleCheckboxChange(v._id)}
+                    onChange={() => handleCheckboxChange(v._id)
+                    }
                   />
                   <label
                     htmlFor={`checkbox-${v._id}`}
                     style={{ display: `${toggleCheckbox ? "block" : "none"}` }}
                   ></label>
                 </p>
+                
                 {v.items?.map((Item, index) => (
                   <p className="order-item" key={index}>
                     <strong>
@@ -500,7 +496,8 @@ export default function PreperingOrder() {
                         {DeliveryBoy.map((DeliveryBoy) => {
                           return (
                             <tr
-                              className="order-table-row-box"
+                            
+                              className={`order-table-row-box ${v.deliveryBoyName ===DeliveryBoy.username ? 'disable' : ''}`}
                               onClick={() =>
                                 AssignedDeliveryBoy(
                                   DeliveryBoy._id,
@@ -510,8 +507,9 @@ export default function PreperingOrder() {
                                   
                                 )
                               }
+                              
                             >
-                              <td className="fw-bold text-start">
+                              <td className={`fw-bold text-start`}>
                                 {DeliveryBoy.username}
                               </td>
                               <td className="fw-bold text-center">
@@ -524,6 +522,7 @@ export default function PreperingOrder() {
                     </table>
                   </div>
                 </p>
+              
                 <div className={`order-actions `} >
                   <button className={`Prepering-order-btn w-100 ${v.colour === "Red" ? 'red' : v.colour === "Yellow" ? 'Yellow' : ''}`} disabled>
                    {` ${v.colour === "Red" ? 'REASSIGNED FOR PICKUP' : v.colour === "Yellow" ? 'DELAYED FOR PICKUP' : 'READY TO PICKUP'}`}

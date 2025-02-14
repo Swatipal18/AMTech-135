@@ -7,6 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
+import { FaCirclePlus } from 'react-icons/fa6';
 
 const AllItem = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -179,11 +180,12 @@ const AllItem = () => {
     <div className="page-container">
       <div className="header">
         <div className="add-item ">
-          <FaPlus className="plus-icon" />
+     
+           <FaCirclePlus color='plus-icon' />
           <Link className="text-decoration-none text-white" to="/AddNewItem"> Add Item</Link>
         </div>
 
-        <div className="search w-50">
+        <div className="search ">
           <FaSearch className="search-icons" />
           <input
             type="search"

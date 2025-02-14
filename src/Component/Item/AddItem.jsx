@@ -422,7 +422,7 @@ function AddItem() {
                         </div>
                         {/* Business Menu Variants */}
                         <div className="variants-section">
-                            <h3 className="variants-title">Business Menu Variants</h3>
+                            <h3 className="variants-title">  BUSINESS MENU VARIANTS</h3>
                             {watch("size").map((_, index) => (
                                 <div key={index} className="row" >
                                     <div className="col-md-3 mb-3">
@@ -461,7 +461,7 @@ function AddItem() {
                                             type="text"
                                             {...register(`size[${index}].volume`)}
                                             name={`size[${index}].volume`}
-                                            // value="120ml"
+                                             
                                             className="form-control shadow"
                                             placeholder="e.g. 60ml"
                                         />
@@ -489,7 +489,7 @@ function AddItem() {
                         </div>
                         {/* Personal Menu Variants */}
                         <div className="variants-section">
-                            <h3 className="variants-title">Personal Menu Variants</h3>
+                            <h3 className="variants-title">  PERSONAL MENU VARIANTS</h3>
                             {watch("personalSize").map((_, index) => (
                                 <div key={index} className="row">
                                     <div className="col-md-3 mb-3">
