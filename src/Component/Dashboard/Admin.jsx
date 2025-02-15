@@ -216,25 +216,24 @@ const Admin = () => {
             </div>
           </div>
 
-          <div className="mx-3">
-
-    <div className="Top-delivery-boys col-12 mt-5 ">
+         
+ 
+          <div className="Second-line-container row d-flex justify-content-around mt-5">
+          <div className="Top-delivery-boys col-6 ">
             <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
-                    <h3 className="fw-bold">Today Subscription</h3>
+                    <h3 className="fw-bold ">Today Subscriptions</h3>
                   </div>
-                  <div className="date">
-                    <input type="date" />
-                  </div>
+                  
                 </div>
+                    <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
                       <th>No</th>
                       <th>Customer Name</th>
                       <th>Item name</th>
-                      <th>Time Slot</th>
                       <th>Time Slot</th>
                     </tr>
                   </thead>
@@ -245,7 +244,7 @@ const Admin = () => {
                         <td>{user.name}</td>
                         <td>{user.name}</td>
                         <td>{user.value}</td>
-                        <td>{user.value}</td>
+                
                       </tr>
                     ))}
                   </tbody>
@@ -259,83 +258,31 @@ const Admin = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="Second-line-container row d-flex justify-content-around mt-5">
-            <div className="Next-day-Subscription col-6">
-              <div className="over-view-header d-flex justify-content-around mt-4 align-items-center">
-                <div className="Headername">
-                  <h3 className="fw-bold">Next Day Subscription</h3>
-                </div>
-                <div className="date">
-                  <input type="date" />
-                </div>
-              </div>
-              <hr />
-              <div className="over-view-detail d-flex flex-column justify-content-around ">
-                <div className="row d-flex justify-content-around">
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Sales</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>500,00,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                  <hr className="vertical-hr p-0" />
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Orders</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>100,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                </div>
-                <hr />
-                <div className="row d-flex justify-content-around ">
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">
-                      Total Users <span>(b)</span>
-                    </h2>
-                    <h2 className="fs-3">
-                      ₹ <b>10,000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                  <hr className="vertical-hr p-0" />
-                  <div className="total-sales col-5">
-                    <h2 className="fs-3">Total Users</h2>
-                    <h2 className="fs-3">
-                      ₹ <b>7000 </b>
-                    </h2>
-                    <span>since last weak 10% ^</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="High-Value-Itmes col-5">
+          <div className="New-Orders col-5">
               <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
-                    <h3 className="fw-bold">High Value Item</h3>
+                    <h3 className="fw-bold">Next Day Subscriptions</h3>
                   </div>
-                  <div className="date">
-                    <input type="date" />
-                  </div>
+                 
                 </div>
+                <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Name</th>
+                      <th>Subscription Name</th>
                       <th>Quntity</th>
+                      {/* <th>Price</th> */}
                     </tr>
                   </thead>
                   <tbody>
-                    {HighValueItem.slice(0, 7).map((user, index) => (
+                    {NewOrders.slice(0, 7).map((user, index) => (
                       <tr key={index}>
                         <td>{index + 1}.</td>
                         <td>{user.name}</td>
                         <td>{user.value}</td>
+                        {/* <td>{user.value}</td> */}
                       </tr>
                     ))}
                   </tbody>
@@ -410,11 +357,11 @@ const Admin = () => {
                 </div>
               </div>
             </div>
-            <div className="Top-delivery-boys col-5">
-            <div className="high-value-users-box">
+            <div className="High-Value-Itmes col-5">
+              <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
-                    <h3 className="fw-bold">Top 5 delivery Boy</h3>
+                    <h3 className="fw-bold">High Value Items</h3>
                   </div>
                   <div className="date">
                     <input type="date" />
@@ -429,7 +376,7 @@ const Admin = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {HighValueItem.slice(0, 5).map((user, index) => (
+                    {HighValueItem.slice(0, 7).map((user, index) => (
                       <tr key={index}>
                         <td>{index + 1}.</td>
                         <td>{user.name}</td>
@@ -448,7 +395,6 @@ const Admin = () => {
               </div>
             </div>
           </div>
-
           <div className="Second-line-container row d-flex justify-content-center">
             <div className="Total-Order-Chart col-11">
             <div style={{ width: "100%", height: "300px", padding: "20px" }}>

@@ -88,14 +88,14 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Order Management',
-            icon:<><div className='dot-parent'> <RiUserStarFill size={20} className='m-2 ' /> <span className={`${length > 0 ? 'red-dot' : 'red-none'}`}>.</span></div></> ,
+            icon:<><div className='dot-parent'> <RiUserStarFill size={20} className='m-2 ' /> <span className={`${length > 0 ? 'red-dot' : 'red-none'}`}></span></div></> ,
             subItems: [
                 { label: 'All Orders', path: '/AllOrders'  },
                 { 
                     label: (
                         <div className='dot-parent'>
                             New Orders
-                            <span className={`${length > 0 ? 'red-dot-2' : 'red-none'}`}>.</span>
+                            <span className={`${length > 0 ? 'red-dot-2' : 'red-none'}`}></span>
                         </div>
                     ), 
                     path: '/OrderManagement',
@@ -205,7 +205,7 @@ const Sidebar = ({ onToggle, children }) => {
                             )}
                         </div>
                         {item.isDropdown && activeDropdown === item.title && isOpen && (
-                            <div className="submenu rounded">
+                            <div className="submenu ">
                                 {item.subItems.map((subItem, subIndex) => {
                                     const isSubActive = location.pathname === subItem.path; // Check if the sub-item is active
                                     return (

@@ -173,25 +173,32 @@
   position: relative;
 }
 
-.red-dot{
-  font-size: 57px;
-  color: red;
+.red-dot {
   position: absolute;
-  top: -42px;
-  left: 200px;
+  top: 13px;
+  left: 184px;
+  height: 10px !important;
+  width: 10px !important;
+  /* border: 1px solid black; */
+  background-color: red; /* Ensure visibility */
   border-radius: 50% !important;
 }
+
 .red-none{
   display: none;
+  background-image: url('/public/Audios/new-order-store-admin.mp3');
 }
 
 
 .red-dot-2{
-  font-size: 57px;
-  color: red;
+ 
   position: absolute;
-  top: -48px;
-  right: -100px;
+  top: 2px;
+  right: -13px;
+  height: 10px !important;
+  width: 10px !important;
+  /* border: 1px solid black; */
+  background-color: red; /* Ensure visibility */
   border-radius: 50% !important;
 }
 
@@ -200,7 +207,7 @@
   width: 100%;
   position: fixed;
   top: 0;
-  z-index: 1;
+  z-index: 111;
   background-color: #0000002b;
   left: -0px;
  

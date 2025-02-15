@@ -12,7 +12,7 @@
 //   const [selectAll, setSelectAll] = useState(false);
 // const [toggleCheckbox , settoggleCheckbox] = useState(false)
 // const [loding , setloding] = useState(false)
-// const tone = new Audio('/Audios/new-order-store-admin.mp3'); // Place the file in the public/audio folder
+// const tone = new Audio('/public/Audios/new-order-store-admin.mp3'); // Place the file in the public/audio folder
 
 //   useEffect(() => {
 //     const interval = setInterval(() => {
@@ -217,7 +217,7 @@ function OrderManagement() {
   const [selectAll, setSelectAll] = useState(false);
   const [toggleCheckbox, settoggleCheckbox] = useState(false);
   const [loading, setLoading] = useState(false); // ✅ Loader state
-  const tone = new Audio("/Audios/new-order-store-admin.mp3");
+  const tone = new Audio("/public/Audios/new-order-store-admin.mp3");
   const [NewOrder, setNewOrder] = useState([]);
   const prevOrderLength = useRef(0);
   
@@ -406,13 +406,13 @@ function OrderManagement() {
                     <p className="order-item" key={`item-${index}`}>
                       <strong>
                         {Item.quantity}
-                        <span>X&nbsp; &nbsp;</span>
+                        <span>&nbsp;x &nbsp;</span>
                         {Item.itemName} ({Item.size.sizeName})
                       </strong>
                     </p>
                   ))}
-                  <p className="order-delivery fs-9">
-                    DELIVERY: {v.deliveryAddress}
+                  <p className="order-delivery " style={{fontSize:"12px"}}>
+                    <span style={{opacity:"0.5"}}>DELIVERY:</span> {v.deliveryAddress.toUpperCase()}
                   </p>
                   <div className="order-actions">
                     <button className="reject-order-btn">Reject</button>

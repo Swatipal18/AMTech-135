@@ -250,7 +250,9 @@ export default function PreperingOrder() {
               type="checkbox"
               onClick={() => settoggleCheckbox(!toggleCheckbox)}
             />
+            &nbsp;
             Select
+            
           </label>
         </span>
         <button
@@ -329,11 +331,13 @@ export default function PreperingOrder() {
                       {v.deliveryBoyName}{" "}
                     </span>{" "}
                   </span>{" "}
-                  &nbsp; &nbsp;
+          &nbsp;— &nbsp;
+                  
                   <span
                     className="ressign"
                     onClick={() => AssignDeliveryBoy(v)} // Open only this specific box
                   >
+                    
                     {v.deliveryBoyName === "No delivery boy assign"
                       ? "ASSIGN NOW"
                       : "REASSIGN ANOTHER"}

@@ -307,16 +307,16 @@ input::placeholder {
 }
 
 .submenu {
-    padding-right: 3rem;
     margin-bottom: 0.2rem;
-    border-radius: 18px !important;
-    /* margin-top: -10px; */
+    width: 95%;
+    overflow: hidden;
+    border-radius: 0px  0px 18px 0px !important;
 }
 
 .submenu-item {
-    padding: 0.6rem 1rem;
-    width: 113%;
-    /* margin: 0.2rem 0; */
+    padding: 0.5rem 1rem;
+    width:auto;
+    
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -1153,16 +1153,17 @@ input[type="range"] {
     color: white;
     padding: 10px 15%;
     border: none;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
 }
 
 .accept-order-btn {
-    background-color: #4caf50;
+    background-color:#40C057;
     color: white;
     padding: 10px 15%;
+    height: 48px;
     border: none;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
 }
 
@@ -1333,9 +1334,9 @@ input[type="range"] {
     text-align: center;
     align-content: center;
     height: 45px;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
-    margin-right: 10px;
+    /* margin-right: 10px; */
 }
 
 /* Table */
@@ -1383,6 +1384,7 @@ input[type="range"] {
     border-radius: 15px;
     right: -15px;
     background-color: #8DA9C4;
+    z-index: 111;
 }
 
 .delivery-boy-detail {
@@ -1519,7 +1521,7 @@ input[type="range"] {
 }
 
 .status-red {
-    background-color: red;
+    background-color: #FF3B30;
     border-radius: 30px;
     color: white;
     padding: 6px;
