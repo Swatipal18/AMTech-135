@@ -819,6 +819,13 @@ input[type="range"] {
     border: none;
 }
 
+.customselect {
+    width: 53px !important;
+    color: #0B2545;
+    border: 2px solid #0B2545 !important;
+    border-radius: 30px !important;
+    margin-left: 5px;
+}
 
 /* Table Styles */
 .table {

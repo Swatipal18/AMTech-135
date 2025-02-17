@@ -10,7 +10,6 @@ import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
 function ActiveSubscription() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [items, setItems] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [role, setRole] = useState('all');
@@ -18,7 +17,7 @@ function ActiveSubscription() {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [checkedItems, setCheckedItems] = useState({});
-    const limit = 10;
+    const [limit, setLimit] = useState(10);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,7 +31,7 @@ function ActiveSubscription() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
+    }, [currentPage, searchTerm, limit]);
     // Fetch items from API
     const fetchItems = async (page, search) => {
         try {
@@ -55,37 +54,6 @@ function ActiveSubscription() {
             console.error('Error fetching items:', error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleDelete = async (_id) => {
-        const result = await Swal.fire({
-            title: 'Are you sure?',
-            text: "This action cannot be undone!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-        });
-
-        if (result.isConfirmed) {
-            try {
-                await axios.delete(`${baseUrl}/menu/delete/${_id}`);
-                fetchItems(currentPage, searchTerm);
-                toast.success('Item deleted successfully!', {
-                    position: "top-right",
-                    autoClose: 1000,
-                    theme: "colored",
-                });
-            } catch (error) {
-                setError('Failed to delete item. Please try again.');
-                console.error('Error deleting item:', error);
-                toast.error('Failed to delete item. Please try again.', {
-                    position: "top-right",
-                    autoClose: 3000,
-                    theme: "colored",
-                });
-            }
         }
     };
 
@@ -151,13 +119,11 @@ function ActiveSubscription() {
                 return;
             }
         }
-
-        // Only allow toggling from false to true
         setCheckedItems(prevState => ({
             ...prevState,
             [itemId]: {
                 ...prevState[itemId],
-                [type]: true, // Only allow setting to true
+                [type]: true,
             }
         }));
     };
@@ -168,10 +134,28 @@ function ActiveSubscription() {
         const endIndex = Math.min(currentPage * limit, totalItems);
 
         return (
-            <div className="pagination-container">
-                <div className="showing-text">
-                    Showing {startIndex}-{endIndex} Of {totalItems} Items
+            <div className="pagination-container d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+
+                    <span className="showing-text">
+                        Showing {startIndex}-{endIndex} Of
+                        <select
+                            className="me-1 text-center customselect "
+                            value={limit}
+                            style={{ width: '-80px' }}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>User
+                    </span>
                 </div>
+
                 <div className="pagination-controls">
                     <button
                         className='pagination-button'
@@ -198,7 +182,7 @@ function ActiveSubscription() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                    // disabled={currentPage === totalPages}
                     >
                         <FaChevronRight />
                     </button>
@@ -248,33 +232,33 @@ function ActiveSubscription() {
                         <div className="error-message">{error}</div>
                     ) : (
                         <>
-                            <table className="table mt-3">
+                            <table className="table mt-3 table-hover">
                                 <thead>
                                     <tr>
                                         <th>User</th>
                                         <th>Subscription</th>
                                         <th>Period</th>
-                                        <th>Subscription On</th>
-                                        <th>Total</th>
-                                        <th>Remaining</th>
-                                        <th>Delivered</th>
-                                        <th>Postponed</th>
+                                        <th>Subscribed On</th>
+                                        <th className='text-center'>Total</th>
+                                        <th className='text-center'>Remaining</th>
+                                        <th className='text-center'>Delivered</th>
+                                        <th className='text-center'>Postponed</th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
 
                                     {items.map((item, index) => (
-                                        <tr key={`${item._id}-${index}`} className="table-row">
-                                            <td>{item.itemName}</td>
-                                            <td>{item.category}</td>
-                                            <td>{item.period}</td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            
+                                        <tr key={`${item._id}-${index}`} className="table-row ">
+                                            <td>AMTech Design </td>
+                                            <td>Masala Tea Jar</td>
+                                            <td>Monthly</td>
+                                            <td>12 feb 2025 </td>
+                                            <td className='text-center'>78</td>
+                                            <td className='text-center'>78</td>
+                                            <td style={{ color: '#40C057', fontSize: '17px' }} className='text-center'>12</td>
+                                            <td style={{ color: '#FF3B30 ', fontSize: '17px' }} className='text-center'>5</td>
+
                                             <td className="actions d-flex justify-content-around">
                                                 <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                                                     EDIT

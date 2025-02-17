@@ -14,7 +14,7 @@ const AllStaff = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const limit = 10;
+  const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
   useEffect(() => {
     setCurrentPage(1);
@@ -29,7 +29,7 @@ const AllStaff = () => {
   };
   useEffect(() => {
     fetchStaff(currentPage, searchTerm);
-  }, [currentPage, searchTerm]);
+  }, [currentPage, searchTerm, limit]);
 
   const fetchStaff = async (page, search) => {
     try {
@@ -99,44 +99,62 @@ const AllStaff = () => {
     const endIndex = Math.min(currentPage * limit, totalItems);
 
     return (
-      <div className="pagination-container">
-        <div className="showing-text">
-          Showing {startIndex}-{endIndex} Of {totalItems} Items
+        <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center">
+
+                <span className="showing-text">
+                    Showing {startIndex}-{endIndex} Of
+                    <select
+                        className="me-1 text-center customselect "
+                        value={limit}
+                        style={{ width: '-80px' }}
+                        onChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setCurrentPage(1);
+                        }}>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>Staff
+                </span>
+            </div>
+
+            <div className="pagination-controls">
+                <button
+                    className='pagination-button'
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                >
+                    <FaAngleLeft />
+                </button>
+                <span
+                    style={{
+                        fontWeight: 'bold',
+                        backgroundColor: '#8DA9C4',
+                        color: '#0B2545',
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                >
+                    {currentPage}
+                </span>
+                <button
+                    className='pagination-button'
+                    onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
+                // disabled={currentPage === totalPages}
+                >
+                    <FaChevronRight />
+                </button>
+            </div>
         </div>
-        <div className="pagination-controls">
-          <button
-            className='pagination-button'
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            <FaAngleLeft />
-          </button>
-          <span
-            style={{
-              fontWeight: 'bold',
-              backgroundColor: '#8DA9C4',
-              color: '#0B2545',
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {currentPage}
-          </span>
-          <button
-            className='pagination-button'
-            onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            <FaChevronRight />
-          </button>
-        </div>
-      </div>
     );
-  };
+};
   return (
     <div className="page-container">
       <div className="header">

@@ -10,15 +10,13 @@ import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
 function AllSubscriptions() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [items, setItems] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [role, setRole] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [checkedItems, setCheckedItems] = useState({});
-    const limit = 10;
+    const [limit, setLimit] = useState(10);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,8 +30,8 @@ function AllSubscriptions() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
-    // Fetch items from API
+    }, [currentPage, searchTerm, limit]);
+
     const fetchItems = async (page, search) => {
         try {
             setLoading(true);
@@ -160,10 +158,28 @@ function AllSubscriptions() {
         const endIndex = Math.min(currentPage * limit, totalItems);
 
         return (
-            <div className="pagination-container">
-                <div className="showing-text">
-                    Showing {startIndex}-{endIndex} Of {totalItems} Items
+            <div className="pagination-container d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+
+                    <span className="showing-text">
+                        Showing {startIndex}-{endIndex} Of
+                        <select
+                            className="me-1 text-center customselect "
+                            value={limit}
+                            style={{ width: '-80px' }}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>Items
+                    </span>
                 </div>
+
                 <div className="pagination-controls">
                     <button
                         className='pagination-button'
@@ -190,7 +206,7 @@ function AllSubscriptions() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                    // disabled={currentPage === totalPages}
                     >
                         <FaChevronRight />
                     </button>

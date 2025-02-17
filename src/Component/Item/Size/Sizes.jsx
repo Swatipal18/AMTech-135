@@ -16,7 +16,7 @@ function Sizes() {
     const [editSize, setEditSize] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const limit = 10;
+    const [limit, setLimit] = useState(10);
     const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
@@ -25,7 +25,7 @@ function Sizes() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
+    }, [currentPage, searchTerm, limit]);
     const fetchItems = async (page, search) => {
         try {
             setLoading(true);
@@ -133,15 +133,32 @@ function Sizes() {
     };
     const Pagination = () => {
         const totalPages = Math.ceil(totalItems / limit);
-        
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
 
         return (
-            <div className="pagination-container">
-                <div className="showing-text">
-                    Showing {startIndex}-{endIndex} Of {totalItems} Categories
+            <div className="pagination-container d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+
+                    <span className="showing-text">
+                        Showing {startIndex}-{endIndex} Of
+                        <select
+                            className="me-1 text-center customselect "
+                            value={limit}
+                            style={{ width: '-80px' }}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>Size
+                    </span>
                 </div>
+
                 <div className="pagination-controls">
                     <button
                         className='pagination-button'
@@ -168,7 +185,7 @@ function Sizes() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                    // disabled={currentPage === totalPages}
                     >
                         <FaChevronRight />
                     </button>

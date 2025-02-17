@@ -17,7 +17,16 @@ function AllBanners() {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const limit = 10;
+    const [limit, setLimit] = useState(10);
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+
+    useEffect(() => {
+        (currentPage, searchTerm);
+    }, [currentPage, searchTerm, limit]);
+
     const selectRole = (event) => {
         setRole(event.target.value);
     };
@@ -30,10 +39,28 @@ function AllBanners() {
         const endIndex = Math.min(currentPage * limit, totalItems);
 
         return (
-            <div className="pagination-container">
-                <div className="showing-text">
-                    Showing {startIndex}-{endIndex} Of {totalItems} Items
+            <div className="pagination-container d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+
+                    <span className="showing-text">
+                        Showing {startIndex}-{endIndex} Of
+                        <select
+                            className="me-1 text-center customselect "
+                            value={limit}
+                            style={{ width: '-80px' }}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>Items
+                    </span>
                 </div>
+
                 <div className="pagination-controls">
                     <button
                         className='pagination-button'
@@ -60,7 +87,7 @@ function AllBanners() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                    // disabled={currentPage === totalPages}
                     >
                         <FaChevronRight />
                     </button>
@@ -103,6 +130,30 @@ function AllBanners() {
         navigate(`/EditItem/${id}`);
     };
 
+
+    const fetchItems = async (page, search) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const pageNumber = Math.max(Number(page), 1);
+            const limitNumber = Number(limit);
+            // const response = await axios.get(`${baseUrl}/subscriptions/list`, {
+                // params: { page: pageNumber, limit: limitNumber, search: search || '' }
+            // });
+
+            if (response.data?.data?.subsItems) {
+                setItems(response.data.data.subsItems || []);
+                setTotalItems(response.data.data.total || 0);
+            } else {
+                setError('No items found.');
+            }
+        } catch (error) {
+            setError('Failed to fetch items. Please try again later.');
+            console.error('Error fetching items:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className="page-container">
             <div className="header">

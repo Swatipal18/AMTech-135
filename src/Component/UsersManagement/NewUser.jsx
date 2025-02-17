@@ -156,7 +156,6 @@ function NewUser() {
                                         <label className="form-label">Type:</label>
                                         <select
                                             className="form-select form-control shadow w-25"
-                                            // {...register('type')}
                                             onChange={(e) => setUserType(e.target.value)}
                                             defaultValue="business"
                                         >
@@ -175,7 +174,6 @@ function NewUser() {
                                                     className="form-control"
                                                     placeholder="Business Name"
                                                     {...register('businessName')}
-                                                    value="Business2"
                                                 />
                                             </div>
 
@@ -186,7 +184,6 @@ function NewUser() {
                                                     className="form-control"
                                                     placeholder="Owner Name"
                                                     {...register('ownerName')}
-                                                    value="Owner"
                                                 />
                                             </div>
                                         </>
@@ -230,7 +227,6 @@ function NewUser() {
                                                 })}
                                                 className="form-control shadow"
                                                 placeholder="e.g. ABCD@example.com"
-                                                value="4nXo5@example.com"
                                             />
                                         </div>
                                     </div>
@@ -242,7 +238,6 @@ function NewUser() {
                                             {...register("address")}
                                             className="form-control shadow"
                                             placeholder="Full Address"
-                                            value="Address"
                                         />
                                     </div>
 

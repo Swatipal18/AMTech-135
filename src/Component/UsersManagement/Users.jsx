@@ -21,7 +21,7 @@ function Users() {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const limit = 10;
+    const [limit, setLimit] = useState(10);
     const navigate = useNavigate();
     useEffect(() => {
         setCurrentPage(1);
@@ -30,7 +30,7 @@ function Users() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm]);
+    }, [currentPage, searchTerm, limit]);
 
 
     const formatDate = (dateString) => {
@@ -53,6 +53,7 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
             });
+            // console.log('response: ', response.data.data.businessList.length);
             if (response.data?.data?.businessList) {
                 setItems(response.data.data.businessList || []);
                 setTotalItems(response.data.data.total || 0);
@@ -74,12 +75,31 @@ function Users() {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
-
+        console.log(currentPage, "current page");
+        console.log(totalItems, "total items");
         return (
-            <div className="pagination-container">
-                <div className="showing-text">
-                    Showing {startIndex}-{endIndex} Of {totalItems} Items
+            <div className="pagination-container d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center">
+
+                    <span className="showing-text">
+                        Showing {startIndex} Of
+                        <select
+                            className="me-1 text-center customselect "
+                            value={limit}
+                            style={{ width: '-80px' }}
+                            onChange={(e) => {
+                                setLimit(Number(e.target.value));
+                                setCurrentPage(1);
+                            }}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>User
+                    </span>
                 </div>
+
                 <div className="pagination-controls">
                     <button
                         className='pagination-button'
@@ -106,7 +126,7 @@ function Users() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === endIndex}
                     >
                         <FaChevronRight />
                     </button>
