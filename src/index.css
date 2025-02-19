@@ -168,7 +168,7 @@ input::placeholder {
     top: 0;
     display: flex;
     flex-direction: column;
-    z-index: 10;
+    z-index: 12212123233333232938391283091283098130891;
 }
 
 
@@ -235,9 +235,9 @@ input::placeholder {
 .sidebar-content {
     overflow-y: auto;
     flex-grow: 1;
-
     scrollbar-width: none;
     -ms-overflow-style: none;
+    z-index: 10;
 }
 
 .sidebar-content::-webkit-scrollbar {
@@ -246,6 +246,7 @@ input::placeholder {
 
 .sidebar-wrapper {
     transition: all 0.3s ease;
+    z-index: 10;
 }
 
 .main-wrapper {
@@ -267,17 +268,16 @@ input::placeholder {
     transition: all 0.2s;
     /* gap: 1rem; */
     /* justify-content: space-around; */
+    margin-bottom: 0;
     margin-top: 15px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     background-color: var(--primary-color);
     color: #f8f6f6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
     border-radius: 0 18px 18px 0;
+    /* position: relative; */
 }
 
-.business-row {
-    width: 23rem !important;
-}
 
 .menu-item:hover {
     background-color: var(--backdround-color);
@@ -312,22 +312,25 @@ input::placeholder {
 }
 
 .submenu {
-    padding-right: 3rem;
-    margin-top: 0.2rem;
     margin-bottom: 0.2rem;
+    width: 95%;
+    overflow: hidden;
+    border-radius: 0px 0px 18px 0px !important;
 }
 
 .submenu-item {
-    padding: 0.6rem 1rem;
-    margin: 0.2rem 0;
+    padding: 0.5rem 1rem;
+    width: auto;
+
     display: flex;
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    border-radius: 8px;
+
     background-color: var(--primary-color);
+
     color: #fffefe;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
 }
 
 .submenu-item:hover {
@@ -747,17 +750,23 @@ input[type="range"] {
     padding: 0.5rem;
     display: flex;
     align-items: center;
+    gap: 20px !important;
     justify-content: space-between;
     color: #fff;
+    position: sticky;
+    top: 100px;
+    z-index: 1999;
     border-radius: 55px;
+    margin-bottom: 10px;
 }
 
 .add-item {
     width: 20rem;
-    height: 2.5rem;
+    height: 3.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 20px;
     background-color: var(--backdround-color);
     color: #ffffff;
     border: none;
@@ -777,8 +786,8 @@ input[type="range"] {
     align-items: center;
     background-color: var(--backdround-color);
     border-radius: 30px;
-    padding: 0.2rem 1rem;
-    width: 800px;
+    padding: 0.6rem 2rem;
+    width: 100% !important;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -1190,6 +1199,15 @@ input[type="range"] {
     column-width: 250px;
 }
 
+@media(min-width :1700px) and (max-width:3000px) {
+    .order-list {
+        display: block;
+        column-count: 4;
+        column-gap: 20px;
+        column-width: 250px;
+    }
+}
+
 .order-card {
     background-color: var(--backdround-color);
     color: white;
@@ -1215,18 +1233,19 @@ input[type="range"] {
 .reject-order-btn {
     background-color: var(--error-red);
     color: white;
-    padding: 10px 32px;
+    padding: 10px 15%;
     border: none;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
 }
 
 .accept-order-btn {
     background-color: #4caf50;
     color: white;
-    padding: 10px 32px;
+    padding: 10px 15%;
+    height: 48px;
     border: none;
-    border-radius: 20px;
+    border-radius: 30px;
     cursor: pointer;
 }
 
@@ -1327,8 +1346,10 @@ input[type="range"] {
     border-radius: 30px;
     position: sticky;
     z-index: 11;
-    top: 88px;
-    box-shadow: 0px -10px 20px 5px white;
+    top: 93px;
+    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
 }
 
 .checkbox-container>button {
@@ -1354,12 +1375,18 @@ input[type="range"] {
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
+    gap: 5px;
     height: 55px;
+    padding: 5px;
     width: 100%;
     align-items: center;
-    padding: 10px;
     border-radius: 30px;
+    position: sticky;
+    top: 113px;
     background-color: #8DA9C4;
+    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
 }
 
 .order-filter-btn {
@@ -1367,7 +1394,7 @@ input[type="range"] {
     color: #fff;
     border: none;
     padding: 10px 0px;
-    width: 15%;
+    width: 12% !important;
     border-radius: 20px;
     cursor: pointer;
     margin-right: 10px;
@@ -1378,6 +1405,7 @@ input[type="range"] {
     gap: 10px;
     color: #123456;
     font-weight: bold;
+
 }
 
 .summary-details {
@@ -1387,10 +1415,10 @@ input[type="range"] {
     width: 200px;
     text-align: center;
     align-content: center;
-    height: 40px;
-    border-radius: 20px;
+    height: 45px;
+    border-radius: 30px;
     cursor: pointer;
-    margin-right: 10px;
+    /* margin-right: 10px; */
 }
 
 /* Table */
@@ -1403,7 +1431,6 @@ input[type="range"] {
 
 .order-table-heading {
     padding: 10px;
-    border-bottom: 2px dashed #c9c9c9;
     color: #8c9dad;
     font-size: 14px;
     text-transform: uppercase;
@@ -1442,12 +1469,14 @@ input[type="range"] {
 
 .delivery-boy-box {
     position: absolute;
-    height: 200px;
+    height: auto;
+    padding: 10px;
     width: 330px;
     border: 2px solid #EEF4ED;
     border-radius: 15px;
     right: -15px;
     background-color: #8DA9C4;
+    z-index: 111;
 }
 
 .delivery-boy-detail {
@@ -1516,7 +1545,7 @@ input[type="range"] {
 }
 
 .toggle-switch.off {
-    background-color: red;
+    background-color: var(--error-red);
 }
 
 .toggle-knob {
@@ -1578,13 +1607,13 @@ input[type="range"] {
     color: white;
     background-color: #0B2545;
     height: 46px;
-    /* padding: 5px 7px; */
+    /* padding: 8px 18px; */
     min-width: 15%;
 
 }
 
 .status-red {
-    background-color: red;
+    background-color: var(--error-red);
     border-radius: 30px;
     color: white;
     padding: 6px;
@@ -1619,29 +1648,41 @@ input[type="range"] {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 32px;
+ 
     flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
 }
+
 
 .dropdown-group {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    width: auto;
 }
+
 
 /* Custom Dropdown Styles */
 .custom-dropdown {
     position: relative;
-    width: 200px;
+    width: 200px !important;
+    
 }
+
 
 .dropdown-display {
     height: 40px;
-    padding: 0 12px;
+    padding: 0 10px;
+    /* width: 200px !important; */
     background: white;
+    height: 50px;
+    border-radius: 30px !important;
+    border: none !important;
     border: 1px solid #e5e5e5;
     border-radius: 6px;
     display: flex;
+    width: 100% ;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
@@ -1657,6 +1698,7 @@ input[type="range"] {
 
 .calendar-icon {
     color: #666;
+    z-index: 10;
 }
 
 .arrow-down {
@@ -1686,24 +1728,28 @@ input[type="range"] {
 
 .download-btn {
     padding: 0 16px;
-    height: 40px;
-    background: #f3f4f6;
+    /* height: 40px; */
+    height: 50px;
+    margin-right: 10px;
+    border: none !important;
+    border-radius: 30px !important;
+    background-color: var(--backdround-color);
     border: none;
     border-radius: 6px;
-    color: #9ca3af;
+    color: white;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-.download-btn:hover {
+/* .download-btn:hover {
     background: #e5e7eb;
-}
+} */
 
 /* No Transactions Message */
 .no-transactions {
-    background: #f9fafb;
+     
     border-radius: 8px;
     padding: 64px 0;
     display: flex;
@@ -1717,19 +1763,9 @@ input[type="range"] {
     height: 10rem;
     border-radius: 4px;
     position: relative;
-    margin-bottom: 16px;
-}
-
-.folder-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: none !important;
-    isolation: isolate;
-    mix-blend-mode: multiply;
-    -webkit-mask-image: url('./assets/Images/folder.png');
-    mask-image: url('./assets/Images/folder.png');
-
+    color: #0B2545;
+    font-size: 100px;
+    /* margin-bottom: 16px; */
 }
 
 .no-transactions {

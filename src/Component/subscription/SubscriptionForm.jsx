@@ -481,83 +481,31 @@ function SubscriptionForm() {
                             </div>
 
                             {/* ----------------------------   timing  ----------------------------    */}
-                            <div className="col-md-3 mb-3">
-                                <label className="form-label">Period :</label>
-                                <div className="period-dropdown position-relative">
-                                    <div
-                                        className="form-control shadow d-flex justify-content-between align-items-center"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsDropdownOpen(!isDropdownOpen);
-                                        }}
-                                    >
-                                        {selectedPeriods.length > 0
-                                            ? selectedPeriods.join(",")
-                                            : "Select"}
-                                    </div>
-                                    {isDropdownOpen && (
-                                        <div
-                                            className="position-absolute bg-white border rounded shadow-sm w-100 mt-1"
-                                            style={{ zIndex: 1000 }}
-                                        >
-                                            <div
-                                                className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handlePeriodSelect("Weekly");
-                                                }}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    className="me-2"
-                                                    checked={selectedPeriods.includes("Weekly")}
-                                                    onChange={() => { }}
-
-                                                />
-                                                <span>Weekly</span>
-                                            </div>
-                                            <div
-                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handlePeriodSelect("Monthly");
-                                                }}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    className="me-2"
-                                                    checked={selectedPeriods.includes("Monthly")}
-                                                    onChange={() => { }}
-                                                />
-                                                <span>Monthly</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="col-md-3 mb-3">
+                           
+                            <div className="col-md-3 mb-3 position-relative ">
                                 <h5>Timing : </h5>
                                 <div
-                                    className="position-absolute bg-white border rounded shadow-sm w-25 mt-1"
+                                    className="position-absolute bg-white w-auto  form-control  mt-1"
                                     style={{ zIndex: 1000 }}
                                 >
+                                    select
                                     <div
-                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        className="p-2 cursor-pointer justify-content-between hover-bg-light d-flex align-items-center"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            handletimePeriodSelect("9 AM TO 10:00 AM");
+                                            handletimePeriodSelect("9:00 AM TO 10:00 AM");
                                         }}
                                     >
                                         <input
                                             type="checkbox"
                                             className="me-2"
-                                            checked={selectedtimePeriods.includes("9 AM TO 10:00 AM")}
+                                            checked={selectedtimePeriods.includes("9:00 AM TO 10:00 AM")}
                                             onChange={() => { }}
                                         />
-                                        <span>9 AM TO 10:00 AM</span>
+                                        <span>9:00 AM TO 10:00 AM</span>
                                     </div>
                                     <div
-                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        className="p-2 cursor-pointer justify-content-between hover-bg-light d-flex align-items-center"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handletimePeriodSelect("10:00 AM TO 11:00 AM");
@@ -574,7 +522,7 @@ function SubscriptionForm() {
                                         <span>10:00 AM TO 11:00 AM</span>
                                     </div>
                                     <div
-                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        className="p-2 cursor-pointer justify-content-between hover-bg-light d-flex align-items-center"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handletimePeriodSelect("1:30 AM TO 2:30 AM");
@@ -589,7 +537,7 @@ function SubscriptionForm() {
                                         <span>1:30 AM TO 2:30 AM</span>
                                     </div>
                                     <div
-                                        className="p-2 cursor-pointer border-bottom hover-bg-light d-flex align-items-center"
+                                        className="p-2 cursor-pointer justify-content-between hover-bg-light d-flex align-items-center"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handletimePeriodSelect("3:00 AM TO 4:00 AM");
@@ -604,7 +552,7 @@ function SubscriptionForm() {
                                         <span>3:00 AM TO 4:00 AM</span>
                                     </div>
                                     <div
-                                        className="p-2 cursor-pointer hover-bg-light d-flex align-items-center"
+                                        className="p-2 cursor-pointer justify-content-between hover-bg-light d-flex align-items-center"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handletimePeriodSelect("4:00 AM TO 5:00 AM");
@@ -619,6 +567,48 @@ function SubscriptionForm() {
                                         />
                                         <span>4:00 AM TO 5:00 AM</span>
                                     </div>
+                                </div>
+                            </div>
+                            <div className="col-md-3 mb-3 ">
+                                <label className="form-label">Period :</label>
+                                <div className=" position-relative form-control ">
+                                        <div
+                                            className="  bg-white  w-100 mt-1"
+                                            style={{ zIndex: 1000 }}
+                                            >
+                                            <div>select </div>
+                                            <div
+                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePeriodSelect("Weekly");
+                                                }}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="me-2"
+                                                    checked={selectedPeriods.includes("Weekly")}
+                                                    onChange={() => { }}
+
+                                                />
+                                                <span>Weekly</span>
+                                            </div>
+                                            <div
+                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePeriodSelect("Monthly");
+                                                }}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="me-2"
+                                                    checked={selectedPeriods.includes("Monthly")}
+                                                    onChange={() => { }}
+                                                />
+                                                <span>Monthly</span>
+                                            </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -637,3 +627,4 @@ function SubscriptionForm() {
 }
 
 export default SubscriptionForm;
+

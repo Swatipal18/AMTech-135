@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, Search, Store, Briefcase } from 'lucide-react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { RiHome3Line } from "react-icons/ri";
-import { RiCupLine } from "react-icons/ri";
-import { RiUserCommunityFill } from "react-icons/ri";
+import { Link, useLocation } from 'react-router-dom';
 import { RiUserStarFill } from "react-icons/ri";
 import { HiUserGroup } from "react-icons/hi";
 import { AiFillPieChart } from "react-icons/ai";
@@ -15,11 +12,19 @@ import { RiBuilding2Fill } from "react-icons/ri";
 import { GiWallet } from "react-icons/gi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { BsFillQuestionCircleFill } from "react-icons/bs";
-import { BiBox } from "react-icons/bi";
+import { io } from 'socket.io-client';
+
+
+const socket_url = import.meta.env.VITE_SOCKET_URL
+const socket = io(socket_url, {
+    transports: ["websocket"],
+});
 
 const Sidebar = ({ onToggle, children }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [activeDropdown, setActiveDropdown] = useState(null);
+    const [length, setlenght] = useState()
+    const location = useLocation();
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
@@ -29,6 +34,25 @@ const Sidebar = ({ onToggle, children }) => {
     const toggleDropdown = (name) => {
         setActiveDropdown(activeDropdown === name ? null : name);
     };
+    useEffect(() => {
+        socket.emit("total-records", {});
+        socket.on("total-records-received", (data) => {
+            setlenght(data.data)
+            console.log('---------------- data.data: ', data.data);
+
+        });
+
+        const interval = setInterval(() => {
+
+            socket.emit("total-records", {});
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+            socket.off("");
+        };
+
+    }, []);
 
     const menuItems = [
         {
@@ -46,6 +70,11 @@ const Sidebar = ({ onToggle, children }) => {
             </svg>,
 
             path: '/franchise'
+        },
+        {
+            title: 'History Management',
+            icon: <GiWallet size={20} className='m-2 sidebar-icon' />,
+            path: '/history'
         },
         {
             title: 'Items Management',
@@ -84,20 +113,28 @@ const Sidebar = ({ onToggle, children }) => {
         },
         {
             title: 'Order Management',
-            icon: <RiUserCommunityFill size={20} className='m-2 sidebar-icon' />,
+            icon: <><div className='dot-parent'><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className='m-2 sidebar-icon'>
+                <path d="M4.36149 6.4416C5.54419 4.5719 7.62785 3.33335 10.0002 3.33335C12.3725 3.33335 14.4562 4.5719 15.6389 6.4416L17.0474 5.55061C15.5721 3.21835 12.9677 1.66669 10.0002 1.66669C7.03273 1.66669 4.42828 3.21835 2.95297 5.55061L4.36149 6.4416ZM10.0002 16.6667C7.62785 16.6667 5.54419 15.4282 4.36149 13.5584L2.95297 14.4494C4.42828 16.7817 7.03273 18.3334 10.0002 18.3334C12.9677 18.3334 15.5721 16.7817 17.0474 14.4494L15.6389 13.5584C14.4562 15.4282 12.3725 16.6667 10.0002 16.6667ZM10 10C11.3807 10 12.5 8.88077 12.5 7.50002C12.5 6.11931 11.3807 5.00002 10 5.00002C8.61925 5.00002 7.5 6.11931 7.5 7.50002C7.5 8.88077 8.61925 10 10 10ZM10 10.8334C11.8409 10.8334 13.3333 12.3258 13.3333 14.1667H6.66667C6.66667 12.3258 8.15905 10.8334 10 10.8334ZM5 10C5 11.3808 3.88071 12.5 2.5 12.5C1.11929 12.5 0 11.3808 0 10C0 8.61927 1.11929 7.50002 2.5 7.50002C3.88071 7.50002 5 8.61927 5 10ZM17.5 12.5C18.8807 12.5 20 11.3808 20 10C20 8.61927 18.8807 7.50002 17.5 7.50002C16.1192 7.50002 15 8.61927 15 10C15 11.3808 16.1192 12.5 17.5 12.5Z" fill="#8DA9C4" />
+            </svg>
+                <span className={`${length > 0 ? 'red-dot' : 'red-none'}`}></span></div></>,
             subItems: [
                 { label: 'All Orders', path: '/AllOrders' },
-                { label: 'New Orders', path: '/OrderManagement' },
+                {
+                    label: (
+                        <div className='dot-parent'>
+                            New Orders
+                            <span className={`${length > 0 ? 'red-dot-2' : 'red-none'}`}></span>
+                        </div>
+                    ),
+                    path: '/OrderManagement',
+
+                },
                 { label: 'Current Orders', path: '/PreperingOrder' },
                 { label: 'Out For Delivery Orders', path: '/Outfordelivery' }
             ],
             isDropdown: true
         },
-        {
-            title: 'History Management',
-            icon: <GiWallet size={20} className='m-2 sidebar-icon' />,
-            path: '/history'
-        },
+
         {
             title: 'User Management',
             icon: <HiUserGroup size={20} className='m-2 sidebar-icon' />,
@@ -170,60 +207,67 @@ const Sidebar = ({ onToggle, children }) => {
                     </button>
                     {isOpen && (
                         <div className='mt-3 mx-2'>
-                            <Link to="/admin" className="logo ms-5">
+                            <Link to="/" className="logo ms-5">
                                 <img src="/main-logo.png" alt="Logo" />
                             </Link>
-
                         </div>
                     )}
                 </div>
             </div>
-            <div className={`sidebar-content ${isOpen ? '' : 'mt-5'}`} >
-                {menuItems.map((item, index) => (
-                    <div key={index}>
-                        <div
-                            className="menu-item"
-                            onClick={() => item.isDropdown && toggleDropdown(item.title)}
-                        >
-                            {item.isDropdown ? (
-                                <>
-                                    <span className="icon">{item.icon}</span>
-                                    {isOpen && (
-                                        <>
-                                            <span className="title text-white">{item.title}</span>
-                                            <span className="dropdown-icon">
-                                                {activeDropdown === item.title ? (
-                                                    <ChevronDown size={20} />
-                                                ) : (
-                                                    <ChevronRight size={20} />
-                                                )}
-                                            </span>
-                                        </>
-                                    )}
-                                </>
-                            ) : (
-                                <Link to={item.path} className="menu-link text-white text-decoration-none w-100 d-flex align-items-center">
-                                    <span className="icon">{item.icon}</span>
-                                    {isOpen && <span className="title">{item.title}</span>}
-                                </Link>
+            <div className={`sidebar-content ${isOpen ? '' : 'mt-5'}`}>
+                {menuItems.map((item, index) => {
+                    const isActive = location.pathname === item.path; // Check if the item is active
+
+                    return (
+                        <div key={index} style={{ marginRight: `${isOpen ? '' : '10px'}` }}>
+                            <div
+                                className={`menu-item ${isActive ? 'active' : ''}`}
+                                style={{ borderRadius: `${item.isDropdown && activeDropdown === item.title && isOpen ? '0px 15px 0px 0px' : '0px 15px 15px 0px'}` }}
+                                onClick={() => item.isDropdown && toggleDropdown(item.title)}
+                            >
+                                {item.isDropdown ? (
+                                    <>
+                                        <span className="icon">{item.icon}</span>
+                                        {isOpen && (
+                                            <>
+                                                <span className="title text-white">{item.title}</span>
+                                                <span className="dropdown-icon">
+                                                    {activeDropdown === item.title ? (
+                                                        <ChevronDown size={20} />
+                                                    ) : (
+                                                        <ChevronRight size={20} />
+                                                    )}
+                                                </span>
+                                            </>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Link to={item.path} className="menu-link text-white text-decoration-none w-100 d-flex align-items-center">
+                                        <span className="icon ">{item.icon}</span>
+                                        {isOpen && <span className="title">{item.title}</span>}
+                                    </Link>
+                                )}
+                            </div>
+                            {item.isDropdown && activeDropdown === item.title && isOpen && (
+                                <div className="submenu ">
+                                    {item.subItems.map((subItem, subIndex) => {
+                                        const isSubActive = location.pathname === subItem.path; // Check if the sub-item is active
+                                        return (
+                                            <Link
+                                                key={subIndex}
+                                                to={subItem.path}
+                                                className={`submenu-item text-white text-decoration-none ${isSubActive ? 'active' : ''}`}
+                                            >
+                                                <span>{subItem.label}</span>
+                                                <ChevronRight size={16} className="chevron-icon" />
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                             )}
                         </div>
-                        {item.isDropdown && activeDropdown === item.title && isOpen && (
-                            <div className="submenu">
-                                {item.subItems.map((subItem, subIndex) => (
-                                    <Link
-                                        key={subIndex}
-                                        to={subItem.path}
-                                        className="submenu-item text-white text-decoration-none"
-                                    >
-                                        <span>{subItem.label}</span>
-                                        <ChevronRight size={16} className="chevron-icon" />
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

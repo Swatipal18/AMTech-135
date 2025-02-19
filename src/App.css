@@ -5,15 +5,15 @@
    color: #134074;
  }
 
- .over-view .date {
+ .date {
    border: 3px solid #8DA9C4;
    padding: 5px;
    border-radius: 30px;
  }
 
- /* .over-tables tr {
-   border-bottom: 3px solid #ccc !important;
- } */
+ .over-view-detail {
+   position: relative;
+ }
 
  .vertical-hr {
    position: absolute;
@@ -55,7 +55,9 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
-   /* margin-bottom: 20px; */
+   box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
  }
 
  .header h2 {
@@ -136,6 +138,13 @@
    position: relative;
  }
 
+ .btn-container {
+   background-color: white;
+   box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+ }
+
  .Admin-header-button {
    border: none;
    padding: 10px;
@@ -156,7 +165,13 @@
  .Paginition-for-AllOrder {
    position: fixed;
    top: 90vh;
+ }
 
+ .Pagination-for-AllOrder .MuiPaginationItem-root {
+   color: white;
+   border-color: #0B2545;
+   background-color: blue !important;
+   /* Using !important to ensure styles take precedence */
  }
 
  .dot-parent {
@@ -164,28 +179,34 @@
  }
 
  .red-dot {
-   font-size: 57px;
-   color: red;
    position: absolute;
-   top: -40px;
-   right: -177px;
+   top: 13px;
+   left: 184px;
+   height: 10px !important;
+   width: 10px !important;
+   /* border: 1px solid black; */
+   background-color: red;
+   /* Ensure visibility */
    border-radius: 50% !important;
  }
 
  .red-none {
    display: none;
+   background-image: url('/public/Audios/new-order-store-admin.mp3');
+
  }
 
  .red-dot-2 {
-   font-size: 57px;
-   color: red;
    position: absolute;
-   top: -48px;
-   right: -100px;
+   top: 2px;
+   right: -13px;
+   height: 10px !important;
+   width: 10px !important;
+   background-color: red;
+   /* Ensure visibility */
    border-radius: 50% !important;
  }
 
- /* HTML: <div class="loader"></div> */
  .loader-container {
    height: 100vh;
    width: 130vw;
@@ -193,14 +214,15 @@
    top: 0;
    z-index: 1;
    background-color: #4241412b;
-   align-items: center;
    left: -150px;
  }
 
  .loader {
-   /* position: absolute; */
    width: fit-content;
    font-weight: bold;
+   position: absolute;
+   top: 50%;
+   left: 50%;
    font-family: monospace;
    font-size: 30px;
    background: radial-gradient(circle closest-side, #0B2545 94%, #0000) right/calc(200% - 1em) 100%;
@@ -217,6 +239,11 @@
    background-clip: text;
  }
 
+ .position-absolute {
+   right: 14px;
+   top: 13px !important;
+ }
+
  @keyframes l24 {
    100% {
      background-position: left
@@ -225,13 +252,27 @@
 
  .red {
    background-color: #ff0000 !important;
+   color: red !important;
+
  }
 
  .Yellow {
    background-color: #ffcc00 !important;
+   color: yellow;
  }
 
  .custom-date-picker .MuiCalendarPicker-root {
    background-color: lightgreen !important;
    /* Change the calendar's background color */
+ }
+
+ .disable {
+   pointer-events: none;
+   opacity: 0.5;
+ }
+
+ .menu-item.active,
+ .submenu-item.active {
+   background-color: #0B2545 !important;
+   /* border-radius: 5px; */
  }
