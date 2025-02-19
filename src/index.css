@@ -162,8 +162,8 @@ input::placeholder {
     left: 0;
     top: 0;
     display: flex;
-    z-index: 1221;
     flex-direction: column;
+    z-index: 12212123233333232938391283091283098130891;
 }
 
 
@@ -753,7 +753,7 @@ input[type="range"] {
     position: sticky;
   top: 100px;
     z-index: 1999;
-    border-radius: 55px;
+    border-radius: 55px;margin-bottom: 10px;
 }
 
 .add-item {
@@ -1124,6 +1124,15 @@ input[type="range"] {
     column-count: 3;
     column-gap: 20px;
     column-width: 250px;
+}
+
+@media(min-width :1700px) and (max-width:3000px){
+    .order-list {
+        display: block;
+        column-count: 4;
+        column-gap: 20px;
+        column-width: 250px;
+    }
 }
 
 .order-card {

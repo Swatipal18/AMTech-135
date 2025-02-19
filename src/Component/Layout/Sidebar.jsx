@@ -14,7 +14,8 @@ import { FaAd, FaFileInvoice } from "react-icons/fa";
 import { RiBuilding2Fill } from "react-icons/ri";
 import { io } from 'socket.io-client';
 
-const socket = io("http://192.168.1.12:3000/", {
+const socket_url =  import.meta.env.VITE_SOCKET_URL
+const socket = io(socket_url , {
     transports: ["websocket"],
   });
   
@@ -37,6 +38,7 @@ const Sidebar = ({ onToggle, children }) => {
         socket.emit("total-records", {});
         socket.on("total-records-received", (data) => {
             setlenght(data.data)
+            console.log('---------------- data.data: ', data.data);
         
         });
     

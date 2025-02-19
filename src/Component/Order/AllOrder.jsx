@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
 // const socket_url = ''
 const socket_url =  import.meta.env.VITE_SOCKET_URL
+console.log('socket_url: ', socket_url);
 const socket = io(socket_url, {
   transports: ["websocket"],
 });
@@ -19,8 +20,6 @@ const AllOrder = () => {
     firstDate: "",
     lastDate: "",
   });
-
-
   const [dropdownValues, setDropdownValues] = useState({
     dateFilter: "all",
     userType: "all",
@@ -68,7 +67,7 @@ const AllOrder = () => {
         filters.selectedEndDate = dateRange.lastDate;
       }
     }
-
+     
     if (dropdownValues.userType !== "all") {
       filters.userType =
         dropdownValues.userType === "business" ? "BusinessUser" : "User";
@@ -83,6 +82,7 @@ const AllOrder = () => {
     }
 
     if (dropdownValues.paymentMethod !== "all") {
+     
       filters.paymentMethod =
         dropdownValues.paymentMethod === "perks" ? "Perks" : "UPI";
     }

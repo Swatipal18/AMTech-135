@@ -5,11 +5,12 @@
     border-radius: 30px;
     color: #134074;
  }
- .over-view .date {
+  .date {
     border: 3px solid #8DA9C4;
     padding: 5px;
     border-radius: 30px;
  }
+ 
  .over-view-detail{
     position: relative;
  }
@@ -191,13 +192,11 @@
 
 
 .red-dot-2{
- 
   position: absolute;
   top: 2px;
   right: -13px;
   height: 10px !important;
   width: 10px !important;
-  /* border: 1px solid black; */
   background-color: red; /* Ensure visibility */
   border-radius: 50% !important;
 }
@@ -207,7 +206,7 @@
   width: 100%;
   position: fixed;
   top: 0;
-  z-index: 111;
+  z-index: 1;
   background-color: #0000002b;
   left: -0px;
  
@@ -231,6 +230,10 @@
   background-image: radial-gradient(circle closest-side,#fff 94%,#0B2545);
   -webkit-background-clip:text;
           background-clip:text;
+}
+.position-absolute{
+  right: 14px;
+  top: 13px !important;
 }
 
 @keyframes l24{

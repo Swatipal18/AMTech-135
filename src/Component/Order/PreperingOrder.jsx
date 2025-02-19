@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 
 const socket_url = import.meta.env.VITE_SOCKET_URL
-console.log('socket_url: ', socket_url);
+// console.log('socket_url: ', socket_url);
 
 const socket = io(socket_url, {
   transports: ["websocket"],
@@ -134,45 +134,54 @@ export default function PreperingOrder() {
   const preparedOrders = CurrentOrder.filter(
     (order) => order.currentStatus === "Prepared"
   );
-  console.log(preparedOrders)
+  // console.log(preparedOrders)
 
   /*  this logic for delivery boy time API calling  */
 
   const prevDeliveryBoyRef = useRef(new Map()); // Store previous delivery boy names
   const handledOrders = useRef(new Set());
+  
+  useEffect(() => {
+    const savedOrders = JSON.parse(localStorage.getItem("handledOrders")) || [];
+    handledOrders.current = new Set(savedOrders);
+  }, []); // Run only once when the component mounts
+  
   useEffect(() => {
     if (!CurrentOrder.length) return;
+  
     CurrentOrder.forEach((order) => {
       if (order.currentStatus !== "Prepared") return;
-
+  
       const prevDeliveryBoy = prevDeliveryBoyRef.current.get(order._id);
       const isDeliveryBoyAssigned =
         order.deliveryBoyName &&
         order.deliveryBoyName !== "No delivery boy assign" &&
         order.deliveryBoyName !== prevDeliveryBoy;
+      // ✅ Check if the order has already been handled (including across reloads)
+
       if (isDeliveryBoyAssigned && !handledOrders.current.has(order._id)) {
         prevDeliveryBoyRef.current.set(order._id, order.deliveryBoyName);
         handledOrders.current.add(order._id); // Mark this order as handled
-
-        // ✅ API call for this specific order
+  
+        // Save the updated handled orders list in localStorage
+        localStorage.setItem("handledOrders", JSON.stringify([...handledOrders.current]));
+  
+        // ✅ API call for this specific order (only once per order)
         (async () => {
           console.log("Starting pickup timer for Order:", order._id);
           try {
-            const response = await axios.post(
-              "http://192.168.1.12:9000/pickup-time",
-              {
-                type: "start",
-                orderId: [order._id], // Send single orderId
-              }
-            );
+            await axios.post("http://192.168.1.12:9000/pickup-time", {
+              type: "start",
+              orderId: [order._id], // Send single orderId
+            });
+            console.log(`Pickup time started for Order ${order._id}`);
           } catch (error) {
-            console.log("error): ", error);
             console.error(`Error calling API for Order ${order._id}:`, error);
           }
         })();
       }
     });
-  }, [JSON.stringify(CurrentOrder)]); // ✅ Detect actual changes
+  }, [JSON.stringify(CurrentOrder)]);  // ✅ Detect actual changes
   useEffect(() => {
     if (currentOrders.length === 0) {
       setSelectAll(false);
@@ -208,7 +217,7 @@ export default function PreperingOrder() {
         orderId: order_id,
       });
       socket.on("delivery-boy-assigned", (data) => {
-        console.log("data: ", data);
+        // console.log("data: ", data);
       });
     } else {
       socket.emit("assign-delivery-boy", {
@@ -218,10 +227,10 @@ export default function PreperingOrder() {
         oldDeliveryBoyId: old_id,
       });
       socket.on("delivery-boy-assigned", (data) => {
-        console.log("data: ", data);
+        // console.log("data: ", data);
       });
     }
-    console.log(" order_id: ", order_id);
+    console.log(" order_id: ", or/der_id);
   }
   function AssignDeliveryBoy(v) {
     socket.emit("delivery-list", {});
@@ -277,7 +286,7 @@ export default function PreperingOrder() {
             <span className="line"></span>
           </h2>
           <h1 className="text-center">
-            {currentOrders.length === 0 ? "No Preparing Order Found" : ""}
+            {currentOrders.length === 0 ? "No orders are Preparing yet" : ""}
           </h1>
           <div className="order-list">
             {currentOrders.map((v, i) => (
@@ -301,7 +310,8 @@ export default function PreperingOrder() {
                   />
                   <label
                     htmlFor={`checkbox-${v._id}`}
-                    style={{ display: `${toggleCheckbox ? "block" : "none"}` }}
+                    style={{ display: `${toggleCheckbox ? "block " : "none"}` }}
+                    className = {`${toggleCheckbox ? "position-absolute" : "none"}`}
                   ></label>
                 </p>
                 
@@ -418,7 +428,7 @@ export default function PreperingOrder() {
             <span className="line"></span>
           </h2>
           <h1 className="text-center no-order">
-            {preparedOrders.length === 0 ? "No prepared Order Found" : ""}
+            {preparedOrders.length === 0 ? " No orders are prepared yet" : ""}
           </h1>
           <div className="order-list">
             {preparedOrders.map((v, i) => (
@@ -527,7 +537,7 @@ export default function PreperingOrder() {
                   </div>
                 </p>
               
-                <div className={`order-actions `} >
+                <div className={`order-actions`} >
                   <button className={`Prepering-order-btn w-100 ${v.colour === "Red" ? 'red' : v.colour === "Yellow" ? 'Yellow' : ''}`} disabled>
                    {` ${v.colour === "Red" ? 'REASSIGNED FOR PICKUP' : v.colour === "Yellow" ? 'DELAYED FOR PICKUP' : 'READY TO PICKUP'}`}
                   </button>

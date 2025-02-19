@@ -38,8 +38,6 @@ const Admin = () => {
     { name: "Vikas Soni", value: "₹1,00,00,000" },
     { name: "Rahul Sharma", value: "₹1,00,00,000" },
     { name: "LoansMitra", value: "₹1,00,00,000" },
-    { name: "Ajay Panchal", value: "₹1,00,00,000" },
-    { name: "Vatsal Nayi", value: "₹1,00,00,000" },
   ]);
   const [HighValueItem, SetHighValueItem] = useState([
     { name: "Anup Parekh", value: "₹1,00,00,000" },
@@ -48,19 +46,21 @@ const Admin = () => {
     { name: "Vikas Soni", value: "₹1,00,00,000" },
     { name: "Rahul Sharma", value: "₹1,00,00,000" },
     { name: "LoansMitra", value: "₹1,00,00,000" },
-    { name: "Ajay Panchal", value: "₹1,00,00,000" },
-    { name: "Vatsal Nayi", value: "₹1,00,00,000" },
   ]);
 
   const chartData = [
-    { name: "Dec 1", value: 30000 },
-    { name: "Dec 5", value: 25000 },
-    { name: "Dec 10", value: 35000 },
-    { name: "Dec 15", value: 28000 },
-    { name: "Dec 20", value: 22000 },
-    { name: "Dec 25", value: 45000 },
-    { name: "Dec 30", value: 32000 },
-    { name: "Jan 5", value: 42000 },
+    { name: "Jan", value: 30000 },
+    { name: "Fab", value: 25000 },
+    { name: "Mar", value: 35000 },
+    { name: "Apr", value: 28000 },
+    { name: "May", value: 22000 },
+    { name: "Jun", value: 45000 },
+    { name: "Jul", value: 32000 },
+    { name: "Aug", value: 42000 },
+    { name: "Sep", value: 12000 },
+    { name: "Oct", value: 28000 },
+    { name: "Nov", value: 2000 },
+    { name: "Dec", value: 35000 },
   ];
   const options = {
         responsive: true,
@@ -115,11 +115,11 @@ const Admin = () => {
       <div className="main-deshboard-container">
         <div className="D-header">
           <div className="btn-container d-flex justify-content-around gap-5">
-            <button className="Admin-header-button"  onClick={()=>url("/AddNewItem")}> + New Item</button>
-            <button className="Admin-header-button"  onClick={()=>url("#")}> + New Store</button>
-            <button className="Admin-header-button" onClick={()=>url("/AddStaff")}>+ New Staff</button>
-            <button className="Admin-header-button" onClick={()=>url("/OrderManagement")}>Order Managment</button>
-            <button className="Admin-header-button" onClick={()=>url("#")}>Customer</button>
+            <button className="Admin-header-button"  onClick={()=>url("/AddNewItem")}><b> + New Item</b></button>
+            <button className="Admin-header-button"  onClick={()=>url("#")}> <b>+ New Store</b></button>
+            <button className="Admin-header-button" onClick={()=>url("/AddStaff")}><b>+ New Staff</b></button>
+            <button className="Admin-header-button" onClick={()=>url("/OrderManagement")}><b>Order Managment</b></button>
+            <button className="Admin-header-button" onClick={()=>url("#")}><b>Customer</b></button>
           </div>
         </div>
         <div className="Deshboard-main-content mt-4">
@@ -129,9 +129,12 @@ const Admin = () => {
                 <div className="Headername">
                   <h3 className="fw-bold">Overview</h3>
                 </div>
-                <div className="date">
-                  <input type="date" />
-                </div>
+                   <select name="select" id="" className="date p-2">
+                    <option value="All Time">All Time</option>
+                    <option value="All Time">Last 7 days</option>
+                    <option value="All Time">Last Month</option>
+                    <option value="Custom">Custom</option>
+                   </select>
               </div>
               <hr />
               <div className="over-view-detail d-flex flex-column justify-content-around ">
@@ -180,11 +183,15 @@ const Admin = () => {
                   <div className="Headername">
                     <h3 className="fw-bold">New Orders</h3>
                   </div>
-                  <div className="date">
-                    <input type="date" />
-                  </div>
+                  <select name="select" id="" className="date p-2">
+                    <option value="All Time">All Time</option>
+                    <option value="All Time">Last 7 days</option>
+                    <option value="All Time">Last Month</option>
+                    <option value="Custom">Custom</option>
+                   </select>
                 </div>
-                {/* <hr /> */}
+
+                <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
@@ -215,17 +222,14 @@ const Admin = () => {
               </div>
             </div>
           </div>
-
-         
- 
+          
           <div className="Second-line-container row d-flex justify-content-around mt-5">
           <div className="Top-delivery-boys col-6 ">
             <div className="high-value-users-box">
-                <div className="over-view-header d-flex justify-content-around  align-items-center">
+                <div className="over-view-header d-flex align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold ">Today Subscriptions</h3>
                   </div>
-                  
                 </div>
                     <hr />
                 <table className="users-table">
@@ -244,7 +248,6 @@ const Admin = () => {
                         <td>{user.name}</td>
                         <td>{user.name}</td>
                         <td>{user.value}</td>
-                
                       </tr>
                     ))}
                   </tbody>
@@ -260,11 +263,10 @@ const Admin = () => {
             </div>
           <div className="New-Orders col-5">
               <div className="high-value-users-box">
-                <div className="over-view-header d-flex justify-content-around  align-items-center">
+                <div className="over-view-header d-flex   align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">Next Day Subscriptions</h3>
                   </div>
-                 
                 </div>
                 <hr />
                 <table className="users-table">
@@ -297,12 +299,18 @@ const Admin = () => {
               </div>
             </div>
           </div>
-          <div className="Third-line-container row d-flex justify-content-center">
-            <div className="Analytics-Chart col-11 mt-5">
-              <h2>Analytics</h2>
-              <div className="chart-container mt-5">
+          <div className="Third-line-container row d-flex justify-content-center ">
+            <div className="Analytics-Chart col-11">
+              <div className="chart-container mt-5 ">
+                <div className="d-flex justify-content-between mb-3">
+              <h2 style={{color:"#134074"}} className="fw-bold">Total Sales & Customer Analytics</h2>
+              <select name="select" id="" className="date p-2">
+                    <option value="All Time">Total Sales</option>
+                    <option value="All Time">Total Customer</option>
+                   </select>
+              </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <RechartsLineChart data={chartData}>
+                  <RechartsLineChart data={chartData}> 
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} />
                     <YAxis axisLine={false} tickLine={false} />
@@ -320,16 +328,20 @@ const Admin = () => {
             </div>
           </div>
           <div className="Fourth-line-container row d-flex justify-content-around mt-5">
-            <div className="High-value-Users col-6">
+            <div className="High-value-Users col-6 mt-5">
             <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">High Value Orders</h3>
                   </div>
-                  <div className="date">
-                    <input type="date" />
-                  </div>
+                  <select name="select" id="" className="date p-2">
+                    <option value="All Time">All Time</option>
+                    <option value="All Time">Last 7 days</option>
+                    <option value="All Time">Last Month</option>
+                    <option value="Custom">Custom</option>
+                   </select>
                 </div>
+                <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
@@ -357,16 +369,20 @@ const Admin = () => {
                 </div>
               </div>
             </div>
-            <div className="High-Value-Itmes col-5">
-              <div className="high-value-users-box">
+            <div className="High-Value-Itmes col-5 mt-5">
+              <div className="high-value-users-box ">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">High Value Items</h3>
                   </div>
-                  <div className="date">
-                    <input type="date" />
-                  </div>
+                  <select name="select" id="" className="date p-2">
+                    <option value="All Time">All Time</option>
+                    <option value="All Time">Last 7 days</option>
+                    <option value="All Time">Last Month</option>
+                    <option value="Custom">Custom</option>
+                   </select>
                 </div>
+                  <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
