@@ -221,9 +221,9 @@ function EditItem() {
             }
             setRating(ItemData.ratings || 0);
         } catch (err) {
-            console.error("Error fetching staff details:", err);
-            setError("Failed to load staff details. Please try again.");
-            toast.error("Failed to load staff details. Please try again.", {
+            console.error("Error fetching Item details:", err);
+            setError("Failed to load Item details. Please try again.");
+            toast.error("Failed to load Item details. Please try again.", {
                 position: "top-right",
                 autoClose: 3000,
                 theme: "colored",

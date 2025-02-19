@@ -4,18 +4,20 @@ import axios from 'axios';
 import { GrUploadOption, GrClose } from "react-icons/gr";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
 import Cropper from 'react-easy-crop';
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import imageCompression from 'browser-image-compression';
+
 function EditUser() {
     const { id } = useParams();
     const baseUrl = import.meta.env.VITE_API_URL;
-    const [userType, setUserType] = useState('business');
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const [loading, setLoading] = useState(false);
+    const [userType, setUserType] = useState('');
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
     const [imagePreviews, setImagePreviews] = useState("");
     const [imageError, setImageError] = useState('');
     const [imageSelected, setImageSelected] = useState(false);
@@ -24,48 +26,84 @@ function EditUser() {
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
-    const onSubmit = async (data) => {
-        console.log('data: ', data);
 
+    const fetchItemDetails = async () => {
         try {
-            // const formDatas = {
-            //     ...data,
-            //     type: userType
-            // };
-            // console.log('Form submitted:', formDatas);
-            // const formData = new FormData();
-            // formData.append('images', data.images);
-            // console.log(formData, "formData")
-            const response = await axios.put(`${baseUrl}admin-business/update/${id}`,
-                data,
-                // { headers: { "Content-Type": "multipart/form-data" } }
-            );
+            const response = await axios.get(`${baseUrl}/admin-business/details/${id}`);
+            const data = response.data.data;
 
-            if (response.data.success) {
-                toast.success(response.data.message || "Item updated successfully!", {
-                    position: "top-right",
-                    autoClose: 1000,
-                    theme: "colored",
-                    style: {
-                        backgroundColor: '#FFEB3B',
-                        color: '#000',
-                    },
+            if (data.businessUser) {
+                setUserType('business');
+                reset({
+                    ...data.businessUser,
+                    images: data.businessUser.images || null,
                 });
-                // reset();
-                setRating(0);
-                setImagePreviews(null);
+                if (data.businessUser.images) {
+                    setImagePreviews(data.businessUser.images);
+                }
+            } else if (data.normalUser) {
+                setUserType('personal');
+                const fullName = `${data.normalUser.firstName} ${data.normalUser.lastName}`.trim();
+                reset({
+                    ...data.normalUser,
+                    username: fullName,  
+                    images: data.normalUser.images || null,
+                });
+                if (data.normalUser.images) {
+                    setImagePreviews(data.normalUser.images);
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching User details:", err);
+            setError("Failed to load User details. Please try again.");
+            toast.error("Failed to load User details. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    const onSubmit = async (data) => {
+        try {
+            if (userType === 'personal') {
+                const nameParts = data.username.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ') || '';
+                formData.append('firstName', firstName);
+                formData.append('lastName', lastName);
+                formData.append('contact', data.contact);
+                formData.append('address', data.address);
+                if (data.images) {
+                    formData.append('images', data.images);
+                }
+            } else {
+                Object.keys(data).forEach(key => {
+                    formData.append(key, data[key]);
+                });
+            }
 
+            formData.append('type', userType);
+
+            const response = await axios.put(
+                `${baseUrl}/admin-business/update/${id}`,
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            if (response.data.success) {
+                toast.success("User updated successfully!");
                 setTimeout(() => {
-                    navigate('/all-items');
+                    navigate('/Users');
                 }, 1000);
             }
         } catch (error) {
-            console.error("Error details:", error.response ? error.response.data : error);
-            toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
+            console.error("Error details:", error);
+            toast.error(error.response?.data?.message || "Failed to update user.");
         }
     };
 
+    useEffect(() => {
+        fetchItemDetails();
+    }, [id]);
 
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
@@ -137,32 +175,29 @@ function EditUser() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
+
     return (
         <div className="container-fluid">
             <div className="row">
                 <div className="col-md-12 main-content">
                     <div className="form-container">
-                        <button className='edit-btn mb-4 fs-6' onClick={() => {
-                            console.log("Back Button Clicked"),
-                                navigate('/Users')
-                        }}>Back</button>
+                        <button className='edit-btn mb-4 fs-6' onClick={() => navigate('/Users')}>
+                            Back
+                        </button>
 
-                        <h1 className="form-title">Edit New User</h1>
+                        <h1 className="form-title">Edit User</h1>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="row">
                                 <div className="col-md-8">
-                                    {/* Type Selection */}
+                                    {/* Type Display (read-only) */}
                                     <div className="mb-4">
                                         <label className="form-label">Type:</label>
-                                        <select
-                                            className="form-select form-control shadow w-25"
-                                            // {...register('type')}
-                                            onChange={(e) => setUserType(e.target.value)}
-                                            defaultValue="business"
-                                        >
-                                            <option value="business">Business</option>
-                                            <option value="personal">Personal</option>
-                                        </select>
+                                        <input
+                                            type="text"
+                                            className="form-control shadow w-25"
+                                            value={userType === 'business' ? 'Business' : 'Personal'}
+                                            readOnly
+                                        />
                                     </div>
 
                                     {/* Business Fields */}
@@ -173,9 +208,7 @@ function EditUser() {
                                                 <input
                                                     type="text"
                                                     className="form-control"
-                                                    placeholder="Business Name"
                                                     {...register('businessName')}
-                                                    value="Business"
                                                 />
                                             </div>
 
@@ -184,9 +217,7 @@ function EditUser() {
                                                 <input
                                                     type="text"
                                                     className="form-control"
-                                                    placeholder="Owner Name"
                                                     {...register('ownerName')}
-                                                    value="Owner"
                                                 />
                                             </div>
                                         </>
@@ -199,7 +230,6 @@ function EditUser() {
                                             <input
                                                 type="text"
                                                 className="form-control"
-                                                placeholder="Full Name"
                                                 {...register('username')}
                                             />
                                         </div>
@@ -213,8 +243,6 @@ function EditUser() {
                                                 type='number'
                                                 {...register("contact")}
                                                 className="form-control shadow no-spinner"
-                                                placeholder="e.g. +91 1234567890"
-                                            // value="7894561309"
                                             />
                                         </div>
 
@@ -222,15 +250,8 @@ function EditUser() {
                                             <label className="form-label">E-Mail Address:</label>
                                             <input
                                                 type="email"
-                                                {...register("email", {
-                                                    pattern: {
-                                                        value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                                                        message: 'Invalid email address',
-                                                    }
-                                                })}
+                                                {...register("email")}
                                                 className="form-control shadow"
-                                                placeholder="e.g. ABCD@example.com"
-                                                value="4nXo5@example.com"
                                             />
                                         </div>
                                     </div>
@@ -241,8 +262,6 @@ function EditUser() {
                                             type="text"
                                             {...register("address")}
                                             className="form-control shadow"
-                                            placeholder="Full Address"
-                                            value="Address"
                                         />
                                     </div>
 
@@ -250,10 +269,10 @@ function EditUser() {
                                     {userType === 'business' && (
                                         <div className='d-flex d-inline'>
                                             <div className="mb-4 w-25">
-                                                <label className="form-label">Property Type:</label>
+                                                <label className="form-label">Business Type:</label>
                                                 <select
                                                     className="form-select form-control shadow"
-                                                    {...register('buninessType', { required: true })}
+                                                    {...register('buninessType')}
                                                 >
                                                     <option value="">Select Any One</option>
                                                     <option value="pvt-limited">Pvt limited</option>
@@ -265,7 +284,7 @@ function EditUser() {
                                                 <label className="form-label">Occupant Type:</label>
                                                 <select
                                                     className="form-select form-control shadow"
-                                                    {...register('ocupant', { required: true })}
+                                                    {...register('ocupant')}
                                                 >
                                                     <option value="">Select Any One</option>
                                                     <option value="owner">Owner</option>
@@ -276,14 +295,14 @@ function EditUser() {
                                                 <label className="form-label">GST Number:</label>
                                                 <input
                                                     type="text"
-                                                    {...register("gst", { required: false })}
+                                                    {...register("gst")}
                                                     className="form-control shadow"
-                                                    placeholder="Enter GST Number"
                                                 />
                                             </div>
                                         </div>
                                     )}
                                 </div>
+
                                 {/* Image Upload Section */}
                                 <div className="col-md-4">
                                     <label className="form-label mb-3 ms-4">Image:</label>
@@ -418,9 +437,9 @@ function EditUser() {
                                     </div>
                                     {imageError && <div className="text-danger mt-2">{imageError}</div>}
                                 </div>
-                                {/* Submit Button */}
+
                                 <div className="mt-4">
-                                    <button type="submit" className="submit-btn">ADD USER</button>
+                                    <button type="submit" className="submit-btn">UPDATE USER</button>
                                 </div>
                             </div>
                         </form>
@@ -432,4 +451,4 @@ function EditUser() {
     );
 }
 
-export default EditUser
+export default EditUser;

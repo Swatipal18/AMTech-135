@@ -42,7 +42,7 @@ const AllStaff = () => {
       });
       if (response.data?.data?.users) {
         setStaff(response.data.data.users || []);
-        setTotalItems(response.data.data.totalItems || 0);
+        setTotalItems(response.data.data.users.length || 0);
       } else {
         setError('No staff found.');
       }
@@ -97,64 +97,66 @@ const AllStaff = () => {
     const totalPages = Math.ceil(totalItems / limit);
     const startIndex = (currentPage - 1) * limit + 1;
     const endIndex = Math.min(currentPage * limit, totalItems);
+    const isNextButtonDisabled = totalItems < limit;
+
 
     return (
-        <div className="pagination-container d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
+      <div className="pagination-container d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center">
 
-                <span className="showing-text">
-                    Showing {startIndex}-{endIndex} Of
-                    <select
-                        className="me-1 text-center customselect "
-                        value={limit}
-                        style={{ width: '-80px' }}
-                        onChange={(e) => {
-                            setLimit(Number(e.target.value));
-                            setCurrentPage(1);
-                        }}>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>Staff
-                </span>
-            </div>
-
-            <div className="pagination-controls">
-                <button
-                    className='pagination-button'
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                >
-                    <FaAngleLeft />
-                </button>
-                <span
-                    style={{
-                        fontWeight: 'bold',
-                        backgroundColor: '#8DA9C4',
-                        color: '#0B2545',
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}
-                >
-                    {currentPage}
-                </span>
-                <button
-                    className='pagination-button'
-                    onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                // disabled={currentPage === totalPages}
-                >
-                    <FaChevronRight />
-                </button>
-            </div>
+          <span className="showing-text">
+            Showing {startIndex}-{endIndex} Of
+            <select
+              className="me-1 text-center customselect "
+              value={limit}
+              style={{ width: '-80px' }}
+              onChange={(e) => {
+                setLimit(Number(e.target.value));
+                setCurrentPage(1);
+              }}>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>Staff
+          </span>
         </div>
+
+        <div className="pagination-controls">
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <FaAngleLeft />
+          </button>
+          <span
+            style={{
+              fontWeight: 'bold',
+              backgroundColor: '#8DA9C4',
+              color: '#0B2545',
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {currentPage}
+          </span>
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
+            disabled={isNextButtonDisabled}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      </div>
     );
-};
+  };
   return (
     <div className="page-container">
       <div className="header">

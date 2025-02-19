@@ -137,10 +137,6 @@ function NewUser() {
     const closeModal = () => {
         setIsModalOpen(false);
     };
-    // const handleTypeChange = (e) => {
-    //     setUserType(e.target.value);
-    //     reset();
-    // };
 
     return (
         <div className="container-fluid">

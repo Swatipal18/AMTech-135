@@ -44,7 +44,7 @@ function AllSubscriptions() {
 
             if (response.data?.data?.subsItems) {
                 setItems(response.data.data.subsItems || []);
-                setTotalItems(response.data.data.total || 0);
+                setTotalItems(response.data.data.subsItems.length || 0);
             } else {
                 setError('No items found.');
             }
@@ -156,6 +156,7 @@ function AllSubscriptions() {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
+        const isNextButtonDisabled = totalItems < limit;
 
         return (
             <div className="pagination-container d-flex align-items-center justify-content-between">
@@ -206,7 +207,7 @@ function AllSubscriptions() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                    // disabled={currentPage === totalPages}
+                        disabled={isNextButtonDisabled}
                     >
                         <FaChevronRight />
                     </button>

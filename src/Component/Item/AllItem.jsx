@@ -47,7 +47,7 @@ const AllItem = () => {
 
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
-        setTotalItems(response.data.data.total || 0);
+        setTotalItems(response.data.data.menuItems.length || 0);
       } else {
         setError('No items found.');
       }
@@ -183,6 +183,7 @@ const AllItem = () => {
     const totalPages = Math.ceil(totalItems / limit);
     const startIndex = (currentPage - 1) * limit + 1;
     const endIndex = Math.min(currentPage * limit, totalItems);
+    const isNextButtonDisabled = totalItems < limit;
 
     return (
       <div className="pagination-container d-flex align-items-center justify-content-between">
@@ -233,7 +234,8 @@ const AllItem = () => {
           <button
             className='pagination-button'
             onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-          // disabled={currentPage === totalPages}
+            disabled={isNextButtonDisabled}
+
           >
             <FaChevronRight />
           </button>

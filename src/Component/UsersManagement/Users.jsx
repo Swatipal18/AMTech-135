@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import debounce from 'lodash.debounce';
 import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 
@@ -37,7 +36,7 @@ function Users() {
         const date = new Date(dateString);
         return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
     };
-    // Convert role number to text
+
     const getRoleText = (roleNumber) => {
         const role = Number(roleNumber);
         if (role === 0) return "Business";
@@ -53,10 +52,9 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
             });
-            // console.log('response: ', response.data.data.businessList.length);
             if (response.data?.data?.businessList) {
                 setItems(response.data.data.businessList || []);
-                setTotalItems(response.data.data.total || 0);
+                setTotalItems(response.data.data.businessList.length || 0);
             } else {
                 setError('No Users found.');
             }
@@ -75,8 +73,8 @@ function Users() {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
-        console.log(currentPage, "current page");
-        console.log(totalItems, "total items");
+        const isNextButtonDisabled = totalItems < limit;
+
         return (
             <div className="pagination-container d-flex align-items-center justify-content-between">
                 <div className="d-flex align-items-center">
@@ -84,7 +82,7 @@ function Users() {
                     <span className="showing-text">
                         Showing {startIndex} Of
                         <select
-                            className="me-1 text-center customselect "
+                            className="me-1 text-center customselect border-0"
                             value={limit}
                             style={{ width: '-80px' }}
                             onChange={(e) => {
@@ -126,12 +124,12 @@ function Users() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                        disabled={currentPage === endIndex}
+                        disabled={isNextButtonDisabled}
                     >
                         <FaChevronRight />
                     </button>
                 </div>
-            </div>
+            </div >
         );
     };
     const handleDelete = async (_id) => {
@@ -147,7 +145,7 @@ function Users() {
         if (result.isConfirmed) {
             try {
                 await axios.delete(`${baseUrl}/admin-business/delete/${_id}`);
-                fetchItems();
+                fetchItems(currentPage, searchTerm, limit);
                 toast.success('Item deleted successfully!', {
                     position: "top-right",
                     autoClose: 1000,
@@ -259,9 +257,6 @@ function Users() {
                                                         <label className={`switch ${item.isActive ? 'disabled' : ''}`}>
                                                             <input
                                                                 type="checkbox"
-                                                            // checked={checkedItems[item._id]?.business || false}
-                                                            // onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                                                            // disabled={item.isActiveForBusiness}
                                                             />
                                                             <span
                                                                 className="slider"
@@ -317,9 +312,7 @@ function Users() {
                                                             </div>
                                                         ) : selectedUserData ? (
                                                             <div className="row g-3">
-                                                                {/* Conditional rendering based on user type */}
                                                                 {selectedUserData.businessUser ? (
-                                                                    // Business User Content
                                                                     <>
                                                                         {/* Images Section */}
                                                                         <div className="col-12">
@@ -389,9 +382,7 @@ function Users() {
                                                                         </div>
                                                                     </>
                                                                 ) : (
-                                                                    // Normal User Content
                                                                     <>
-                                                                        {/* Personal User Image */}
                                                                         {selectedUserData.normalUser.profileImage && (
                                                                             <div className="col-12">
                                                                                 <div className="info-card">

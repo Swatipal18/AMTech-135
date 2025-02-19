@@ -25,7 +25,7 @@
 
 //     return () => clearInterval(interval) 
 //   }, [NewOrder.length > 0]);
- 
+
 //   const convertToIST = (utcTime) => {
 //     const options = {
 //       timeZone: "Asia/Kolkata",
@@ -36,7 +36,7 @@
 //     return new Intl.DateTimeFormat("en-IN", options).format(new Date(utcTime));
 //   };
 
-   
+
 //   useEffect(() => {
 //     socket.emit("placed-list", {});
 //     setloding(true)
@@ -47,7 +47,7 @@
 //     const interval = setInterval(() => {
 //       socket.emit("placed-list", {});
 //     }, 1000);
-    
+
 //     return () => {
 //       clearInterval(interval);
 //       socket.off("placed-list-response");
@@ -58,10 +58,10 @@
 //   useEffect(()=>{
 //     localStorage.setItem('length' , NewOrder.length)
 //   },[NewOrder])
-   
-   
 
-  
+
+
+
 //   // Handle individual checkbox selection
 //   const handleCheckboxChange = (orderId) => {
 //     setSelectedOrders((prevSelected) =>
@@ -148,7 +148,7 @@
 //               {NewOrder.map((v, i) => (
 //                 <div className="order-card" key={`received-${i}`}>
 //                   <p className="order-id d-flex">
-                   
+
 //                     <div className="d-flex justify-content-between w-100">
 //                       <strong>
 //                         <span className="timer mx-2">ORDER ID:</span>
@@ -157,7 +157,7 @@
 //                       <p className="order-time">
 //                         Time: {convertToIST(v.createdAt)}
 //                       </p>
-                  
+
 //                     </div>
 //                     <input
 //                     id={`checkbox-${v._id}`}
@@ -362,11 +362,11 @@ function OrderManagement() {
 
           <div className="orders-container">
             <h2 className="section-heading">New Orders ({NewOrder.length})</h2>
-          {loading && (
-            <div className="loader-container d-flex justify-content-center">
-              <div className="loader"></div>
-            </div>
-          )}
+            {loading && (
+              <div className="loader-container d-flex justify-content-center">
+                <div className="loader"></div>
+              </div>
+            )}
             {/* Orders List */}
             <div className="order-list">
               {NewOrder.map((v, i) => (
@@ -418,7 +418,7 @@ function OrderManagement() {
           </div>
         </div>
 
-        {!loading && NewOrder.length === 0 ?  <h1 className="text-center">No orders Found</h1> : ''}
+        {!loading && NewOrder.length === 0 ? <h1 className="text-center">No orders Found</h1> : ''}
       </div>
     </div>
   );

@@ -12,13 +12,16 @@ const Login = () => {
     const { register, handleSubmit, reset } = useForm();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_API_URL;
+
 
     const onSubmit = async (data) => {
         setLoading(true);
 
         try {
             const response = await axios.post(
-                "http://192.168.1.12:9000/auth/login",
+                `${baseUrl}/auth/login`,
+                // "http://192.168.1.12:9000",
                 {
                     username: data.username,
                     password: data.password,

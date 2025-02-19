@@ -17,6 +17,7 @@ function AddItem() {
         defaultValues: {
             ratings: 0,
             images: null,
+            categoryId: "",
             size: [{
                 sizeId: "",
                 volume: "",
@@ -74,6 +75,22 @@ function AddItem() {
         const sizeArray = watch("size") || [];
         sizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
         setValue("size", sizeArray);
+    };
+    const businessVariants = watch("size") || [];
+    const removeBusinessVariant = (index) => {
+        const sizeArray = watch("size");
+        if (sizeArray.length > 1) {
+            const newArray = sizeArray.filter((_, i) => i !== index);
+            setValue("size", newArray);
+        }
+    };
+
+    const removePersonalVariant = (index) => {
+        const personalSizeArray = watch("personalSize");
+        if (personalSizeArray.length > 1) {
+            const newArray = personalSizeArray.filter((_, i) => i !== index);
+            setValue("personalSize", newArray);
+        }
     };
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
@@ -176,7 +193,6 @@ function AddItem() {
 
             const formData = new FormData();
             formData.append('images', data.images);
-            // console.log(formData, "formData")
             const response = await axios.post(`${baseUrl}/menu/create`, data, {
                 headers: {
                     "Content-Type": "multipart/form-data"
@@ -208,13 +224,13 @@ function AddItem() {
     };
     return (
         <div className='dashboard-container'>
-            <div className="col-md-12 main-content">
+            <div className="main-content">
                 <div className="form-container">
                     <h1 className="form-title">Add New Item</h1>
-                    <form method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-                        {/* Name Field */}
-                        <div className="row">
-                            <div className="col-md-8">
+                    <form method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data" >
+                        <div className="row g-0 ">
+                            {/* Name Field */}
+                            <div className="col-lg-9 col-md-8 col-sm-6 form-size" >
                                 <div className="mb-4">
                                     <label className="form-label">Name :</label>
                                     <input
@@ -282,10 +298,11 @@ function AddItem() {
                                     {...register("ratings", { required: true })}
                                     value={rating}
                                 />
-                            </div>
 
+                            </div>
+                            {/* <div className="col-1"></div> */}
                             {/* Image Upload Section */}
-                            <div className="col-md-4">
+                            <div className="col-lg-3 col-md-3 col-sm-6    ">
                                 <label className="form-label mb-3 ms-4">Image:</label>
                                 <div className="image-upload shadow ms-4">
                                     <div className="upload-icon">
@@ -420,139 +437,165 @@ function AddItem() {
                                 {imageError && <div className="text-danger mt-2">{imageError}</div>}
                             </div>
                         </div>
-                        {/* Business Menu Variants */}
-                        <div className="variants-section">
-                            <h3 className="variants-title">Business Menu Variants</h3>
-                            {watch("size").map((_, index) => (
-                                <div key={index} className="row" >
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Category :</label>
-                                        <select
-                                            {...register('categoryId', { defaultValue: '' })}
-                                            className="form-control shadow"
-                                            name='categoryId'
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {categories.map((category) => (
-                                                <option key={category._id} value={category._id}>
-                                                    {category.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
+                        <div className="row">
+                            {/* Business Menu Variants */}
+                            <div className="variants-section col-12">
+                                <h3 className="variants-title">Business Menu Variants</h3>
+                                <div className="row">
+                                    {watch("size").map((_, index) => (
+                                        <div key={index} className="row w-100 mx-0 mb-3">
+                                            <div className="col-md-3 mb-2">
+                                                <label className="form-label">Category :</label>
+                                                <select
+                                                    {...register('categoryId')}
+                                                    className="form-control shadow"
+                                                    name='categoryId'
+                                                    disabled={businessVariants.length > 1}
+                                                >
+                                                    <option value="">Select Any One</option>
+                                                    {categories.map((category) => (
+                                                        <option key={category._id} value={category._id}>
+                                                            {category.title}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
 
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Size :</label>
-                                        <select
-                                            {...register(`size[${index}].sizeId`)}
-                                            className="form-control shadow"
-                                            name={`size[${index}].sizeId`}
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {sizes.map((size) => (
-                                                <option key={size._id} value={size._id}>{size.size}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                            <div className="col-md-3">
+                                                <label className="form-label">Size :</label>
+                                                <select
+                                                    {...register(`size[${index}].sizeId`)}
+                                                    className="form-control shadow"
+                                                    name={`size[${index}].sizeId`}
+                                                >
+                                                    <option value="">Select Any One</option>
+                                                    {sizes.map((size) => (
+                                                        <option key={size._id} value={size._id}>{size.size}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
 
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Volume :</label>
-                                        <input
-                                            type="text"
-                                            {...register(`size[${index}].volume`)}
-                                            name={`size[${index}].volume`}
-                                            // value="120ml"
-                                            className="form-control shadow"
-                                            placeholder="e.g. 60ml"
-                                        />
-                                    </div>
+                                            <div className="col-md-3">
+                                                <label className="form-label">Volume :</label>
+                                                <input
+                                                    type="text"
+                                                    {...register(`size[${index}].volume`)}
+                                                    name={`size[${index}].volume`}
+                                                    className="form-control shadow"
+                                                    placeholder="e.g. 60ml"
+                                                />
+                                            </div>
 
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Price :</label>
-                                        <input
-                                            type="number"
-                                            name={`size[${index}].sizePrice`}
-                                            {...register(`size[${index}].sizePrice`)}
-                                            // value="100"
-                                            className="form-control shadow"
-                                            placeholder="₹ e.g. 100"
-                                        />
-                                    </div>
+                                            <div className="col-md-3">
+                                                <label className="form-label">Price :</label>
+                                                <input
+                                                    type="number"
+                                                    name={`size[${index}].sizePrice`}
+                                                    {...register(`size[${index}].sizePrice`)}
+                                                    className="form-control shadow"
+                                                    placeholder="₹ e.g. 100"
+                                                />
+                                            </div>
+
+                                            {watch("size").length > 1 && (
+                                                <div className="col-2 d-flex align-items-end">
+                                                    <button
+                                                        type="button"
+                                                        className="btn mb-2"
+                                                        onClick={() => removeBusinessVariant(index)}
+                                                    >
+                                                        <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            <button type="button" className="add-variant-btn" onClick={() => {
-                                addBusinessVariant();
-                                // removeBusinessVariant(index);
-                            }}>
-                                + ADD VARIANT
-                            </button>
-                        </div>
-                        {/* Personal Menu Variants */}
-                        <div className="variants-section">
-                            <h3 className="variants-title">Personal Menu Variants</h3>
-                            {watch("personalSize").map((_, index) => (
-                                <div key={index} className="row">
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Category :</label>
-                                        <select
-                                            // {...register(`personalSize[${index}].categoryId`)}
-                                            className="form-control shadow"
-                                            disabled
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {categories.map((category) => (
-                                                <option key={category._id} value={category._id}>
-                                                    {category.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
 
-                                    {/* Personal Size */}
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Size :</label>
-                                        <select
-                                            name={`personalSize[${index}].sizeId`}
-                                            {...register(`personalSize[${index}].sizeId`)}
-                                            className="form-control shadow"
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {sizes.map((size) => (
-                                                <option key={size._id} value={size._id}>{size.size}</option>
-                                            ))}
-                                        </select>
-                                    </div>
+                                <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                                    + ADD VARIANT
+                                </button>
+                            </div>
 
-                                    {/* Personal Size - Volume */}
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Volume :</label>
-                                        <input
-                                            type="text"
-                                            name={`personalSize[${index}].volume`}
-                                            {...register(`personalSize[${index}].volume`)}
-                                            // value="120ml"
-                                            className="form-control shadow"
-                                            placeholder="e.g. 60ml"
-                                        />
-                                    </div>
+                            {/* Personal Menu Variants */}
+                            <div className="variants-section col-12">
+                                <h3 className="variants-title">Personal Menu Variants</h3>
+                                {watch("personalSize").map((_, index) => (
+                                    <div key={index} className="row">
+                                        <div className="col-md-3 mb-2">
+                                            <label className="form-label">Category :</label>
+                                            <select
+                                                // {...register(`personalSize[${index}].categoryId`)}
+                                                className="form-control shadow"
+                                                disabled
+                                            >
+                                                <option value="">Select Any One</option>
+                                                {categories.map((category) => (
+                                                    <option key={category._id} value={category._id}>
+                                                        {category.title}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
 
-                                    {/* Personal Size - Price */}
-                                    <div className="col-md-3 mb-3">
-                                        <label className="form-label">Price :</label>
-                                        <input
-                                            type="number"
-                                            name={`personalSize[${index}].sizePrice`}
-                                            {...register(`personalSize[${index}].sizePrice`,)}
-                                            // value="100"
-                                            className="form-control shadow"
-                                            placeholder="₹ e.g. 100"
-                                        />
+                                        {/* Personal Size */}
+                                        <div className="col-md-3 mb-2">
+                                            <label className="form-label">Size :</label>
+                                            <select
+                                                name={`personalSize[${index}].sizeId`}
+                                                {...register(`personalSize[${index}].sizeId`)}
+                                                className="form-control shadow"
+                                            >
+                                                <option value="">Select Any One</option>
+                                                {sizes.map((size) => (
+                                                    <option key={size._id} value={size._id}>{size.size}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        {/* Personal Size - Volume */}
+                                        <div className="col-md-3 mb-2">
+                                            <label className="form-label">Volume :</label>
+                                            <input
+                                                type="text"
+                                                name={`personalSize[${index}].volume`}
+                                                {...register(`personalSize[${index}].volume`)}
+                                                // value="120ml"
+                                                className="form-control shadow"
+                                                placeholder="e.g. 60ml"
+                                            />
+                                        </div>
+
+                                        {/* Personal Size - Price */}
+                                        <div className="col-md-3 mb-2">
+                                            <label className="form-label">Price :</label>
+                                            <input
+                                                type="number"
+                                                name={`personalSize[${index}].sizePrice`}
+                                                {...register(`personalSize[${index}].sizePrice`,)}
+                                                // value="100"
+                                                className="form-control shadow"
+                                                placeholder="₹ e.g. 100"
+                                            />
+                                        </div>
+                                        {watch("personalSize").length > 1 && (
+                                            <div className="col-2 d-flex align-items-end">
+                                                <button
+                                                    type="button"
+                                                    className="btn mb-2"
+                                                    onClick={() => removePersonalVariant(index)}
+                                                >
+                                                    <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-                            ))}
-                            <button type="button" className="add-variant-btn" onClick={addPersonalVariant}>
-                                + ADD VARIANT
-                            </button>
+                                ))}
+                                <button type="button" className="add-variant-btn mt-3" onClick={addPersonalVariant}>
+                                    + ADD VARIANT
+                                </button>
+
+                            </div>
 
                         </div>
 

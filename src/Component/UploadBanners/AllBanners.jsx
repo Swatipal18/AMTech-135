@@ -37,6 +37,7 @@ function AllBanners() {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
+        const isNextButtonDisabled = totalItems < limit;
 
         return (
             <div className="pagination-container d-flex align-items-center justify-content-between">
@@ -87,7 +88,8 @@ function AllBanners() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                    // disabled={currentPage === totalPages}
+                        disabled={isNextButtonDisabled}
+
                     >
                         <FaChevronRight />
                     </button>
@@ -138,12 +140,12 @@ function AllBanners() {
             const pageNumber = Math.max(Number(page), 1);
             const limitNumber = Number(limit);
             // const response = await axios.get(`${baseUrl}/subscriptions/list`, {
-                // params: { page: pageNumber, limit: limitNumber, search: search || '' }
+            // params: { page: pageNumber, limit: limitNumber, search: search || '' }
             // });
 
             if (response.data?.data?.subsItems) {
                 setItems(response.data.data.subsItems || []);
-                setTotalItems(response.data.data.total || 0);
+                setTotalItems(response.data.data.subsItems.length || 0);
             } else {
                 setError('No items found.');
             }

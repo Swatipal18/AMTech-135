@@ -37,7 +37,7 @@ function Sizes() {
             });
             if (response.data?.data?.sizes) {
                 setItems(response.data.data.sizes || []);
-                setTotalItems(response.data.data.total || 0);
+                setTotalItems(response.data.data.sizes.length || 0);
             } else {
                 setError('No data received from server');
                 toast.error('No data received from server');
@@ -135,7 +135,7 @@ function Sizes() {
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (currentPage - 1) * limit + 1;
         const endIndex = Math.min(currentPage * limit, totalItems);
-
+        const isNextButtonDisabled = totalItems < limit;
         return (
             <div className="pagination-container d-flex align-items-center justify-content-between">
                 <div className="d-flex align-items-center">
@@ -185,7 +185,7 @@ function Sizes() {
                     <button
                         className='pagination-button'
                         onClick={() => setCurrentPage(prev => Math.max(prev + 1, totalPages))}
-                    // disabled={currentPage === totalPages}
+                        disabled={isNextButtonDisabled}
                     >
                         <FaChevronRight />
                     </button>
