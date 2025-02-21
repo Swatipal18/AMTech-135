@@ -292,26 +292,26 @@ function Users() {
                                                     onClick={() => setShowModal(false)}
                                                 />
                                                 <div className={`modal-slide ${showModal ? 'show' : ''}`}>
-                                                    <div className="modal-slide-header">
-                                                        <h5 className="m-0">
+                                                    <div className="modal-slide-header ">
+                                                        <h5 className="m-0 bg-transparent">
                                                             {selectedUserData?.businessUser ? 'Business Information' : 'Personal Information'}
                                                         </h5>
                                                         <button
-                                                            className="modal-slide-close text-danger fs-2"
+                                                            className="modal-slide-close text-danger fs-2 bg-transparent"
                                                             onClick={() => setShowModal(false)}
                                                         >
                                                             ×
                                                         </button>
                                                     </div>
-                                                    <div className="modal-slide-body">
+                                                    <div className="modal-slide-body ">
                                                         {loadingDetails ? (
-                                                            <div className="text-center p-4">
+                                                            <div className="text-center p-4 bg-transparent">
                                                                 <div className="spinner-border text-primary" role="status">
                                                                     <span className="visually-hidden">Loading...</span>
                                                                 </div>
                                                             </div>
                                                         ) : selectedUserData ? (
-                                                            <div className="row g-3">
+                                                            <div className="row g-3 bg-transparent">
                                                                 {selectedUserData.businessUser ? (
                                                                     <>
                                                                         {/* Images Section */}

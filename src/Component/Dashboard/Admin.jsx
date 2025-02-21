@@ -1,4 +1,4 @@
- 
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Clock, ChevronDown, LineChart } from "lucide-react";
@@ -63,63 +63,63 @@ const Admin = () => {
     { name: "Dec", value: 35000 },
   ];
   const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            grid: {
-              display: false, // Hide vertical grid lines
-            },
-            ticks: {
-              color: "#9CA3AF", // Light gray for x-axis labels
-            },
-          },
-          y: {
-            grid: {
-              color: "#E5E7EB", // Light gray for horizontal grid lines
-            },
-            ticks: {
-              color: "#9CA3AF", // Light gray for y-axis labels
-              stepSize: 20, // Fixed y-axis step
-            },
-            beginAtZero: true,
-          },
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false, // Hide vertical grid lines
         },
-        plugins: {
-          legend: {
-            display: false, // Hide legend
-          },
-          tooltip: {
-            enabled: true,
-            backgroundColor: "#002D5B",
-            titleColor: "#FFFFFF",
-            bodyColor: "#FFFFFF",
-          },
+        ticks: {
+          color: "#9CA3AF", // Light gray for x-axis labels
         },
-      };
+      },
+      y: {
+        grid: {
+          color: "#E5E7EB", // Light gray for horizontal grid lines
+        },
+        ticks: {
+          color: "#9CA3AF", // Light gray for y-axis labels
+          stepSize: 20, // Fixed y-axis step
+        },
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false, // Hide legend
+      },
+      tooltip: {
+        enabled: true,
+        backgroundColor: "#002D5B",
+        titleColor: "#FFFFFF",
+        bodyColor: "#FFFFFF",
+      },
+    },
+  };
   const url = useNavigate();
   const maindata = {
-        labels: ["01", "02", "03", "04", "05", "06"],
-        datasets: [
-          {
-            label: "Total Orders",
-            data: [30, 50, 40, 70, 60, 80],
-            backgroundColor: "#002D5B", // Dark blue
-            borderRadius: 5, // Rounded bar corners
-            barPercentage: 0.6, // Adjust bar width
-          },
-        ],
-      };
+    labels: ["01", "02", "03", "04", "05", "06"],
+    datasets: [
+      {
+        label: "Total Orders",
+        data: [30, 50, 40, 70, 60, 80],
+        backgroundColor: "#002D5B", // Dark blue
+        borderRadius: 5, // Rounded bar corners
+        barPercentage: 0.6, // Adjust bar width
+      },
+    ],
+  };
   return (
     <>
       <div className="main-deshboard-container">
         <div className="D-header">
-          <div className="btn-container d-flex justify-content-around gap-5">
-            <button className="Admin-header-button"  onClick={()=>url("/AddNewItem")}><b> + New Item</b></button>
-            <button className="Admin-header-button"  onClick={()=>url("#")}> <b>+ New Store</b></button>
-            <button className="Admin-header-button" onClick={()=>url("/AddStaff")}><b>+ New Staff</b></button>
-            <button className="Admin-header-button" onClick={()=>url("/OrderManagement")}><b>Order Managment</b></button>
-            <button className="Admin-header-button" onClick={()=>url("#")}><b>Customer</b></button>
+          <div className="btn-container d-flex justify-content-around gap-5" style={{ backgroundColor: "#EEF4ED" }}>
+            <button className="Admin-header-button" onClick={() => url("/AddNewItem")}><b> + New Item</b></button>
+            <button className="Admin-header-button" onClick={() => url("#")}> <b>+ New Store</b></button>
+            <button className="Admin-header-button" onClick={() => url("/AddStaff")}><b>+ New Staff</b></button>
+            <button className="Admin-header-button" onClick={() => url("/OrderManagement")}><b>Order Managment</b></button>
+            <button className="Admin-header-button" onClick={() => url("#")}><b>Customer</b></button>
           </div>
         </div>
         <div className="Deshboard-main-content mt-4">
@@ -129,12 +129,12 @@ const Admin = () => {
                 <div className="Headername">
                   <h3 className="fw-bold">Overview</h3>
                 </div>
-                   <select name="select" id="" className="date p-2">
-                    <option value="All Time">All Time</option>
-                    <option value="All Time">Last 7 days</option>
-                    <option value="All Time">Last Month</option>
-                    <option value="Custom">Custom</option>
-                   </select>
+                <select name="select" id="" className="date p-2">
+                  <option value="All Time">All Time</option>
+                  <option value="All Time">Last 7 days</option>
+                  <option value="All Time">Last Month</option>
+                  <option value="Custom">Custom</option>
+                </select>
               </div>
               <hr />
               <div className="over-view-detail d-flex flex-column justify-content-around ">
@@ -188,7 +188,7 @@ const Admin = () => {
                     <option value="All Time">Last 7 days</option>
                     <option value="All Time">Last Month</option>
                     <option value="Custom">Custom</option>
-                   </select>
+                  </select>
                 </div>
 
                 <hr />
@@ -222,16 +222,16 @@ const Admin = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="Second-line-container row d-flex justify-content-around mt-5">
-          <div className="Top-delivery-boys col-6 ">
-            <div className="high-value-users-box">
+            <div className="Top-delivery-boys col-6 ">
+              <div className="high-value-users-box">
                 <div className="over-view-header d-flex align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold ">Today Subscriptions</h3>
                   </div>
                 </div>
-                    <hr />
+                <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
@@ -261,7 +261,7 @@ const Admin = () => {
                 </div>
               </div>
             </div>
-          <div className="New-Orders col-5">
+            <div className="New-Orders col-5">
               <div className="high-value-users-box">
                 <div className="over-view-header d-flex   align-items-center">
                   <div className="Headername">
@@ -303,14 +303,14 @@ const Admin = () => {
             <div className="Analytics-Chart col-11">
               <div className="chart-container mt-5 ">
                 <div className="d-flex justify-content-between mb-3">
-              <h2 style={{color:"#134074"}} className="fw-bold">Total Sales & Customer Analytics</h2>
-              <select name="select" id="" className="date p-2">
+                  <h2 style={{ color: "#134074" }} className="fw-bold">Total Sales & Customer Analytics</h2>
+                  <select name="select" id="" className="date p-2">
                     <option value="All Time">Total Sales</option>
                     <option value="All Time">Total Customer</option>
-                   </select>
-              </div>
+                  </select>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <RechartsLineChart data={chartData}> 
+                  <RechartsLineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="name" axisLine={false} tickLine={false} />
                     <YAxis axisLine={false} tickLine={false} />
@@ -329,7 +329,7 @@ const Admin = () => {
           </div>
           <div className="Fourth-line-container row d-flex justify-content-around mt-5">
             <div className="High-value-Users col-6 mt-5">
-            <div className="high-value-users-box">
+              <div className="high-value-users-box">
                 <div className="over-view-header d-flex justify-content-around  align-items-center">
                   <div className="Headername">
                     <h3 className="fw-bold">High Value Orders</h3>
@@ -339,7 +339,7 @@ const Admin = () => {
                     <option value="All Time">Last 7 days</option>
                     <option value="All Time">Last Month</option>
                     <option value="Custom">Custom</option>
-                   </select>
+                  </select>
                 </div>
                 <hr />
                 <table className="users-table">
@@ -380,9 +380,9 @@ const Admin = () => {
                     <option value="All Time">Last 7 days</option>
                     <option value="All Time">Last Month</option>
                     <option value="Custom">Custom</option>
-                   </select>
+                  </select>
                 </div>
-                  <hr />
+                <hr />
                 <table className="users-table">
                   <thead>
                     <tr>
@@ -413,11 +413,11 @@ const Admin = () => {
           </div>
           <div className="Second-line-container row d-flex justify-content-center">
             <div className="Total-Order-Chart col-11">
-            <div style={{ width: "100%", height: "300px", padding: "20px" }}>
-         <h4 style={{ color: "#4B5563" }}>Total Orders</h4>
-         <p style={{ color: "#9CA3AF", fontSize: "12px" }}>from 1-6 Dec, 2020</p>
-         <Bar data={maindata} options={options} />
-       </div>
+              <div style={{ width: "100%", height: "300px", padding: "20px" }}>
+                <h4 style={{ color: "#4B5563" }}>Total Orders</h4>
+                <p style={{ color: "#9CA3AF", fontSize: "12px" }}>from 1-6 Dec, 2020</p>
+                <Bar data={maindata} options={options} />
+              </div>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@
  }
 
  .date {
+   background-color: #EEF4ED !important;
    border: 3px solid #8DA9C4;
    padding: 5px;
    border-radius: 30px;
@@ -139,7 +140,7 @@
  }
 
  .btn-container {
-   background-color: white;
+   background-color: #EEF4ED;
    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
@@ -157,6 +158,7 @@
 
 
  .D-header {
+   background-color: #EEF4ED !important;
    position: sticky;
    top: 106px;
    z-index: 10;
@@ -168,7 +170,7 @@
  }
 
  .Pagination-for-AllOrder .MuiPaginationItem-root {
-   color: white;
+   color: #EEF4ED;
    border-color: #0B2545;
    background-color: blue !important;
    /* Using !important to ensure styles take precedence */
