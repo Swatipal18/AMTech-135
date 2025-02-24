@@ -114,7 +114,7 @@ const Admin = () => {
     <>
       <div className="main-deshboard-container">
         <div className="D-header">
-          <div className="btn-container d-flex justify-content-around gap-5" style={{ backgroundColor: "#EEF4ED" }}>
+          <div className="btn-container d-flex justify-content-around gap-5" >
             <button className="Admin-header-button" onClick={() => url("/AddNewItem")}><b> + New Item</b></button>
             <button className="Admin-header-button" onClick={() => url("#")}> <b>+ New Store</b></button>
             <button className="Admin-header-button" onClick={() => url("/AddStaff")}><b>+ New Staff</b></button>

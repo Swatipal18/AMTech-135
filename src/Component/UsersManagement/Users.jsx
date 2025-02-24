@@ -84,7 +84,7 @@ function Users() {
                         <select
                             className="me-1 text-center customselect border-0"
                             value={limit}
-                            style={{ width: '-80px' }}
+                            style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
                                 setLimit(Number(e.target.value));
                                 setCurrentPage(1);
@@ -172,7 +172,6 @@ function Users() {
             setLoadingDetails(true);
             setShowModal(true);
             const response = await axios.get(`${baseUrl}/admin-business/details/${userId}`);
-            console.log(response.data);
             setSelectedUserData(response.data.data);
         } catch (error) {
             console.error('Error fetching user details:', error);

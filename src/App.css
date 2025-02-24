@@ -56,9 +56,10 @@
    display: flex;
    justify-content: space-between;
    align-items: center;
-   box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-   -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-   -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.82);
+   -webkit-box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.767);
+   -moz-box-shadow: 1px 10px 1px 5px rgb(238, 244, 237);
+
  }
 
  .header h2 {
@@ -141,9 +142,9 @@
 
  .btn-container {
    background-color: #EEF4ED;
-   box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-   -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-   -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+   box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.82);
+   -webkit-box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.767);
+   -moz-box-shadow: 1px 10px 1px 5px rgb(238, 244, 237);
  }
 
  .Admin-header-button {

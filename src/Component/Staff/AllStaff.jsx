@@ -109,7 +109,7 @@ const AllStaff = () => {
             <select
               className="me-1 text-center customselect "
               value={limit}
-              style={{ width: '-80px' }}
+              style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
               onChange={(e) => {
                 setLimit(Number(e.target.value));
                 setCurrentPage(1);
