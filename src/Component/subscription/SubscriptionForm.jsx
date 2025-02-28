@@ -9,7 +9,7 @@ import { applyCropZoomRotation } from "../../../utils/getCroppedImg";
 import Cropper from "react-easy-crop";
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
-import { FiMinusCircle } from "react-icons/fi";
+import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import imageCompression from "browser-image-compression";
 
 function SubscriptionForm() {
@@ -31,9 +31,42 @@ function SubscriptionForm() {
     const [selectedtimePeriods, setSelectedtimePeriods] = useState([]);
     const [itemname, setitemname] = useState("");
     const [sizeId, setsizeId] = useState("");
+    const inputRefs = useRef([]);
+    // const [selecteditmes ,  setselecteditmes] = useState([])'
+    const [ingredients, setIngredients] = useState([{ value: '' }]);
     const volume = useRef();
     const sizePrice = useRef();
     const navigate = useNavigate()
+    const [selecteditmes, setselecteditmes] = useState([]);
+    console.log('selecteditmes: ', selecteditmes);
+    const dropdownRef = useRef(null);
+
+    const periods = ["Regular", "Jain", "Weekly", "Monthly", "Yearly"];
+
+    const handleSelect = (item) => {
+        setselecteditmes((prev) => {
+            if (Array.isArray(prev)) {
+                return prev.includes(item)
+                    ? prev.filter((i) => i !== item) // Remove if selected
+                    : [...prev, item];               // Add if not selected
+            } else {
+                return [item]; // Reset to array if corrupted
+            }
+        });
+    };
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
 
     const onSubmit = async (data) => {
         const updatedData = {
@@ -163,16 +196,6 @@ function SubscriptionForm() {
         setValue("ratings", index + 1);
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (!event.target.closest(".period-dropdown")) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, []);
     const handlePeriodSelect = (period) => {
         const updatedPeriods = selectedPeriods.includes(period)
             ? selectedPeriods.filter((p) => p !== period)
@@ -200,7 +223,37 @@ function SubscriptionForm() {
 
         fetchData();
     }, []);
+    const handleIngredientChange = (index, newValue) => {
+        const updatedIngredients = [...ingredients];
+        updatedIngredients[index].value = newValue;
+        setIngredients(updatedIngredients);
+    };
 
+    const addIngredient = () => {
+        setIngredients([...ingredients, { value: '' }]);
+    };
+
+    const removeIngredient = (index) => {
+        const updatedIngredients = ingredients.filter((_, i) => i !== index);
+        setIngredients(updatedIngredients);
+    };
+
+    useEffect(() => {
+        ingredients.forEach((ingredient, index) => {
+            const input = inputRefs.current[index];
+            if (input) {
+                const tempSpan = document.createElement('span');
+                tempSpan.style.visibility = 'hidden';
+                tempSpan.style.position = 'absolute';
+                tempSpan.style.font = window.getComputedStyle(input).font;
+                tempSpan.innerText = ingredient.value || input.placeholder || '';
+                document.body.appendChild(tempSpan);
+                const newWidth = Math.max(tempSpan.offsetWidth + 30, 60); // Add padding and set minimum width
+                input.style.minWidth = `${newWidth}px`;
+                document.body.removeChild(tempSpan);
+            }
+        });
+    }, [ingredients]);
     return (
         <div className="dashboard-container">
             <div className="col-md-12 main-content">
@@ -231,16 +284,6 @@ function SubscriptionForm() {
                                     />
                                 </div>
 
-                                {/* Ingredients Field */}
-                                <div className="mb-4">
-                                    <label className="form-label">Ingredients :</label>
-                                    <input
-                                        type="text"
-                                        {...register("ingredients")}
-                                        className="form-control shadow"
-                                        placeholder="e.g. Masala Tea"
-                                    />
-                                </div>
 
                                 {/* Rating */}
                                 <div className="mb-4 rating d-flex align-items-center">
@@ -431,6 +474,89 @@ function SubscriptionForm() {
                         </div>
 
                         {/* Variants Section */}
+                        <h3 className="variants-title mt-4">ADD ITEMS</h3>
+                        {/* Itmes Field */}
+                        <div className="d-flex justify-content-around gap-3">
+                            <div className="mb-4 col-6">
+                                <div className="position-relative" ref={dropdownRef}>
+                                    <label className="form-label">  Items:</label>
+                                    <div
+                                        className="form-control shadow cursor-pointer"
+                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    >
+                                        {selecteditmes.length > 0
+                                            ? selecteditmes.join(",")
+                                            : "Select Multiple Items"}
+                                    </div>
+
+                                    {isDropdownOpen && (
+                                        <div className="position-absolute border shadow w-100 mt-1 z-3 items-dropdown" style={{ backgroundColor: "#EEF4ED" }}>
+                                            {periods.map((item) => (
+                                                <div
+                                                    key={item}
+                                                    className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleSelect(item);
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        className="me-2"
+                                                        checked={selecteditmes.includes(item)}
+                                                        readOnly
+                                                    />
+                                                    <span>{item}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Ingredients Field */}
+                            <div className="mb-4 col-6">
+                                <label className="form-label ">Ingredients:</label>
+                                <div className="d-flex flex-wrap   align-items-center">
+                                    {ingredients.map((ingredient, index) => (
+                                        <div key={index} className="d-flex align-items-center ">
+                                            <div className="input-group mt-2" style={{ width: 'auto' }}>
+                                                <input
+                                                    ref={(el) => (inputRefs.current[index] = el)}
+                                                    type="text"
+                                                    className="form-control shadow "
+                                                    placeholder="Add Ingredient"
+                                                    value={ingredient.value}
+                                                    onChange={(e) => handleIngredientChange(index, e.target.value)}
+                                                    style={{
+                                                        width: '60px',
+                                                        minWidth: '60px !important',
+                                                        transition: 'width 0.2s ease'
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-link p-2  end-0"
+                                                    onClick={() =>
+                                                        index === ingredients.length - 1
+                                                            ? addIngredient()
+                                                            : removeIngredient(index)
+                                                    }
+                                                >
+                                                    {index === ingredients.length - 1 ? (
+                                                        <FiPlusCircle className="fs-5 text-primary" />
+                                                    ) : (
+                                                        <FiMinusCircle className="fs-5 text-danger" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Variants Section */}
 
                         <div className="row" >
                             <div className="col-md-3 mb-3">
@@ -449,8 +575,8 @@ function SubscriptionForm() {
                                 <label className="form-label">Size :</label>
                                 <select
                                     className="form-control shadow"
-                                    value={sizeId} // सही सेलेक्टेड वैल्यू दिखाने के लिए
-                                    onChange={(e) => setsizeId(e.target.value)} // सेलेक्ट होने पर स्टेट अपडेट होगा
+                                    value={sizeId}
+                                    onChange={(e) => setsizeId(e.target.value)}
                                 >
                                     <option value="">Select Any One</option>
                                     {sizes.map((size) => (
@@ -481,12 +607,12 @@ function SubscriptionForm() {
                             </div>
 
                             {/* ----------------------------   timing  ----------------------------    */}
-                           
-                            <div className="col-md-3 mb-3 position-relative ">
+
+                            <div className="col-md-3 mb-3 position-relative " style={{ backgroundColor: "#EEF4ED" }}>
                                 <h5>Timing : </h5>
                                 <div
-                                    className="position-absolute bg-white w-auto  form-control  mt-1"
-                                    style={{ zIndex: 1000 }}
+                                    className="position-absolute bg-white w-auto  form-control  mt-1 bg-transparent "
+
                                 >
                                     select
                                     <div
@@ -572,43 +698,43 @@ function SubscriptionForm() {
                             <div className="col-md-3 mb-3 ">
                                 <label className="form-label">Period :</label>
                                 <div className=" position-relative form-control ">
+                                    <div
+                                        className="  bg-transparent  w-100 mt-1"
+                                        style={{ zIndex: 1000 }}
+                                    >
+                                        <div>select </div>
                                         <div
-                                            className="  bg-white  w-100 mt-1"
-                                            style={{ zIndex: 1000 }}
-                                            >
-                                            <div>select </div>
-                                            <div
-                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handlePeriodSelect("Weekly");
-                                                }}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    className="me-2"
-                                                    checked={selectedPeriods.includes("Weekly")}
-                                                    onChange={() => { }}
+                                            className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePeriodSelect("Weekly");
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="me-2"
+                                                checked={selectedPeriods.includes("Weekly")}
+                                                onChange={() => { }}
 
-                                                />
-                                                <span>Weekly</span>
-                                            </div>
-                                            <div
-                                                className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handlePeriodSelect("Monthly");
-                                                }}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    className="me-2"
-                                                    checked={selectedPeriods.includes("Monthly")}
-                                                    onChange={() => { }}
-                                                />
-                                                <span>Monthly</span>
-                                            </div>
+                                            />
+                                            <span>Weekly</span>
                                         </div>
+                                        <div
+                                            className="p-2 cursor-pointer hover-bg-light d-flex align-items-center justify-content-between"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePeriodSelect("Monthly");
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                className="me-2"
+                                                checked={selectedPeriods.includes("Monthly")}
+                                                onChange={() => { }}
+                                            />
+                                            <span>Monthly</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

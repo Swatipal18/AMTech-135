@@ -543,6 +543,11 @@ input::placeholder {
     padding: 10px 15px;
 }
 
+.ingredient {
+    min-width: 60px !important;
+    transition: width 0.2s ease;
+}
+
 .form-label {
     color: var(--backdround-color);
     font-size: 20px;
@@ -555,10 +560,10 @@ input::placeholder {
 
 .image-upload {
     border: 2px solid #0b2545;
-    height: 325px;
+    min-height: 325px;
     width: auto;
-    border-radius: 25px;
-    padding: 60px;
+    border-radius: 30px;
+    padding: 35px 0px;
     text-align: center;
     background-color: #EEF4ED;
     cursor: pointer;
@@ -588,21 +593,76 @@ input::placeholder {
     font-size: 8px;
 }
 
-/* Image Preview */
+/* Container for all images */
 .image-preview-container {
-
-
-    margin-top: 15px;
-    cursor: pointer;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    overflow: hidden;
 }
 
-.image-preview-container img {
-    border: 2px solid #0b2545;
-    width: 4500px !important;
-    height: 500px;
+/* Featured first image container */
+.featured-image {
+    width: 70%;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.featured-image img {
+    width: 100% !important;
+    height: 180px;
+    /* Fixed height for featured image */
+    object-fit: cover;
+    border: 2px solid #0b2545 !important;
+    border-radius: 10px;
+}
+
+/* Container for remaining images */
+.remaining-images {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+    overflow-x: auto;
+    /* Enable horizontal scrolling if needed */
+    padding-bottom: 5px;
+}
+
+/* Individual image item */
+.image-preview-item {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.remaining-images .image-preview-item {
+    width: 100px;
+    /* Fixed width for smaller images */
+}
+
+.image-preview-item img {
+    border: 2px solid #0b2545 !important;
+    width: 100% !important;
+    height: 100px;
+    /* Fixed height for smaller images */
     object-fit: cover;
     border-radius: 10px;
+}
+
+/* Delete button styling */
+.image-preview-item .remove-button {
+    top: 5px;
+    right: 5px;
+    border-radius: 50%;
+    padding: 0.4rem;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
 }
 
 /* Modal Overlay (for large image preview) */
@@ -731,7 +791,7 @@ input[type="range"] {
     background-color: #1e3a5f;
     color: #EEF4ED;
     padding: 10px 30px;
-    border-radius: 8px;
+    border-radius: 30px;
     border: none;
     float: right;
     cursor: pointer;

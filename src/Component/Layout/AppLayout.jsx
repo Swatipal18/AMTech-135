@@ -62,7 +62,7 @@ function AppLayout() {
                                         />
                                     </div>
                                     <div className=" ">
-                                        <span className='fs-5'>Hello</span>,<span className="fs-5 fw-bold" style={{ color: "#0B2545" }}>Rahul Sharma!</span>
+                                        <span className='fs-5'>Hello</span>,<span className="fs-5 fw-bold" style={{ color: "#0B2545" }}> Rahul Sharma!</span>
                                         <div className="mt-1">
                                             <button className="logout " onClick={logOut}>LOGOUT </button>
                                         </div>

@@ -279,3 +279,9 @@
    background-color: #0B2545 !important;
    /* border-radius: 5px; */
  }
+
+ .items-dropdown {
+   top: 73px !important;
+   border-radius: 10px;
+   left: 0px;
+ }

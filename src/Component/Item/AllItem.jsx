@@ -250,8 +250,7 @@ const AllItem = () => {
     <div className="page-container">
       <div className="header">
         <div className="add-item ">
-          <FaPlus className="plus-icon me-3" />
-          <Link className="text-decoration-none text-white" to="/AddNewItem"> Add Item</Link>
+          <Link className="text-decoration-none text-white" to="/AddNewItem"><FaPlus className="plus-icon me-3" /> Add Item</Link>
         </div>
 
         <div className="search w-50">
