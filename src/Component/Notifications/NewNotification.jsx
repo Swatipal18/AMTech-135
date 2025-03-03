@@ -11,8 +11,6 @@ import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import imageCompression from 'browser-image-compression';
-import  imgs  from '../../../Alert circle/alert-circle.svg'
-
 function NewNotification() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [imageList, setImageList] = useState([]);
@@ -259,7 +257,7 @@ function NewNotification() {
                                             className="form-control shadow"
                                             placeholder="Add A Title Here"
                                         />
-                                        <img src={imgs} alt=""  />
+
                                     </div>
 
                                     {/* Description Field */}

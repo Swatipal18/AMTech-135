@@ -185,8 +185,10 @@ function Users() {
         <div className="page-container">
             <div className="header">
                 <div className="add-item ">
-                    <FaPlus className="plus-icon me-2" />
-                    <Link className="text-decoration-none text-white" to="/NewUser"> Add New User</Link>
+
+                    <Link className="text-decoration-none text-white" to="/NewUser">
+                        <FaPlus className="plus-icon me-2" />
+                        Add New User</Link>
                 </div>
 
                 <div className="search w-50 ms-3">
@@ -253,17 +255,20 @@ function Users() {
                                                     <td>{item.totalOrder}</td>
                                                     <td>&#8377;  {item.totalSpend}</td>
                                                     <td>
-                                                        <label className={`switch ${item.isActive ? 'disabled' : ''}`}>
+                                                        <label className={`switch`}>
                                                             <input
                                                                 type="checkbox"
                                                             />
-                                                            <span
+                                                            <div
                                                                 className="slider"
                                                                 style={{
-                                                                    backgroundColor: item.isActive ? '#FF3B30' : '#4CAF50',
-                                                                    cursor: item.isActive ? 'not-allowed' : 'pointer'
+                                                                    backgroundColor: item.isActiveForPersonal ? '#FF3B30' : '#4CAF50'
                                                                 }}
-                                                            ></span>
+                                                            ></div>
+                                                            <div className="slider-card">
+                                                                <div className="slider-card-face slider-card-front"></div>
+                                                                <div className="slider-card-face slider-card-back"></div>
+                                                            </div>
                                                         </label>
                                                     </td>
                                                     <td className="actions d-flex justify-content-around">

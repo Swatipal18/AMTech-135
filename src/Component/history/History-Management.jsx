@@ -172,7 +172,7 @@ function HistoryManagement() {
         <h1>Transaction history</h1>
         <div className="header ">
           <div className="filter-section">
-            <div className="dropdown-group">
+            <div className="dropdown-group ">
               {/* Statement Period Dropdown */}
               <div className="custom-dropdown">
 
@@ -401,8 +401,8 @@ function HistoryManagement() {
                       const formattedDate = new Date(newValue);
                       // Format date as "DD/MM/YYYY"
                       const formattedString = `${formattedDate.getDate() < 10
-                          ? "0" + formattedDate.getDate()
-                          : formattedDate.getDate()
+                        ? "0" + formattedDate.getDate()
+                        : formattedDate.getDate()
                         }-${formattedDate.getMonth() + 1 < 10
                           ? "0" + (formattedDate.getMonth() + 1)
                           : formattedDate.getMonth() + 1
@@ -438,8 +438,8 @@ function HistoryManagement() {
                       const formattedDate = new Date(newValue);
                       // Format date as "DD/MM/YYYY"
                       const formattedString = `${formattedDate.getDate() < 10
-                          ? "0" + formattedDate.getDate()
-                          : formattedDate.getDate()
+                        ? "0" + formattedDate.getDate()
+                        : formattedDate.getDate()
                         }-${formattedDate.getMonth() + 1 < 10
                           ? "0" + (formattedDate.getMonth() + 1)
                           : formattedDate.getMonth() + 1

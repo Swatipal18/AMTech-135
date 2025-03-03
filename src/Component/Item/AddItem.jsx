@@ -250,8 +250,6 @@ function AddItem() {
             console.error('Error updating image preview:', error);
         }
     };
-
-    // Function to close the modal
     const closeModal = () => {
         setIsModalOpen(false);
         setCurrentImageIndex(null);

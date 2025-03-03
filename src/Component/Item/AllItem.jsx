@@ -17,7 +17,7 @@ const AllItem = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [checkedItems, setCheckedItems] = useState({});
+  // const [checkedItems, setCheckedItems] = useState({});
   const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
 
@@ -31,19 +31,32 @@ const AllItem = () => {
 
 
   useEffect(() => {
-    fetchItems(currentPage, searchTerm);
+    fetchItems(currentPage);
     fetchCategories();
-  }, [currentPage, searchTerm, limit]);
+  }, [currentPage, limit]);
   // Fetch items from API
+
+  function Allitemsearch(e) {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+    if (newSearchTerm.length > 2) {
+      fetchItems(currentPage, newSearchTerm);
+    }
+    if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+      fetchItems(currentPage); // Reset to default items or handle as needed
+    }
+  }
+
   const fetchItems = async (page, search) => {
+    setLoading(true);
     try {
-      setLoading(true);
       setError(null);
       const pageNumber = Math.max(Number(page), 1);
       const limitNumber = Number(limit);
       const response = await axios.get(`${baseUrl}/menu/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
+      // console.log('response: ', response);/
 
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
@@ -107,73 +120,93 @@ const AllItem = () => {
     navigate(`/EditItem/${id}`);
   };
 
-  const handleCheckboxChange = (itemId, type, item) => {
-    // Prevent toggling if status is already active (green)
-    if ((type === 'business' && item.isActiveForBusiness) ||
-      (type === 'personal' && item.isActiveForPersonal)) {
-      Swal.fire({
-        title: 'Not Allowed',
-        text: `Cannot deactivate ${type} status once it is active.`,
-        icon: 'info',
-        confirmButtonText: 'OK'
+  const handleCheckboxChange = async (itemId, type, item) => {
+    // Get current active state from the item directly
+    const isCurrentlyActive = type === 'business' ? item.isActiveForBusiness : item.isActiveForPersonal;
+
+    // If we're trying to activate (red to green) and the item lacks required fields, show error
+    if (!isCurrentlyActive) {
+      // Check if trying to activate business status
+      if (type === 'business') {
+        if (!item.size || item.size.length === 0) {
+          Swal.fire({
+            title: 'Action Required',
+            text: 'Please edit the item and add size information before activating business status.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+
+        if (!item.businessFields || Object.keys(item.businessFields).length === 0) {
+          Swal.fire({
+            title: 'Action Required',
+            text: 'Business fields are empty. Please edit the item and fill in required business information.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+      }
+
+      // Check if trying to activate personal status
+      if (type === 'personal') {
+        if (!item.size || item.size.length === 0) {
+          Swal.fire({
+            title: 'Action Required',
+            text: 'Please edit the item and add size information before activating personal status.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+
+        if (!item.personalFields || Object.keys(item.personalFields).length === 0) {
+          Swal.fire({
+            title: 'Action Required',
+            text: 'Personal fields are empty. Please edit the item and fill in required personal information.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+          return;
+        }
+      }
+    }
+
+    try {
+      // Prepare the payload based on Postman screenshot
+      const payload = {
+        menuId: itemId
+      };
+
+      // Add the appropriate field based on type (business or personal)
+      if (type === 'business') {
+        payload.isActiveForBusiness = !isCurrentlyActive;
+      } else {
+        payload.isActiveForPersonal = !isCurrentlyActive;
+      }
+
+      // Make the API call - using PUT instead of POST based on Postman
+      await axios.put(`${baseUrl}/menu/stock`, payload);
+
+      // Show success message
+      toast.success(`Item ${type} status ${!isCurrentlyActive ? 'activated' : 'deactivated'} successfully!`, {
+        position: "top-right",
+        autoClose: 1000,
+        theme: "colored",
       });
-      return;
+
+      // Refresh the items list to get updated data
+      fetchItems(currentPage, searchTerm);
+
+    } catch (error) {
+      console.error(`Error updating ${type} status:`, error);
+      toast.error(`Failed to update ${type} status. Please try again.`, {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     }
-
-    // Check if trying to toggle business status
-    if (type === 'business' && !item.isActiveForBusiness) {
-      if (!item.size || item.size.length === 0) {
-        Swal.fire({
-          title: 'Action Required',
-          text: 'Please edit the item and add size information before activating business status.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-
-      if (!item.businessFields || Object.keys(item.businessFields).length === 0) {
-        Swal.fire({
-          title: 'Action Required',
-          text: 'Business fields are empty. Please edit the item and fill in required business information.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-    }
-
-    // Check if trying to toggle personal status
-    if (type === 'personal' && !item.isActiveForPersonal) {
-      if (!item.size || item.size.length === 0) {
-        Swal.fire({
-          title: 'Action Required',
-          text: 'Please edit the item and add size information before activating personal status.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-
-      if (!item.personalFields || Object.keys(item.personalFields).length === 0) {
-        Swal.fire({
-          title: 'Action Required',
-          text: 'Personal fields are empty. Please edit the item and fill in required personal information.',
-          icon: 'warning',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
-    }
-
-    // Only allow toggling from false to true
-    setCheckedItems(prevState => ({
-      ...prevState,
-      [itemId]: {
-        ...prevState[itemId],
-        [type]: true, // Only allow setting to true
-      }
-    }));
   };
   const getCategoryTitle = (categoryId) => {
     const category = categories.find(c => c._id === categoryId);
@@ -195,7 +228,7 @@ const AllItem = () => {
             <select
               className="me-1 text-center customselect "
               value={limit}
-              style={{ width: '-80px',border: 'none', backgroundColor: '#EEF4ED',color: '#0B2545' }}
+              style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
               onChange={(e) => {
                 setLimit(Number(e.target.value));
                 setCurrentPage(1);
@@ -260,7 +293,8 @@ const AllItem = () => {
             placeholder="Search By Item Name"
             value={searchTerm}
             onChange={(e) => {
-              setSearchTerm(e.target.value);
+              Allitemsearch(e)
+
             }}
           />
         </div>
@@ -311,39 +345,45 @@ const AllItem = () => {
                         ))}
                       </td>
                       <td>
-                        <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
+                        <label className="switch">
                           <input
                             type="checkbox"
-                            checked={checkedItems[item._id]?.business || false}
+                            checked={item.isActiveForBusiness}
                             onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                            disabled={item.isActiveForBusiness}
                           />
-                          <span
+                          <div
                             className="slider"
                             style={{
-                              backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#FF3B30',
-                              cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
+                              backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#FF3B30'
                             }}
-                          ></span>
+                          ></div>
+                          <div className="slider-card">
+                            <div className="slider-card-face slider-card-front"></div>
+                            <div className="slider-card-face slider-card-back"></div>
+                          </div>
                         </label>
                       </td>
+
                       <td>
-                        <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
+                        <label className="switch">
                           <input
                             type="checkbox"
-                            checked={checkedItems[item._id]?.personal || false}
+                            checked={item.isActiveForPersonal}
                             onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                            disabled={item.isActiveForPersonal}
                           />
-                          <span
+                          <div
                             className="slider"
                             style={{
-                              backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30',
-                              cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
+                              backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30'
                             }}
-                          ></span>
+                          ></div>
+                          <div className="slider-card">
+                            <div className="slider-card-face slider-card-front"></div>
+                            <div className="slider-card-face slider-card-back"></div>
+                          </div>
                         </label>
                       </td>
+
 
                       <td className="actions d-flex justify-content-around">
                         <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>

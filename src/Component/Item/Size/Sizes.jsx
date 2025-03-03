@@ -24,8 +24,18 @@ function Sizes() {
     }, [searchTerm]);
 
     useEffect(() => {
-        fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm, limit]);
+        fetchItems(currentPage);
+    }, [currentPage, limit]);
+    function Allitemsearch(e) {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        if (newSearchTerm.length > 2) {
+            fetchItems(currentPage, newSearchTerm);
+        }
+        if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+            fetchItems(currentPage); // Reset to default items or handle as needed
+        }
+    }
     const fetchItems = async (page, search) => {
         try {
             setLoading(true);
@@ -211,7 +221,10 @@ function Sizes() {
                         type="search"
                         placeholder="Search By Size Name"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setLimit(Number(e.target.value));
+                            setCurrentPage(1);
+                        }}
                     />
                 </div>
             </div>

@@ -281,7 +281,51 @@
  }
 
  .items-dropdown {
-   top: 73px !important;
+   top: 82px !important;
    border-radius: 10px;
    left: 0px;
  }
+ .dropdown-search-container{
+  /* background-color: #8DA9C4; */
+  padding: 10px;
+ }
+
+ .dropdown-search{
+  color: #fff !important;
+ }
+ .edit-hr{
+  border: none;
+  border-top: 3px dashed #000000;
+  margin: 15px 0;
+ }
+ .since-text{
+  display: flex;
+  align-items: center;
+ gap: 10px;
+  font-size: 20px;
+  font-weight: 100;
+ }
+ .value-box{
+  font-size: 12px;
+  height: 20px;
+  width: 50px;
+  border: 2px solid #8DA9C4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+ }
+
+
+ .virtical-line{
+   position: absolute;
+   transform: rotate(90deg);
+   height: 1px;
+   width: 359px;
+   background-color: #8DA9C4;
+   left: 130px;
+   right: 0%;
+   transform: translate(-50% -50%);
+   top: 175px !important;
+ }
+ 

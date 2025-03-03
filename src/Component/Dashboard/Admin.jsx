@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Clock, ChevronDown, LineChart } from "lucide-react";
 import { Bar } from "react-chartjs-2";
-
+import { MdKeyboardDoubleArrowUp } from "react-icons/md";
+import { FaSquareArrowUpRight } from "react-icons/fa6";
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -87,7 +88,7 @@ const Admin = () => {
     },
     plugins: {
       legend: {
-        display: false, // Hide legend
+        display: false,
       },
       tooltip: {
         enabled: true,
@@ -114,7 +115,7 @@ const Admin = () => {
     <>
       <div className="main-deshboard-container">
         <div className="D-header">
-          <div className="btn-container d-flex justify-content-around gap-5" >
+          <div className="btn-container d-flex justify-content-around gap-5">
             <button className="Admin-header-button" onClick={() => url("/AddNewItem")}><b> + New Item</b></button>
             <button className="Admin-header-button" onClick={() => url("#")}> <b>+ New Store</b></button>
             <button className="Admin-header-button" onClick={() => url("/AddStaff")}><b>+ New Staff</b></button>
@@ -124,8 +125,9 @@ const Admin = () => {
         </div>
         <div className="Deshboard-main-content mt-4">
           <div className="First-line-container row d-flex justify-content-around mt-5">
-            <div className="over-view col-6">
-              <div className="over-view-header d-flex justify-content-around mt-4 align-items-center">
+            <div className="over-view col-6 position-relative">
+              <span className="virtical-line"></span>
+              <div className="over-view-header  d-flex justify-content-around mt-4 align-items-center">
                 <div className="Headername">
                   <h3 className="fw-bold">Overview</h3>
                 </div>
@@ -144,7 +146,7 @@ const Admin = () => {
                     <h2 className="fs-3">
                       ₹ <b>500,00,000 </b>
                     </h2>
-                    <span>since last weak 10% ^</span>
+                    <span className="since-text">since last weak <div className="value-box"> 10% <MdKeyboardDoubleArrowUp /></div></span>
                   </div>
                   <hr className="vertical-hr p-0" />
                   <div className="total-sales col-5">
@@ -152,7 +154,7 @@ const Admin = () => {
                     <h2 className="fs-3">
                       ₹ <b>100,000 </b>
                     </h2>
-                    <span>since last weak 10% ^</span>
+                    <span className="since-text">since last weak <div className="value-box"> 10% <MdKeyboardDoubleArrowUp /></div></span>
                   </div>
                 </div>
                 <hr />
@@ -164,7 +166,7 @@ const Admin = () => {
                     <h2 className="fs-3">
                       ₹ <b>10,000 </b>
                     </h2>
-                    <span>since last weak 10% ^</span>
+                    <span className="since-text">since last weak <div className="value-box"> 10% <MdKeyboardDoubleArrowUp /></div></span>
                   </div>
                   <hr className="vertical-hr p-0" />
                   <div className="total-sales col-5">
@@ -172,7 +174,7 @@ const Admin = () => {
                     <h2 className="fs-3">
                       ₹ <b>7000 </b>
                     </h2>
-                    <span>since last weak 10% ^</span>
+                    <span className="since-text">since last weak <div className="value-box"> 10% <MdKeyboardDoubleArrowUp /></div></span>
                   </div>
                 </div>
               </div>
@@ -213,15 +215,16 @@ const Admin = () => {
                   </tbody>
                 </table>
                 <div
-                  className="view-all"
+                  className="view-all "
                   onClick={() => url("/OrderManagement")}
                   style={{ cursor: "pointer" }}
                 >
-                  View All {"->"}
+                  <b> View All </b> <FaSquareArrowUpRight />
                 </div>
               </div>
             </div>
           </div>
+
 
           <div className="Second-line-container row d-flex justify-content-around mt-5">
             <div className="Top-delivery-boys col-6 ">
@@ -253,11 +256,12 @@ const Admin = () => {
                   </tbody>
                 </table>
                 <div
-                  className="view-all"
+                  className="view-all "
                   onClick={() => url("/OrderManagement")}
                   style={{ cursor: "pointer" }}
                 >
-                  View All {"->"}
+                  <b> View All </b> <FaSquareArrowUpRight />
+
                 </div>
               </div>
             </div>
@@ -290,11 +294,11 @@ const Admin = () => {
                   </tbody>
                 </table>
                 <div
-                  className="view-all"
+                  className="view-all "
                   onClick={() => url("/OrderManagement")}
                   style={{ cursor: "pointer" }}
                 >
-                  View All {"->"}
+                  <b> View All </b> <FaSquareArrowUpRight />
                 </div>
               </div>
             </div>
@@ -361,11 +365,11 @@ const Admin = () => {
                   </tbody>
                 </table>
                 <div
-                  className="view-all"
+                  className="view-all "
                   onClick={() => url("/OrderManagement")}
                   style={{ cursor: "pointer" }}
                 >
-                  View All {"->"}
+                  <b> View All </b> <FaSquareArrowUpRight />
                 </div>
               </div>
             </div>
@@ -402,11 +406,11 @@ const Admin = () => {
                   </tbody>
                 </table>
                 <div
-                  className="view-all"
+                  className="view-all "
                   onClick={() => url("/OrderManagement")}
                   style={{ cursor: "pointer" }}
                 >
-                  View All {"->"}
+                  <b> View All </b> <FaSquareArrowUpRight />
                 </div>
               </div>
             </div>

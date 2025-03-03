@@ -161,8 +161,8 @@ const AllStaff = () => {
     <div className="page-container">
       <div className="header">
         <div className="add-item">
-          <FaPlus className="plus-icon" />
           <Link className="add-item text-decoration-none text-white" to="/AddStaff">
+            <FaPlus className="plus-icon" />
             Add New Staff
           </Link>
         </div>

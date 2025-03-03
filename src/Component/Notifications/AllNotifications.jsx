@@ -156,8 +156,10 @@ function AllNotifications() {
         <div className="page-container">
             <div className="header">
                 <div className="add-item ">
-                    <FaPlus className="plus-icon me-2" />
-                    <Link className="text-decoration-none text-white" to="/NewNotification"> Add New Notification</Link>
+
+                    <Link className="text-decoration-none text-white" to="/NewNotification">
+                        <FaPlus className="plus-icon me-2" />
+                        Add New Notification</Link>
                 </div>
 
                 <div className="search w-50">

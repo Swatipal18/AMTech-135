@@ -24,9 +24,18 @@ function Categories() {
     }, [searchTerm]);
 
     useEffect(() => {
-        fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm, limit]);
-
+        fetchItems(currentPage);
+    }, [currentPage, limit]);
+    function Allitemsearch(e) {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        if (newSearchTerm.length > 2) {
+            fetchItems(currentPage, newSearchTerm);
+        }
+        if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+            fetchItems(currentPage); // Reset to default items or handle as needed
+        }
+    }
     // Fetch items from API
     const fetchItems = async (page, search) => {
         try {
@@ -202,7 +211,7 @@ function Categories() {
                         placeholder="Search By Category Name"
                         value={searchTerm}
                         onChange={(e) => {
-                            setSearchTerm(e.target.value);
+                            Allitemsearch(e)
                         }}
                     />
                 </div>

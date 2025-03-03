@@ -42,7 +42,7 @@ function AppLayout() {
 
                     <div className='main-content p-0 mt-3 '>
                         <div className="Admin-bar mx-5">
-                            <div className="toggle-container mt-0 d-flex align-items-center w-100 justify-content-between ">
+                            <div className="toggle-container  d-flex align-items-center w-100 justify-content-between ">
                                 <div className='d-flex align-items-center  store-status'>
                                     <p style={{ marginTop: "9%" }}>STORE STATUS </p> &nbsp;
                                     <div
@@ -58,6 +58,7 @@ function AppLayout() {
                                             src="/src//assets//Images/admin.png"
                                             alt="images"
                                             height={"40px"}
+                                            width={"40px"}
                                             style={{ border: '3px solid #0B2545', borderRadius: '50%', objectFit: 'cover', }}
                                         />
                                     </div>
