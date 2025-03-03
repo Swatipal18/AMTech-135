@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const AllItem = () => {
   const baseUrl = import.meta.env.VITE_API_URL;
@@ -248,7 +248,7 @@ const AllItem = () => {
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
-            <FaAngleLeft />
+            <FaChevronLeft />
           </button>
           <span
             style={{

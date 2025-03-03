@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaSearch, FaChevronRight, FaAngleLeft } from "react-icons/fa";
+import { FaPlus, FaSearch, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
@@ -167,7 +167,7 @@ function Categories() {
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
-                        <FaAngleLeft />
+                        <FaChevronLeft />
                     </button>
                     <span
                         style={{

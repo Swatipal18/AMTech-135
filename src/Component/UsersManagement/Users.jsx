@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { HiOutlineInformationCircle } from "react-icons/hi2";
 
 function Users() {
@@ -29,9 +29,18 @@ function Users() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, searchTerm, limit]);
+    }, [currentPage, limit]);
 
-
+    function Allitemsearch(e) {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        if (newSearchTerm.length > 2) {
+            fetchItems(currentPage, newSearchTerm);
+        }
+        if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+            fetchItems(currentPage); // Reset to default items or handle as needed
+        }
+    }
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
@@ -86,8 +95,8 @@ function Users() {
                             value={limit}
                             style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
-                                setLimit(Number(e.target.value));
-                                setCurrentPage(1);
+                                Allitemsearch(e)
+
                             }}>
                             <option value="5">5</option>
                             <option value="10">10</option>
@@ -104,7 +113,7 @@ function Users() {
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
-                        <FaAngleLeft />
+                        <FaChevronLeft />
                     </button>
                     <span
                         style={{
@@ -198,7 +207,8 @@ function Users() {
                         placeholder="Search By User Name"
                         value={searchTerm}
                         onChange={(e) => {
-                            setSearchTerm(e.target.value);
+                            Allitemsearch(e)
+
                         }}
                     />
                 </div>

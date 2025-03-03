@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
-import { FaAngleLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 
 function AllNotifications() {
@@ -23,7 +23,17 @@ function AllNotifications() {
     // }, [searchTerm]);
     // useEffect(() => {
     //     fetchItems(currentPage, searchTerm);
-    // }, [currentPage, searchTerm, limit]);
+    // }, [currentPage, limit]);
+    function Allitemsearch(e) {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        if (newSearchTerm.length > 2) {
+            fetchItems(currentPage, newSearchTerm);
+        }
+        if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+            fetchItems(currentPage); // Reset to default items or handle as needed
+        }
+    }
     const selectRole = (event) => {
         setRole(event.target.value);
     };
@@ -47,8 +57,7 @@ function AllNotifications() {
                             value={limit}
                             style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
-                                setLimit(Number(e.target.value));
-                                setCurrentPage(1);
+                                Allitemsearch(e)
                             }}>
                             <option value="5">5</option>
                             <option value="10">10</option>
@@ -65,7 +74,7 @@ function AllNotifications() {
                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
-                        <FaAngleLeft />
+                        <FaChevronLeft />
                     </button>
                     <span
                         style={{
