@@ -154,7 +154,9 @@ function ActiveSubscription() {
                             value={limit}
                             style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
-                                Allitemsearch(e)
+                                const newLimit = Number(e.target.value);
+                                setLimit(newLimit);
+                                setCurrentPage(1);
 
                             }}>
                             <option value="5">5</option>
@@ -218,7 +220,7 @@ function ActiveSubscription() {
                         placeholder="Search By User"
                         value={searchTerm}
                         onChange={(e) => {
-                            setSearchTerm(e.target.value);
+                            Allitemsearch(e)
                         }}
                     />
                 </div>

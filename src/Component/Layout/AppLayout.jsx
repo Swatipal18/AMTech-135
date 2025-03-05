@@ -14,6 +14,7 @@ function AppLayout() {
         setIsOn((prev) => !prev);
     };
     const logOut = () => {
+        localStorage.removeItem("authToken");
         navigator('/');
     }
 

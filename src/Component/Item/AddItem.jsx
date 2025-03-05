@@ -833,7 +833,6 @@ function AddItem() {
                             </div>
 
                         </div>
-
                         <div className="mt-4">
                             <button type="submit" className="submit-btn">ADD ITEM</button>
                         </div>

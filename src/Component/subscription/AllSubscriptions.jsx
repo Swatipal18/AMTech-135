@@ -178,8 +178,9 @@ function AllSubscriptions() {
                             value={limit}
                             style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
-                                Allitemsearch(e)
-
+                                const newLimit = Number(e.target.value);
+                                setLimit(newLimit);
+                                setCurrentPage(1);
                             }}>
                             <option value="5">5</option>
                             <option value="10">10</option>
@@ -241,7 +242,7 @@ function AllSubscriptions() {
                         placeholder="Search By Item Name"
                         value={searchTerm}
                         onChange={(e) => {
-                            setSearchTerm(e.target.value);
+                            Allitemsearch(e);
                         }}
                     />
                 </div>

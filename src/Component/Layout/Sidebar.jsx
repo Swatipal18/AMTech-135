@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Menu, Search, Store, Briefcase } from 'lucide-react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -21,10 +21,21 @@ const socket = io(socket_url, {
 });
 
 const Sidebar = ({ onToggle, children }) => {
+    const prevOrderLength = useRef(0);
     const [isOpen, setIsOpen] = useState(true);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [length, setlenght] = useState()
+    const tone = new Audio("/public/Audios/new-order-store-admin.mp3");
     const location = useLocation();
+    console.log('length: ', length);
+    useEffect(() => {
+        if (length > prevOrderLength.current) {
+            tone.play().catch((error) => {
+                console.error("Audio play error:", error);
+            });
+        }
+        prevOrderLength.current = length;
+    }, [length]);
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);

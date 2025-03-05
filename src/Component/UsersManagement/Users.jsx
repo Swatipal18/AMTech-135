@@ -61,6 +61,7 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
             });
+            console.log('response: ', response.data.data.businessList);
             if (response.data?.data?.businessList) {
                 setItems(response.data.data.businessList || []);
                 setTotalItems(response.data.data.businessList.length || 0);
@@ -95,8 +96,9 @@ function Users() {
                             value={limit}
                             style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
                             onChange={(e) => {
-                                Allitemsearch(e)
-
+                                const newLimit = Number(e.target.value);
+                                setLimit(newLimit);
+                                setCurrentPage(1);
                             }}>
                             <option value="5">5</option>
                             <option value="10">10</option>

@@ -1,6 +1,11 @@
 import React from 'react'
+import { 
+    createBrowserRouter, 
+    RouterProvider, 
+    Navigate, 
+    Outlet 
+} from 'react-router-dom'
 import Login from '../Login'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Admin from '../Component/Dashboard/Admin'
 import AppLayout from '../Component/Layout/AppLayout'
 import AllItem from '../Component/Item/AllItem'
@@ -35,6 +40,18 @@ import AllSubscriptions from '../Component/subscription/AllSubscriptions'
 import ActiveSubscription from '../Component/subscription/ActiveSubscription'
 import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm'
 
+// Protected Route Component
+const ProtectedRoute = () => {
+    const authToken = localStorage.getItem('authToken');
+
+    // If no token, redirect to login
+    if (!authToken) {
+        return <Navigate to="/" replace />;
+    }
+
+    // If token exists, render the child routes
+    return <Outlet />;
+};
 
 function Navbar() {
     const router = createBrowserRouter([
@@ -47,140 +64,142 @@ function Navbar() {
             element: <AppLayout />,
             children: [
                 {
-                    path: "/admin",
-                    element: <Admin />
-                },
-
-                {
-                    path: "/all-items",
-                    element: <AllItem />
-                },
-                {
-                    path: "/AddNewItem",
-                    element: <AddItem />
-                },
-                {
-                    path: "/EditItem/:id",
-                    element: <EditItem />
-                },
-                {
-                    path: "/categories",
-                    element: <Categories />
-                },
-                {
-                    path: "/sizes",
-                    element: <Sizes />
-                },
-                {
-                    path: "/AllStaff",
-                    element: <AllStaff />
-                },
-                {
-                    path: "/AddStaff",
-                    element: <AddStaff />
-                },
-                {
-                    path: "/EditStaff/:id",
-                    element: <EditStaff />
-                },
-                {
-                    path: "/franchise",
-                    element: <Franchise />
-                },
-                {
-                    path: "/OrderManagement",
-                    element: <OrderManagement />
-                },
-                {
-                    path: "/history",
-                    element: <HistoryManagement />
-                },
-                {
-                    path: "/PreperingOrder",
-                    element: <PreperingOrder />
-                },
-                {
-                    path: "/Outfordelivery",
-                    element: <Outfordelivery />
-                },
-                {
-                    path: "/AllOrders",
-                    element: <AllOrder />
-                },
-                {
-                    path: "/Subscription",
-                    element: <SubscriptionForm />
-                },
-                {
-                    path: "/AllSubscriptions",
-                    element: <AllSubscriptions />
-                },
-                {
-                    path: "/ActiveSubscription",
-                    element: <ActiveSubscription />
-                },
-                {
-                    path: "/EditSubscriptionForm/:id",
-                    element: <EditSubscriptionForm />
-                },
-                {
-                    path: "/users",
-                    element: <Users />
-                },
-                {
-                    path: "/NewUser",
-                    element: <NewUser />
-                },
-                {
-                    path: "/EditUser/:id",
-                    element: <EditUser />
-                },
-                {
-                    path: "/sales",
-                    element: <Sales />
-                },
-                {
-                    path: "/reports",
-                    element: <ReportsAnalytics />
-                },
-                {
-                    path: "/AllNotifications",
-                    element: <AllNotifications />
-                },
-                {
-                    path: "/NewNotification",
-                    element: <NewNotification />
-                },
-                {
-                    path: "/AllBanners",
-                    element: <AllBanners />
-                },
-                {
-                    path: "/NewBanner",
-                    element: <NewBanner />
-                },
-                {
-                    path: "/business",
-                    element: <BusinessManagement />
-                },
-                {
-                    path: "/menu",
-                    element: <MenuManagement />
-                },
-                {
-                    path: "/support",
-                    element: <Support />
-                },
-                {
-                    path: "/settings",
-                    element: <Settings />
-                },
-
+                    element: <ProtectedRoute />,
+                    children: [
+                        {
+                            path: "/admin",
+                            element: <Admin />
+                        },
+                        {
+                            path: "/all-items",
+                            element: <AllItem />
+                        },
+                        {
+                            path: "/AddNewItem",
+                            element: <AddItem />
+                        },
+                        {
+                            path: "/EditItem/:id",
+                            element: <EditItem />
+                        },
+                        {
+                            path: "/categories",
+                            element: <Categories />
+                        },
+                        {
+                            path: "/sizes",
+                            element: <Sizes />
+                        },
+                        {
+                            path: "/AllStaff",
+                            element: <AllStaff />
+                        },
+                        {
+                            path: "/AddStaff",
+                            element: <AddStaff />
+                        },
+                        {
+                            path: "/EditStaff/:id",
+                            element: <EditStaff />
+                        },
+                        {
+                            path: "/franchise",
+                            element: <Franchise />
+                        },
+                        {
+                            path: "/OrderManagement",
+                            element: <OrderManagement />
+                        },
+                        {
+                            path: "/history",
+                            element: <HistoryManagement />
+                        },
+                        {
+                            path: "/PreperingOrder",
+                            element: <PreperingOrder />
+                        },
+                        {
+                            path: "/Outfordelivery",
+                            element: <Outfordelivery />
+                        },
+                        {
+                            path: "/AllOrders",
+                            element: <AllOrder />
+                        },
+                        {
+                            path: "/Subscription",
+                            element: <SubscriptionForm />
+                        },
+                        {
+                            path: "/AllSubscriptions",
+                            element: <AllSubscriptions />
+                        },
+                        {
+                            path: "/ActiveSubscription",
+                            element: <ActiveSubscription />
+                        },
+                        {
+                            path: "/EditSubscriptionForm/:id",
+                            element: <EditSubscriptionForm />
+                        },
+                        {
+                            path: "/users",
+                            element: <Users />
+                        },
+                        {
+                            path: "/NewUser",
+                            element: <NewUser />
+                        },
+                        {
+                            path: "/EditUser/:id",
+                            element: <EditUser />
+                        },
+                        {
+                            path: "/sales",
+                            element: <Sales />
+                        },
+                        {
+                            path: "/reports",
+                            element: <ReportsAnalytics />
+                        },
+                        {
+                            path: "/AllNotifications",
+                            element: <AllNotifications />
+                        },
+                        {
+                            path: "/NewNotification",
+                            element: <NewNotification />
+                        },
+                        {
+                            path: "/AllBanners",
+                            element: <AllBanners />
+                        },
+                        {
+                            path: "/NewBanner",
+                            element: <NewBanner />
+                        },
+                        {
+                            path: "/business",
+                            element: <BusinessManagement />
+                        },
+                        {
+                            path: "/menu",
+                            element: <MenuManagement />
+                        },
+                        {
+                            path: "/support",
+                            element: <Support />
+                        },
+                        {
+                            path: "/settings",
+                            element: <Settings />
+                        },
+                    ]
+                }
             ]
         }
-
     ])
     return <RouterProvider router={router} />
 }
 
-export default Navbar
+export default Navbar;
