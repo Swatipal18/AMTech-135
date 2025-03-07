@@ -119,7 +119,7 @@ const Login = () => {
             );
             const token = response.data.data.token;
             localStorage.setItem("authToken", token);
-            localStorage.setItem("deviceInfo", JSON.stringify(deviceInfo));
+            // localStorage.setItem("deviceInfo", JSON.stringify(deviceInfo));
             toast.success("Login successful!", {
                 position: "top-right",
                 autoClose: 2000,

@@ -254,7 +254,7 @@ function NewNotification() {
                                         <input
                                             type="text"
                                             {...register("username")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                             placeholder="Add A Title Here"
                                         />
 
@@ -265,7 +265,7 @@ function NewNotification() {
                                         <label className="form-label">Message :</label>
                                         <textarea
                                             {...register("description")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                             rows="8"
                                             style={{
                                                 resize: 'none',
@@ -293,7 +293,7 @@ function NewNotification() {
                                         <label className="form-label">Send To :</label>
                                         <select
                                             {...register("Sends")}
-                                            className="form-select form-control shadow"
+                                            className="form-select form-control shadow text-capitalize"
                                             style={{
                                                 width: '400px',
                                                 color: sends === "" ? '#8DA9C4' : 'inherit'

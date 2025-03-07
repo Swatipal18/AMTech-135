@@ -61,7 +61,7 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '' }
             });
-            console.log('response: ', response.data.data.businessList);
+            console.log('response: ', response.data);
             if (response.data?.data?.businessList) {
                 setItems(response.data.data.businessList || []);
                 setTotalItems(response.data.data.businessList.length || 0);

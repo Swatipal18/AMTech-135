@@ -1,9 +1,9 @@
 import React from 'react'
-import { 
-    createBrowserRouter, 
-    RouterProvider, 
-    Navigate, 
-    Outlet 
+import {
+    createBrowserRouter,
+    RouterProvider,
+    Navigate,
+    Outlet
 } from 'react-router-dom'
 import Login from '../Login'
 import Admin from '../Component/Dashboard/Admin'
@@ -39,17 +39,14 @@ import EditUser from '../Component/UsersManagement/EditUser'
 import AllSubscriptions from '../Component/subscription/AllSubscriptions'
 import ActiveSubscription from '../Component/subscription/ActiveSubscription'
 import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm'
+import AddOns from '../Component/Item/AddOns'
 
 // Protected Route Component
 const ProtectedRoute = () => {
     const authToken = localStorage.getItem('authToken');
-
-    // If no token, redirect to login
     if (!authToken) {
         return <Navigate to="/" replace />;
     }
-
-    // If token exists, render the child routes
     return <Outlet />;
 };
 
@@ -89,6 +86,10 @@ function Navbar() {
                         {
                             path: "/sizes",
                             element: <Sizes />
+                        },
+                        {
+                            path: "/AddOns",
+                            element: <AddOns />
                         },
                         {
                             path: "/AllStaff",

@@ -17,6 +17,7 @@ const AllItem = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [totalRecord, setTotalRecord] = useState(0);
   // const [checkedItems, setCheckedItems] = useState({});
   const [limit, setLimit] = useState(10);
   const navigate = useNavigate();
@@ -56,11 +57,12 @@ const AllItem = () => {
       const response = await axios.get(`${baseUrl}/menu/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
-      // console.log('response: ', response);/
+      console.log('response: ', response.data.data.totalRecords);
 
       if (response.data?.data?.menuItems) {
         setItems(response.data.data.menuItems || []);
         setTotalItems(response.data.data.menuItems.length || 0);
+        setTotalRecord(response.data.data.totalRecords || 0);
       } else {
         setError('No items found.');
       }
@@ -216,7 +218,6 @@ const AllItem = () => {
     const totalPages = Math.ceil(totalItems / limit);
     const startIndex = (currentPage - 1) * limit + 1;
     const endIndex = Math.min(currentPage * limit, totalItems);
-    // console.log('endIndex: ', endIndex);
     const isNextButtonDisabled = totalItems < limit;
 
     return (
@@ -224,7 +225,7 @@ const AllItem = () => {
         <div className="d-flex align-items-center">
 
           <span className="showing-text">
-            Showing {startIndex}-{endIndex} Of
+            Showing {totalRecord} Of
             <select
               className="me-1 text-center customselect "
               value={limit}
@@ -324,8 +325,7 @@ const AllItem = () => {
                     <th>Item</th>
                     <th>Category</th>
                     <th>Rating</th>
-                    <th>Business</th>
-                    <th>Personal</th>
+                    <th>Stock</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -364,7 +364,7 @@ const AllItem = () => {
                         </label>
                       </td>
 
-                      <td>
+                      {/* <td>
                         <label className="switch">
                           <input
                             type="checkbox"
@@ -382,7 +382,7 @@ const AllItem = () => {
                             <div className="slider-card-face slider-card-back"></div>
                           </div>
                         </label>
-                      </td>
+                      </td> */}
 
 
                       <td className="actions d-flex justify-content-around">

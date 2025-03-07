@@ -97,6 +97,7 @@ const Sidebar = ({ onToggle, children }) => {
                 { label: 'Add New Item', path: '/AddNewItem' },
                 { label: 'Categories', path: '/categories' },
                 { label: 'Sizes', path: '/sizes' },
+                { label: 'Add Ons', path: '/AddOns' },
             ],
             isDropdown: true
         },
