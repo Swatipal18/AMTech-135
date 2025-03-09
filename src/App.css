@@ -317,15 +317,245 @@
  }
 
 
- .virtical-line{
+ .virtical-line {
    position: absolute;
-   transform: rotate(90deg);
-   height: 1px;
-   width: 359px;
+   /* transform: rotate(90deg); */
+   height: 353px;
+   width: 1.3px;
    background-color: #8DA9C4;
-   left: 130px;
-   right: 0%;
-   transform: translate(-50% -50%);
-   top: 175px !important;
+   /* left: 50%; */
+   right: 50%;
+   top: 0;
  }
- 
+
+ .ingredients-container {
+   /* min-height: 100vh; */
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   /* padding: 20px; */
+
+ }
+
+ .ingredients-card {
+   /* max-width: 900px; */
+   width: 100%;
+
+   padding: 20px;
+   border-radius: 10px;
+
+ }
+
+ .ingredients-title {
+   font-size: 24px;
+   font-weight: bold;
+   margin-bottom: 20px;
+   color: #102c57;
+ }
+
+ .ingredients-form {
+   display: flex;
+   gap: 10px;
+   margin-bottom: 20px;
+ }
+
+ .input-field {
+   flex: 2;
+   padding: 10px;
+   border: 3px solid #0B2545 !important;
+   border-radius: 30px;
+   font-size: 16px;
+ }
+
+ .select-field {
+   flex: 1;
+   padding: 10px;
+   border: 3px solid #0B2545 !important;
+   border-radius: 30px;
+   font-size: 16px;
+ }
+
+
+ .add-button {
+   background-color: #0B2545;
+   color: white;
+   width: 25%;
+   border: none;
+   border-radius: 30px;
+   cursor: pointer;
+   font-weight: bold;
+ }
+
+ .add-button:hover {
+   background-color: #0d2345;
+ }
+
+ .search-container {
+   display: flex;
+   gap: 10px;
+   margin-bottom: 20px;
+ }
+
+ .refresh-button,
+ .all-button {
+   padding: 10px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   font-size: 16px;
+ }
+
+ .refresh-button {
+   background-color: #ccc;
+ }
+
+ .all-button {
+   background-color: #000;
+   color: white;
+ }
+
+ .ingredients-table {
+   width: 100%;
+   border-collapse: collapse;
+ }
+
+ .ingredients-table th,
+ .ingredients-table td {
+   padding: 10px;
+   /* border-bottom: 1px solid #ddd; */
+   text-align: left;
+ }
+
+ .ingredients-table th {
+   /* background-color: #e0e0e0; */
+   font-weight: bold;
+ }
+
+ .ingredients-table tr:hover {
+   background-color: #f5f5f5;
+ }
+
+ .action-buttons {
+   display: flex;
+   gap: 10px;
+ }
+
+ .edit-button,
+ .delete-button {
+   padding: 8px 52px;
+   border: none;
+   cursor: pointer;
+ }
+
+ .edit-button {
+   /* background-color: #6c757d; */
+   border-radius: 30px;
+   color: black;
+   border: 2px solid black;
+ }
+
+ .delete-button {
+   border-radius: 30px;
+   background-color: #dc3545;
+   color: white;
+ }
+
+ .edit-button:hover {
+   background-color: #5a6268;
+ }
+
+ .delete-button:hover {
+   background-color: #c82333;
+ }
+
+ /* Responsive Design */
+ @media (max-width: 768px) {
+
+   .ingredients-form,
+   .search-container {
+     flex-direction: column;
+   }
+ }
+
+ .ingredients-header {
+   position: sticky;
+   top: 109px;
+
+   background-color: #EEF4ED;
+ }
+
+ .custom-dropdown {
+   position: relative;
+   display: inline-block;
+ }
+
+ .dropdown-btn {
+   /* background: #007bff; */
+   color: rgb(0, 0, 0);
+   padding: 10px 15px;
+   border: none;
+   border-radius: 30px;
+   width: 100%;
+   cursor: pointer;
+   border: 2px solid black;
+ }
+
+ .dropdown-content {
+   position: absolute;
+   background: white;
+   z-index: 10;
+   border: 1px solid #ddd;
+   border-radius: 5px;
+   width: auto;
+   max-height: 300px;
+   overflow-y: auto;
+
+   margin-top: 5px;
+   padding: 20px;
+ }
+
+ .category-item {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 5px;
+   cursor: pointer;
+   border-bottom: 1px solid #eee;
+   flex: 2;
+ }
+
+ .category-item:hover {
+   background: rgba(158, 145, 145, 0.285);
+ }
+
+ .delete-btn {
+   background: transparent;
+   color: rgb(255, 0, 0);
+   border: none;
+   border-radius: 3px;
+   cursor: pointer;
+   width: 20%;
+   z-index: 10;
+ }
+
+ .add-category {
+   display: flex;
+   gap: 1px;
+   margin-top: 10px;
+ }
+
+ .add-category input {
+   flex: 1;
+   padding: 5px;
+   border: 1px solid #ddd;
+   border-radius: 5px;
+ }
+
+ .add-button {
+   /* background: green; */
+   color: white;
+   border: none;
+   padding: 5px 10px;
+   border-radius: 30px;
+   cursor: pointer;
+ }

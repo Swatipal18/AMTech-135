@@ -98,6 +98,8 @@ const Sidebar = ({ onToggle, children }) => {
                 { label: 'Categories', path: '/categories' },
                 { label: 'Sizes', path: '/sizes' },
                 { label: 'Add Ons', path: '/AddOns' },
+                { label: 'Ingredients', path: '/Ingredients' },
+
             ],
             isDropdown: true
         },

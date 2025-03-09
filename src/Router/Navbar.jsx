@@ -40,6 +40,7 @@ import AllSubscriptions from '../Component/subscription/AllSubscriptions'
 import ActiveSubscription from '../Component/subscription/ActiveSubscription'
 import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm'
 import AddOns from '../Component/Item/AddOns'
+import Ingredients from '../Component/Item/Ingredients'
 
 // Protected Route Component
 const ProtectedRoute = () => {
@@ -90,6 +91,10 @@ function Navbar() {
                         {
                             path: "/AddOns",
                             element: <AddOns />
+                        },
+                        {
+                            path: "/Ingredients",
+                            element: <Ingredients />
                         },
                         {
                             path: "/AllStaff",
