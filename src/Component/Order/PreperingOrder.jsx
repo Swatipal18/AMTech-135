@@ -49,7 +49,7 @@ export default function PreperingOrder() {
         ? prevSelected.filter((id) => id !== orderId)
         : [...prevSelected, orderId]
     );
-   
+
   }, []);
   const handleSelectAllChange = () => {
     // setLoading(true)
@@ -59,7 +59,7 @@ export default function PreperingOrder() {
       setSelectedOrders(CurrentOrder.map((order) => order._id));
       setSelectAll(!selectAll);
     }
-  
+
   };
   const handleAcceptAll = async () => {
     // setLoading(true)
@@ -72,7 +72,7 @@ export default function PreperingOrder() {
           orderIds: selectedOrders,
           storeManagerId: "6799c2f16bcd2e26260498eb",
         });
-        socket.on("order-ready-for-delivery", (data) => {});
+        socket.on("order-ready-for-delivery", (data) => { });
         const response = await axios.post(
           "http://192.168.1.12:9000/pickup-time",
           {
@@ -140,18 +140,18 @@ export default function PreperingOrder() {
 
   const prevDeliveryBoyRef = useRef(new Map()); // Store previous delivery boy names
   const handledOrders = useRef(new Set());
-  
+
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("handledOrders")) || [];
     handledOrders.current = new Set(savedOrders);
   }, []); // Run only once when the component mounts
-  
+
   useEffect(() => {
     if (!CurrentOrder.length) return;
-  
+
     CurrentOrder.forEach((order) => {
       if (order.currentStatus !== "Prepared") return;
-  
+
       const prevDeliveryBoy = prevDeliveryBoyRef.current.get(order._id);
       const isDeliveryBoyAssigned =
         order.deliveryBoyName &&
@@ -162,10 +162,10 @@ export default function PreperingOrder() {
       if (isDeliveryBoyAssigned && !handledOrders.current.has(order._id)) {
         prevDeliveryBoyRef.current.set(order._id, order.deliveryBoyName);
         handledOrders.current.add(order._id); // Mark this order as handled
-  
+
         // Save the updated handled orders list in localStorage
         localStorage.setItem("handledOrders", JSON.stringify([...handledOrders.current]));
-  
+
         // ✅ API call for this specific order (only once per order)
         (async () => {
           console.log("Starting pickup timer for Order:", order._id);
@@ -230,7 +230,7 @@ export default function PreperingOrder() {
         // console.log("data: ", data);
       });
     }
-    console.log(" order_id: ", or/der_id);
+    console.log(" order_id: ", or / der_id);
   }
   function AssignDeliveryBoy(v) {
     socket.emit("delivery-list", {});
@@ -261,7 +261,7 @@ export default function PreperingOrder() {
             />
             &nbsp;
             Select
-            
+
           </label>
         </span>
         <button
@@ -311,10 +311,10 @@ export default function PreperingOrder() {
                   <label
                     htmlFor={`checkbox-${v._id}`}
                     style={{ display: `${toggleCheckbox ? "block " : "none"}` }}
-                    className = {`${toggleCheckbox ? "position-absolute" : "none"}`}
+                    className={`${toggleCheckbox ? "position-absolute" : "none"}`}
                   ></label>
                 </p>
-                
+
                 {v.items?.map((Item, index) => (
                   <p className="order-item" key={index}>
                     <strong>
@@ -332,30 +332,28 @@ export default function PreperingOrder() {
                   <span className={`timer `}>
                     DELIVERY BOY: &nbsp;{" "}
                     <span
-                      className={`${
-                        v.deliveryBoyName === "No delivery boy assign"
+                      className={`${v.deliveryBoyName === "No delivery boy assign"
                           ? "status-red"
                           : "thatus-white"
-                      }`}
+                        }`}
                     >
                       {v.deliveryBoyName}{" "}
                     </span>{" "}
                   </span>{" "}
-          &nbsp;— &nbsp;
-                  
+                  &nbsp;— &nbsp;
+
                   <span
                     className="ressign"
                     onClick={() => AssignDeliveryBoy(v)} // Open only this specific box
                   >
-                    
+
                     {v.deliveryBoyName === "No delivery boy assign"
                       ? "ASSIGN NOW"
                       : "REASSIGN ANOTHER"}
                   </span>
                   <div
-                    className={`delivery-boy-box ${
-                      assignOrderId === v._id ? "delivery-boy-box" : "box-close"
-                    }`}
+                    className={`delivery-boy-box ${assignOrderId === v._id ? "delivery-boy-box" : "box-close"
+                      }`}
                   >
                     <div className="delivery-boy-detail">
                       <p className="delivery-boy-heading">
@@ -463,11 +461,10 @@ export default function PreperingOrder() {
                   <span className={`timer `}>
                     DELIVERY BOY: &nbsp;{" "}
                     <span
-                      className={`${
-                        v.deliveryBoyName === "No delivery boy assign"
+                      className={`${v.deliveryBoyName === "No delivery boy assign"
                           ? "status-red"
                           : "thatus-white"
-                      }`}
+                        }`}
                     >
                       {v.deliveryBoyName}{" "}
                     </span>{" "}
@@ -482,9 +479,8 @@ export default function PreperingOrder() {
                       : "REASSIGN ANOTHER"}
                   </span>
                   <div
-                    className={`delivery-boy-box ${
-                      assignOrderId === v._id ? "delivery-boy-box" : "box-close"
-                    }`}
+                    className={`delivery-boy-box ${assignOrderId === v._id ? "delivery-boy-box" : "box-close"
+                      }`}
                   >
                     <div className="delivery-boy-detail">
                       <p className="delivery-boy-heading">
@@ -510,18 +506,18 @@ export default function PreperingOrder() {
                         {DeliveryBoy.map((DeliveryBoy) => {
                           return (
                             <tr
-                            
-                              className={`order-table-row-box ${v.deliveryBoyName ===DeliveryBoy.username ? 'disable' : ''}`}
+
+                              className={`order-table-row-box ${v.deliveryBoyName === DeliveryBoy.username ? 'disable' : ''}`}
                               onClick={() =>
                                 AssignedDeliveryBoy(
                                   DeliveryBoy._id,
                                   v.deliveryBoyId,
                                   v._id,
                                   v.deliveryBoyName
-                                  
+
                                 )
                               }
-                              
+
                             >
                               <td className={`fw-bold text-start`}>
                                 {DeliveryBoy.username}
@@ -536,10 +532,10 @@ export default function PreperingOrder() {
                     </table>
                   </div>
                 </p>
-              
+
                 <div className={`order-actions`} >
                   <button className={`Prepering-order-btn w-100 ${v.colour === "Red" ? 'red' : v.colour === "Yellow" ? 'Yellow' : ''}`} disabled>
-                   {` ${v.colour === "Red" ? 'REASSIGNED FOR PICKUP' : v.colour === "Yellow" ? 'DELAYED FOR PICKUP' : 'READY TO PICKUP'}`}
+                    {` ${v.colour === "Red" ? 'REASSIGNED FOR PICKUP' : v.colour === "Yellow" ? 'DELAYED FOR PICKUP' : 'READY TO PICKUP'}`}
                   </button>
                 </div>
               </div>
