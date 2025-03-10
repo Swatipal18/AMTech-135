@@ -225,7 +225,7 @@ function Categories() {
                             <input type="text" placeholder="Enter Category name" {...register('title', { required: true })} className="form-control" />
                             <div className="modal-actions mt-3">
                                 <button type="submit" className="edit-btn">{editCategory ? 'Update' : 'Submit'}</button>
-                                <button type="button" onClick={() => setShowModal(false)} className="delete-btn">Close</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="deletes-btn">Close</button>
                             </div>
                         </form>
                     </div>
@@ -252,7 +252,7 @@ function Categories() {
                                     <td>{item.title}</td>
                                     <td className="actions d-flex justify-content-end align-items-center">
                                         <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
-                                        <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
+                                        <button className="deletes-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
                                     </td>
                                 </tr>
                             ))}

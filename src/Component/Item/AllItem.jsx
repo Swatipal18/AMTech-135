@@ -389,7 +389,7 @@ const AllItem = () => {
                         <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                           EDIT
                         </button>
-                        <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                        <button className="deletes-btn" onClick={() => handleDelete(item._id)}>
                           DELETE
                         </button>
                       </td>

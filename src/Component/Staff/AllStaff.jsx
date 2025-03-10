@@ -230,7 +230,7 @@ const AllStaff = () => {
                       EDIT
                     </button>
                     <button
-                      className="delete-btn"
+                      className="deletes-btn"
                       onClick={() => handleDelete(staffMember._id)}
                     >
                       DELETE

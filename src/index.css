@@ -1079,7 +1079,7 @@ input:checked~.slider {
     margin-right: 10px;
 }
 
-.delete-btn {
+.deletes-btn {
     /* margin-left: 30px; */
     background-color: var(--error-red);
     color: #EEF4ED;
@@ -1095,7 +1095,7 @@ input:checked~.slider {
     height: 40px;
 }
 
-.delete-btn:hover {
+.deletes-btn:hover {
     background-color: var(--error-red);
     color: #EEF4ED;
     opacity: 0.9;

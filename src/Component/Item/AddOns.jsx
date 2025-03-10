@@ -290,7 +290,7 @@ function AddOns() {
                                     <td>{item.price}</td>
                                     <td className="actions d-flex justify-content-end align-items-center">
                                         <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
-                                        <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
+                                        <button className="deletes-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
                                     </td>
                                 </tr>
                             ))}

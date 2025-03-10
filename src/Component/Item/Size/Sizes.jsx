@@ -242,7 +242,7 @@ function Sizes() {
                             />
                             <div className="modal-actions mt-3">
                                 <button type="submit" className="edit-btn">{editSize ? 'Update' : 'Submit'}</button>
-                                <button type="button" onClick={() => setShowModal(false)} className="delete-btn">Close</button>
+                                <button type="button" onClick={() => setShowModal(false)} className="deletes-btn">Close</button>
                             </div>
                         </form>
                     </div>
@@ -273,7 +273,7 @@ function Sizes() {
                                         <td>{item.size}</td>
                                         <td className="actions d-flex justify-content-end">
                                             <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
-                                            <button className="delete-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
+                                            <button className="deletes-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>
                                         </td>
                                     </tr>
                                 ))}

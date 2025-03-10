@@ -339,7 +339,7 @@ function Ingredients() {
                                                     <span>{category.title}</span>
                                                 </div>
                                                 <button
-                                                    className="delete-btn"
+                                                    className="deletes-btn"
                                                     onClick={() => deleteCategory(category._id)}
                                                 >
                                                     ❌
