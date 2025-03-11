@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
 
 function AllSubscriptions() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -38,7 +39,7 @@ function AllSubscriptions() {
             fetchItems(currentPage, newSearchTerm);
         }
         if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
-            fetchItems(currentPage); // Reset to default items or handle as needed
+            fetchItems(currentPage);
         }
     }
     const fetchItems = async (page, search) => {
@@ -168,7 +169,7 @@ function AllSubscriptions() {
         const isNextButtonDisabled = totalItems < limit;
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">
@@ -271,8 +272,8 @@ function AllSubscriptions() {
                                     <tr>
                                         <th>Item</th>
                                         <th>Category</th>
-                                        <th>Rating</th>
                                         <th>Period</th>
+                                        <th>Rating</th>
                                         <th>Business</th>
                                         <th>Personal</th>
                                     </tr>
@@ -281,9 +282,9 @@ function AllSubscriptions() {
 
                                     {items.map((item, index) => (
                                         <tr key={`${item._id}-${index}`} className="table-row">
-                                            <td>{item.itemName}</td>
-                                            <td>{item.category}</td>
-                                            <td>{item.period}</td>
+                                            <td className='text-capitalize'>{item.itemName}</td>
+                                            <td className='text-capitalize'>{item.category}</td>
+                                            <td className='text-capitalize'>{item.period}</td>
                                             <td className="rating">
                                                 {[1, 2, 3, 4, 5].map((star) => (
                                                     <span
@@ -311,23 +312,7 @@ function AllSubscriptions() {
                                                     ></span>
                                                 </label>
                                             </td>
-                                            <td>
-                                                <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checkedItems[item._id]?.personal || false}
-                                                        onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                                                        disabled={item.isActiveForPersonal}
-                                                    />
-                                                    <span
-                                                        className="slider"
-                                                        style={{
-                                                            backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#FF3B30',
-                                                            cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
-                                                        }}
-                                                    ></span>
-                                                </label>
-                                            </td>
+
 
                                             <td className="actions d-flex justify-content-around">
                                                 <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
@@ -335,6 +320,11 @@ function AllSubscriptions() {
                                                 </button>
                                                 <button className="deletes-btn" onClick={() => handleDelete(item._id)}>
                                                     DELETE
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button className='btn' onClick={() => handleInfoClick(item._id)}>
+                                                    <HiOutlineInformationCircle className='fs-3' />
                                                 </button>
                                             </td>
                                         </tr>

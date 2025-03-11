@@ -233,7 +233,7 @@ function Ingredients() {
         const endIndex = Math.min(currentPage * limit, totalItems);
         const isNextButtonDisabled = totalItems < limit;
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container    ">
                 <div className="d-flex align-items-center">
                     <span className="showing-text">
                         Showing {startIndex}-{endIndex} Of
@@ -433,7 +433,7 @@ function Ingredients() {
                         <tbody>
                             {ingredients.map((item) => (
                                 <tr key={item.id}>
-                                    <td>{item.name}</td>
+                                    <td className="text-capitalize">{item.name}</td>
                                     <td>{item.categoryId.title}</td>
                                     <td>{convertToIST(item.createdAt)}</td>
                                     <td className="action-buttons">

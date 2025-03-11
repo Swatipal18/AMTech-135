@@ -1,23 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { gsap } from 'gsap';
 
 function AppLayout() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const navigator = useNavigate();
+    const location = useLocation();
+    const outletRef = useRef(null);
+
     // Function to handle sidebar state
     const handleSidebarState = (isOpen) => {
         setSidebarOpen(isOpen);
     };
+
     const [isOn, setIsOn] = useState(true);
     const handleToggle = () => {
         setIsOn((prev) => !prev);
     };
+
     const logOut = () => {
         localStorage.removeItem("authToken");
         navigator('/');
     }
 
+    // GSAP animation for the Outlet component
+    useEffect(() => {
+        if (outletRef.current) {
+            // Set initial state
+            gsap.set(outletRef.current, {
+                opacity: 0,
+                y: 30,
+                scale: 0.98
+            });
+
+            // Animate to final state
+            gsap.to(outletRef.current, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                ease: "power2.out",
+                clearProps: "all" // Clean up after animation
+            });
+        }
+    }, [location.pathname]); // Re-run animation when route changes
 
     return (
         <div className='container-fluid'>
@@ -37,14 +64,12 @@ function AppLayout() {
                         marginLeft: sidebarOpen ? '300px' : '60px',
                         transition: 'margin-left 0.3s ease',
                         width: sidebarOpen ? 'calc(100% - 300px)' : 'calc(100% - 60px)',
-
                     }}
                 >
-
                     <div className='main-content p-0 mt-3 '>
                         <div className="Admin-bar mx-5">
-                            <div className="toggle-container  d-flex align-items-center w-100 justify-content-between ">
-                                <div className='d-flex align-items-center  store-status'>
+                            <div className="toggle-container d-flex align-items-center w-100 justify-content-between ">
+                                <div className='d-flex align-items-center store-status'>
                                     <p style={{ marginTop: "9%" }}>STORE STATUS </p> &nbsp;
                                     <div
                                         className={`ms-2 toggle-switch ${isOn ? "on" : "off"}`}
@@ -56,7 +81,7 @@ function AppLayout() {
                                 <div className="d-flex align-items-center">
                                     <div className=" mx-2 ">
                                         <img
-                                            src="/src//assets//Images/admin.png"
+                                            src="/src/assets/Images/admin.png"
                                             alt="images"
                                             height={"40px"}
                                             width={"40px"}
@@ -72,7 +97,11 @@ function AppLayout() {
                                 </div>
                             </div>
                         </div>
-                        <Outlet />
+
+                        {/* Wrapper for Outlet with animation */}
+                        <div ref={outletRef}>
+                            <Outlet />
+                        </div>
                     </div>
                 </div>
             </div>

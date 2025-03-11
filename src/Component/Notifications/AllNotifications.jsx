@@ -47,7 +47,7 @@ function AllNotifications() {
         const isNextButtonDisabled = totalItems < limit;
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">

@@ -207,7 +207,7 @@ function EditUser() {
                                                 <label className="form-label">Business Name:</label>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control text-capitalize"
                                                     {...register('businessName')}
                                                 />
                                             </div>
@@ -216,7 +216,7 @@ function EditUser() {
                                                 <label className="form-label">Owner Name:</label>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control text-capitalize" 
                                                     {...register('ownerName')}
                                                 />
                                             </div>
@@ -229,7 +229,7 @@ function EditUser() {
                                             <label className="form-label">Full Name:</label>
                                             <input
                                                 type="text"
-                                                className="form-control"
+                                                className="form-control text-capitalize"
                                                 {...register('username')}
                                             />
                                         </div>
@@ -261,7 +261,7 @@ function EditUser() {
                                         <input
                                             type="text"
                                             {...register("address")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                         />
                                     </div>
 

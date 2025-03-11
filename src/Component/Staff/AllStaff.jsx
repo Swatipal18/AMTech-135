@@ -110,7 +110,7 @@ const AllStaff = () => {
 
 
     return (
-      <div className="pagination-container d-flex align-items-center justify-content-between">
+      <div className="pagination-container ">
         <div className="d-flex align-items-center">
 
           <span className="showing-text">
@@ -219,9 +219,9 @@ const AllStaff = () => {
             <tbody>
               {staff.map((staffMember, index) => (
                 <tr key={`${staffMember.id}-${index}`} className="table-row">
-                  <td className='text-center'>{staffMember.username}</td>
-                  <td className='text-center'>{staffMember.contact}</td>
-                  <td className='text-center'>{roleMapping[staffMember.role] || 'Unknown Role'}</td>
+                  <td className='text-center text-capitalize'>{staffMember.username}</td>
+                  <td className='text-center '>{staffMember.contact}</td>
+                  <td className='text-center text-capitalize'>{roleMapping[staffMember.role] || 'Unknown Role'}</td>
                   <td className="actions d-flex justify-content-end gap-5">
                     <button
                       className="edit-btn"

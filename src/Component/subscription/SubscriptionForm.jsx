@@ -420,7 +420,7 @@ function SubscriptionForm() {
                   <input
                     type="text"
                     onChange={(e) => setitemname(e.target.value)}
-                    className="form-control shadow"
+                    className="form-control shadow text-capitalize"
                     placeholder="e.g. Masala Tea"
                   />
                 </div>
@@ -430,7 +430,7 @@ function SubscriptionForm() {
                   <label className="form-label">Description :</label>
                   <textarea
                     {...register("description")}
-                    className="form-control shadow"
+                    className="form-control shadow text-capitalize"
                     rows="4"
                     placeholder="Write a short description about this item..."
                   />

@@ -16,6 +16,8 @@ function AddOns() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [limit, setLimit] = useState(10);
+    const [totalRecord, setTotalRecord] = useState(0);
+
     const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
@@ -53,6 +55,7 @@ function AddOns() {
             if (response.data.success) {
                 setItems(response.data.data.addOns || []);
                 setTotalItems(response.data.data.addOns.length || 0);
+                setTotalRecord(response.data.data.totalRecords || 0);
             } else {
                 setError('No data received from server');
                 toast.error('No data received from server');
@@ -138,10 +141,10 @@ function AddOns() {
         const isNextButtonDisabled = totalItems < limit;
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
                     <span className="showing-text">
-                        Showing {startIndex}-{endIndex} Of
+                        Showing {totalRecord} Of
                         <select
                             className="me-1 text-center customselect "
                             value={limit}
@@ -196,11 +199,11 @@ function AddOns() {
 
     return (
         <div className="page-container">
-            <h2 className="form-title mb-3">AddOns Management</h2>
+            <h2 className="ingredients-title">AddOns Management</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="d-flex align-items-center gap-2  mb-4 border-bottom border-secondary pb-3">
                 <div className="row g-0 w-100">
                     <div className="col-4 me-5">
-                        <label className="form-label fs-5">AddOns Name :</label>
+                        <label className="form-label fs-5"></label>
                         <input
                             type="text"
                             placeholder="AddOns Name"
@@ -209,7 +212,7 @@ function AddOns() {
                         />
                     </div>
                     <div className=" col-4 me-5">
-                        <label className="form-label fs-5">AddOns Price :</label>
+                        <label className="form-label fs-5"></label>
                         <input
                             type="text"
                             placeholder="Price"
@@ -217,8 +220,8 @@ function AddOns() {
                             className="form-control"
                         />
                     </div>
-                    <div className="col-3 d-flex flex-column gap-4">
-                        <label className="form-label"></label>
+                    <div className="col-3 d-flex flex-column gap-3">
+                        <label className="form-label fs-5"></label>
                         <button
                             type="submit"
                             className="submit-btn w-100 text-uppercase"
@@ -242,7 +245,7 @@ function AddOns() {
                 </div>
             </form>
             <div className="header">
-                <div className="search ">
+                <div className="search " >
                     <FaSearch className="search-icons" />
                     <input
                         type="search"
@@ -286,7 +289,7 @@ function AddOns() {
                         <tbody>
                             {items.map((item) => (
                                 <tr key={item._id}>
-                                    <td>{item.name}</td>
+                                    <td className='text-capitalize'>{item.name}</td>
                                     <td>{item.price}</td>
                                     <td className="actions d-flex justify-content-end align-items-center">
                                         <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>

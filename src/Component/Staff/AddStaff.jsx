@@ -163,7 +163,7 @@ function AddStaff() {
                                         <input
                                             type="text"
                                             {...register("username")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                             placeholder="e.g. Full Name"
                                         />
                                     </div>
@@ -199,7 +199,7 @@ function AddStaff() {
                                         <input
                                             type="text"
                                             {...register("address")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                             placeholder="Full Address"
                                         />
                                     </div>

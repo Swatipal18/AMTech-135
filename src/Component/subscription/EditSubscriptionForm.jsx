@@ -271,7 +271,7 @@ function EditSubscriptionForm() {
                                         type="text"
                                         value={itemname}
                                         onChange={(e) => setitemname(e.target.value)}
-                                        className="form-control shadow"
+                                        className="form-control shadow text-capitalize"
                                         placeholder="e.g. Masala Tea"
                                     />
                                 </div>
@@ -281,7 +281,7 @@ function EditSubscriptionForm() {
                                     <label className="form-label">Description :</label>
                                     <textarea
                                         {...register("description")}
-                                        className="form-control shadow"
+                                        className="form-control shadow text-capitalize"
                                         rows="4"
                                         placeholder="Write a short description about this item..."
                                     />
@@ -289,7 +289,7 @@ function EditSubscriptionForm() {
 
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
-                                    <label className="form-label">Ingredients :</label>
+                                    <label className="form-label text-capitalize">Ingredients :</label>
                                     <input
                                         type="text"
                                         {...register("ingredients")}
@@ -499,7 +499,7 @@ function EditSubscriptionForm() {
                                 >
                                     <option value="">Select Any One</option>
                                     <option value="regular">Regular</option>
-                                    <option value="jain">jain</option>
+                                    <option value="jain">Jain</option>
                                 </select>
                             </div>
                             <div className="col-md-3 mb-3">

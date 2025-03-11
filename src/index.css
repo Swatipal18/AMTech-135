@@ -128,7 +128,7 @@ input[type="text"] {
 input[type="date"] {
     color: rgb(1, 1, 1) !important;
     margin-left: 10px;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
 }
 
 input[type="search"] {
@@ -1103,15 +1103,17 @@ input:checked~.slider {
 
 /* Pagination */
 .pagination-container {
+    background-color: #EEF4ED;
     height: 31px;
+    width: 80%;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 15px 0;
+    padding:20px  ;
     font-size: 15px;
     color: var(--backdround-color);
     margin-top: 20px;
-    bottom: 15px;
+    bottom: 0px;
     position: fixed;
 }
 

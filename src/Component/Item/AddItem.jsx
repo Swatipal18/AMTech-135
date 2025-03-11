@@ -1319,13 +1319,19 @@ function AddItem() {
 
         data.isActiveForPersonal = personalStatus.isActive;
         data.personalSize = personalStatus.sizeData;
-
+        // Append images
+        data.images.forEach((image) => {
+            formData.append("images", image);
+        });
         // Append other fields
         formData.append("ratings", data.ratings);
         formData.append("categoryId", data.categoryId);
         formData.append("isActiveForBusiness", data.isActiveForBusiness);
         formData.append("isActiveForPersonal", data.isActiveForPersonal);
         formData.append("itemName", data.itemName);
+        formData.append("description", data.description);
+        formData.append("recipe", data.recipe);
+
 
         data.size.forEach((item, index) => {
             formData.append(`size[${index}][sizeId]`, item.sizeId);
@@ -1348,6 +1354,7 @@ function AddItem() {
             formData.append(`personalSize[${index}][volume]`, item.volume);
             formData.append(`personalSize[${index}][sizePrice]`, item.sizePrice);
         });
+
         try {
             const response = await axios.post(`${baseUrl}/menu/create`, formData, {
                 headers: {
@@ -1392,12 +1399,12 @@ function AddItem() {
                             {/* Name Field */}
                             <div className="col-lg-8 col-md-8 col-sm-6 form-size">
                                 <div className="mb-4">
-                                    <label className="form-label">Name :</label>
+                                    <label className="form-label ">Name :</label>
                                     <input
                                         type='text'
                                         name="itemName"
                                         {...register("itemName")}
-                                        className="form-control shadow"
+                                        className="form-control shadow text-capitalize"
                                         placeholder="e.g. Masala Tea"
                                     />
                                 </div>
@@ -1409,8 +1416,8 @@ function AddItem() {
                                         name='description'
                                         {...register("description")}
                                         // value="hello"
-                                        className="form-control shadow"
-                                        rows="4"
+                                        className="form-control shadow text-capitalize"
+                                        rows="5"
                                         style={{
                                             resize: 'none',
                                             overflowY: 'auto',
@@ -1420,6 +1427,24 @@ function AddItem() {
                                         placeholder="Write a short description about this item..."
                                     />
                                 </div>
+                                {/* Recipe Field */}
+                                {/* <div className="mb-4">
+                                    <label className="form-label">Recipe :</label>
+                                    <textarea
+                                        name='description'
+                                        {...register("recipe")}
+                                        // value="hello"
+                                        className="form-control shadow text-capitalize"
+                                        rows="4"
+                                        style={{
+                                            resize: 'none',
+                                            overflowY: 'auto',
+                                            scrollbarWidth: 'none',
+                                            msOverflowStyle: 'none'
+                                        }}
+                                        placeholder="Write a short description about this item..."
+                                    />
+                                </div> */}
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Item Ingredients :</label>
@@ -1444,7 +1469,7 @@ function AddItem() {
                                                 <input
                                                     type="text"
                                                     className="form-control border-0"
-                                                    placeholder="Type To Search Ingredients"
+                                                    placeholder=" Search Ingredients"
                                                     value={ingredientSearchTerm}
                                                     onChange={handleIngredientSearch}
                                                     onFocus={() => handleInputFocus('ingredient')}
@@ -1504,106 +1529,8 @@ function AddItem() {
                                         )}
                                     </div>
                                 </div>
-                            
-                                {/* Add Ons Section */}
-                                <div className="mb-4">
-                                    <label className="form-label">Add-ons :</label>
-                                    <div className="position-relative">
-                                        <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
-                                            {/* Selected Add-ons */}
-                                            <div className="d-flex ms-1 fs-4 align-items-center">
-                                                {selectedAddons.map(item => (
-                                                    <div key={item._id} className="me-1 mb-1">
-                                                        <span className="badge rounded-pill text-white fw-bold"
-                                                            style={{ backgroundColor: '#0B2545', }}>
-                                                            {item.name}
-                                                            <span
-                                                                className="ms-2 cursor-pointer"
-                                                                onClick={() => removeAddon(item._id)}
-                                                            >×</span>
-                                                        </span>
-                                                    </div>
-                                                ))}
-
-                                                {/* Search Input */}
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-0"
-                                                    placeholder="Type To Search Add-ons"
-                                                    value={addonSearchTerm}
-                                                    onChange={handleAddonSearch}
-                                                    onFocus={() => handleInputFocus('addon')}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setShowAddonDropdown(true);
-                                                        if (filteredAddons.length === 0) {
-                                                            setFilteredAddons(addons.slice(0, 5));
-                                                        }
-                                                    }}
-                                                    style={{ boxShadow: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Hidden input for react-hook-form to register the add-ons */}
-                                        <input
-                                            type="hidden"
-                                            {...register("addOn")}
-                                        />
-
-                                        {/* Add-ons Dropdown */}
-                                        {showAddonDropdown && filteredAddons.length > 0 && (
-                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
-                                                style={{
-                                                    zIndex: 1000,
-                                                    maxHeight: '180px',
-                                                    overflowY: 'auto',
-                                                    top: '100%',
-                                                    left: 0
-                                                }}
-                                                onClick={(e) => e.stopPropagation()}>
-                                                {filteredAddons.map(item => (
-                                                    <div key={item._id}
-                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
-                                                        style={{ cursor: 'pointer' }}
-                                                        onClick={() => addAddon(item)}>
-                                                        {item.name}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* Clear All Button for Add-ons */}
-                                        {selectedAddons.length > 0 && (
-                                            <div className="d-flex justify-content-end ">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-link"
-                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
-                                                    onClick={clearAllAddons}
-                                                >
-                                                    Clear All
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Rating */}
-                                <div className="col-md-3 mb-2">
-                                    <label className="form-label">Ratings:</label>
-                                    <input
-                                        type="number"
-                                        name="ratings"
-                                        {...register("ratings", { required: true })}
-                                        className="form-control shadow"
-                                        placeholder=" E.g 4.5"
-                                    />
-                                </div>
-
-
-
                             </div>
+
                             {/* <div className="col-1"></div> */}
                             {/* Image Upload Section */}
                             <div className="col-md-4">
@@ -1792,6 +1719,106 @@ function AddItem() {
 
                             </div>
                         </div>
+                        {/* Add Ons Section */}
+                        <div className="row ">
+                            <div className="col-md-8">
+                                <div className="mb-4">
+                                    <label className="form-label">Add-ons :</label>
+                                    <div className="position-relative">
+                                        <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
+                                            {/* Selected Add-ons */}
+                                            <div className="d-flex ms-1 fs-4 align-items-center">
+                                                {selectedAddons.map(item => (
+                                                    <div key={item._id} className="me-1 mb-1">
+                                                        <span className="badge rounded-pill text-white fw-bold"
+                                                            style={{ backgroundColor: '#0B2545', }}>
+                                                            {item.name}
+                                                            <span
+                                                                className="ms-2 cursor-pointer"
+                                                                onClick={() => removeAddon(item._id)}
+                                                            >×</span>
+                                                        </span>
+                                                    </div>
+                                                ))}
+
+                                                {/* Search Input */}
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-0"
+                                                    placeholder=" Search Add-ons"
+                                                    value={addonSearchTerm}
+                                                    onChange={handleAddonSearch}
+                                                    onFocus={() => handleInputFocus('addon')}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowAddonDropdown(true);
+                                                        if (filteredAddons.length === 0) {
+                                                            setFilteredAddons(addons.slice(0, 5));
+                                                        }
+                                                    }}
+                                                    style={{ boxShadow: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Hidden input for react-hook-form to register the add-ons */}
+                                        <input
+                                            type="hidden"
+                                        // {...register("addOn")}
+                                        />
+
+                                        {/* Add-ons Dropdown */}
+                                        {showAddonDropdown && filteredAddons.length > 0 && (
+                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                                style={{
+                                                    zIndex: 1000,
+                                                    maxHeight: '180px',
+                                                    overflowY: 'auto',
+                                                    top: '100%',
+                                                    left: 0
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}>
+                                                {filteredAddons.map(item => (
+                                                    <div key={item._id}
+                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => addAddon(item)}>
+                                                        {item.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Clear All Button for Add-ons */}
+                                        {selectedAddons.length > 0 && (
+                                            <div className="d-flex justify-content-end ">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-link"
+                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
+                                                    onClick={clearAllAddons}
+                                                >
+                                                    Clear All
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Rating */}
+                            <div className="col-md-4 mt-1">
+                                <div className="mb-2">
+                                    <label className="form-label">Ratings:</label>
+                                    <input
+                                        type="number"
+                                        name="ratings"
+                                        {...register("ratings", { required: true })}
+                                        className="form-control shadow"
+                                        placeholder=" E.g 4.5"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                         <div className="row">
                             {/* Business Menu Variants */}
                             <div className="variants-section col-12">
@@ -1872,7 +1899,24 @@ function AddItem() {
                                     + ADD VARIANT
                                 </button>
                             </div>
-
+                            {/* Recipe Field */}
+                            <div className="mb-4">
+                                <label className="form-label">Recipe :</label>
+                                <textarea
+                                    name='description'
+                                    {...register("recipe")}
+                                    // value="hello"
+                                    className="form-control shadow text-capitalize"
+                                    rows="4"
+                                    style={{
+                                        resize: 'none',
+                                        overflowY: 'auto',
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none'
+                                    }}
+                                    placeholder="Write the cooking instructions for this item..."
+                                />
+                            </div>
                             {/* Personal Menu Variants */}
                             {/* <div className="variants-section col-12">
                                 <h3 className="variants-title">Personal Menu Variants</h3>

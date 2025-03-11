@@ -144,7 +144,7 @@ function ActiveSubscription() {
         const endIndex = Math.min(currentPage * limit, totalItems);
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">
@@ -262,10 +262,10 @@ function ActiveSubscription() {
 
                                     {items.map((item, index) => (
                                         <tr key={`${item._id}-${index}`} className="table-row ">
-                                            <td>AMTech Design </td>
-                                            <td>Masala Tea Jar</td>
-                                            <td>Monthly</td>
-                                            <td>12 feb 2025 </td>
+                                            <td className='text-capitalize'>AMTech Design </td>
+                                            <td className='text-capitalize'>Masala Tea Jar</td>
+                                            <td className='text-capitalize'>Monthly</td>
+                                            <td className='text-capitalize'>12 feb 2025 </td>
                                             <td className='text-center'>78</td>
                                             <td className='text-center'>78</td>
                                             <td style={{ color: '#40C057', fontSize: '17px' }} className='text-center'>12</td>

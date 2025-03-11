@@ -86,7 +86,7 @@ function Users() {
         const isNextButtonDisabled = totalItems < limit;
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">
@@ -259,10 +259,10 @@ function Users() {
                                             {items.map((item, index) => (
 
                                                 <tr key={`${item._id}-${index}`} className="table-row">
-                                                    <td>{item.ownerName}</td>
-                                                    <td>{getRoleText(item.role)}</td>
-                                                    <td>{formatDate(item.createdAt)}</td>
-                                                    <td>{item.deviceType}</td>
+                                                    <td className='text-capitalize'>{item.ownerName}</td>
+                                                    <td className='text-capitalize'>{getRoleText(item.role)}</td>
+                                                    <td className='text-capitalize'>{formatDate(item.createdAt)}</td>
+                                                    <td className='text-capitalize'>{item.deviceType}</td>
                                                     <td>&#8377;  {item.availablePerks}</td>
                                                     <td>{item.totalOrder}</td>
                                                     <td>&#8377;  {item.totalSpend}</td>

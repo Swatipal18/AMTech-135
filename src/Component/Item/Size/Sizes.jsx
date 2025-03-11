@@ -17,6 +17,8 @@ function Sizes() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [limit, setLimit] = useState(10);
+    const [totalRecord, setTotalRecord] = useState(0);
+
     const { register, handleSubmit, setValue, reset } = useForm();
 
     useEffect(() => {
@@ -48,6 +50,7 @@ function Sizes() {
             if (response.data?.data?.sizes) {
                 setItems(response.data.data.sizes || []);
                 setTotalItems(response.data.data.sizes.length || 0);
+                setTotalRecord(response.data.data.totalRecords || 0);
             } else {
                 setError('No data received from server');
                 toast.error('No data received from server');
@@ -147,11 +150,11 @@ function Sizes() {
         const endIndex = Math.min(currentPage * limit, totalItems);
         const isNextButtonDisabled = totalItems < limit;
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">
-                        Showing {startIndex}-{endIndex} Of
+                        Showing {totalRecord} Of
                         <select
                             className="me-1 text-center customselect "
                             value={limit}
@@ -238,7 +241,7 @@ function Sizes() {
                                 type="text"
                                 placeholder="Enter Size name"
                                 {...register('size', { required: true })}
-                                className="form-control"
+                                className="form-control text-capitalize"
                             />
                             <div className="modal-actions mt-3">
                                 <button type="submit" className="edit-btn">{editSize ? 'Update' : 'Submit'}</button>
@@ -270,7 +273,7 @@ function Sizes() {
                                 .filter((item) => item.size && item.size.toLowerCase().includes(searchTerm.toLowerCase()))
                                 .map((item) => (
                                     <tr key={item._id} >
-                                        <td>{item.size}</td>
+                                        <td className='text-capitalize'>{item.size}</td>
                                         <td className="actions d-flex justify-content-end">
                                             <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
                                             <button className="deletes-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>

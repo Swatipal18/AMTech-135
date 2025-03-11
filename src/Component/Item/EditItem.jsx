@@ -37,9 +37,6 @@ function EditItem() {
     const [imageError, setImageError] = useState('');
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedImagesCount, setSelectedImagesCount] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [rating, setRating] = useState(0);
     const [categories, setCategories] = useState([]);
     const [sizes, setSizes] = useState([]);
     const [imageSelected, setImageSelected] = useState(false);
@@ -49,17 +46,25 @@ function EditItem() {
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const navigate = useNavigate();
-    const [ingredients, setIngredients] = useState(['']);
-    // const [ingredientsText, setIngredientsText] = useState('');
-    const inputRefs = useRef([]);
     const businessVariants = watch("size") || [];
     const watchImages = watch("images") || [];
+    const [ingredients, setIngredients] = useState([]);
+    const [selectedIngredients, setSelectedIngredients] = useState([]);
+    const [ingredientSearchTerm, setIngredientSearchTerm] = useState('');
+    const [showIngredientDropdown, setShowIngredientDropdown] = useState(false);
+    const [filteredIngredients, setFilteredIngredients] = useState([]);
+    const [addons, setAddons] = useState([]);
+    const [selectedAddons, setSelectedAddons] = useState([]);
+    const [addonSearchTerm, setAddonSearchTerm] = useState('');
+    const [showAddonDropdown, setShowAddonDropdown] = useState(false);
+    const [filteredAddons, setFilteredAddons] = useState([]);
+    const [loading, setLoading] = useState(true);
     const fetchItemDetails = async () => {
         try {
             const response = await axios.get(`${baseUrl}/menu/details/${id}`);
             const ItemData = response.data.data;
             console.log('ItemData: ', ItemData);
-            console.log(ItemData.images, "data.images");
+
             // Ensure we always have at least one empty size entry
             const defaultSize = [{ sizeId: "", volume: "", sizePrice: "" }];
 
@@ -70,7 +75,19 @@ function EditItem() {
                 size: ItemData.size?.length > 0 ? ItemData.size : defaultSize,
                 personalSize: ItemData.personalSize?.length > 0 ? ItemData.personalSize : defaultSize,
             });
+            // console.log(ItemData.ingredients[0], "ItemData.ingredients in fetchItemDetails function");
+            // {_id: '67cae4c2b7ee23856822d941', name: 'Apple'}
+            // In your fetchItemDetails function, modify the code like this:
+            if (ItemData.ingredients && Array.isArray(ItemData.ingredients)) {
+                setSelectedIngredients(ItemData.ingredients);
+                setValue("ingredients", ItemData.ingredients.map(item => item._id || item));
+            }
 
+            // For addons, update the code to:
+            if (ItemData.addOn && Array.isArray(ItemData.addOn)) {
+                setSelectedAddons(ItemData.addOn);
+                setValue("addOns", ItemData.addOn.map(item => item._id || item));
+            }
             if (ItemData.images && ItemData.images.length > 0) {
                 const imageObjects = ItemData.images.map(img => ({
                     file: null, // You won't have the file object for existing images
@@ -79,26 +96,9 @@ function EditItem() {
                 setImageList(imageObjects);
                 setImageSelected(true);
             }
-            if (ItemData.ingredients) {
-                if (typeof ItemData.ingredients === 'string') {
-                    setIngredients(ItemData.ingredients.split(',').map(item => item.trim()));
-                }
-                else if (Array.isArray(ItemData.ingredients) && ItemData.ingredients.length > 0) {
-                    if (ItemData.ingredients.length === 1 && ItemData.ingredients[0].includes(',')) {
-                        setIngredients(ItemData.ingredients[0].split(',').map(item => item.trim()));
-                    } else {
-                        setIngredients(ItemData.ingredients);
-                    }
-                } else {
-                    setIngredients(['']);
-                }
-            } else {
-                setIngredients(['']);
-            }
-            setRating(ItemData.ratings || 0);
+            // setRating(ItemData.ratings || 0);
         } catch (err) {
             console.error("Error fetching Item details:", err);
-            setError("Failed to load Item details. Please try again.");
             toast.error("Failed to load Item details. Please try again.", {
                 position: "top-right",
                 autoClose: 3000,
@@ -108,71 +108,146 @@ function EditItem() {
             setLoading(false);
         }
     };
-
     const fetchData = async () => {
         try {
-            const [categoryResponse, sizesResponse] = await Promise.all([
-                axios.get(`${baseUrl}/admin/categories-list`),
-                axios.get(`${baseUrl}/size/list`)
-            ]);
-
-            setCategories(categoryResponse.data.data.categories);
-            setSizes(sizesResponse.data.data.sizes);
+            const category = await axios.get(`${baseUrl}/admin/categories-list`);
+            setCategories(category.data.data.categories);
+            const sizes = await axios.get(`${baseUrl}/size/list`);
+            setSizes(sizes.data.data.sizes);
+            const ingredientsResponse = await axios.get(`${baseUrl}/menu/ingredient/list`);
+            setIngredients(ingredientsResponse.data.data.ingredients);
+            const addonsResponse = await axios.get(`${baseUrl}/menu/addOn/list`);
+            setAddons(addonsResponse.data.data.addOns);
         } catch (error) {
             console.error("Error fetching data:", error);
-            toast.error("Failed to load categories and sizes.");
+            toast.error("Failed to load categories,sizes,ingredients & addons .");
         }
     };
 
     // use Effect 
     useEffect(() => {
+        fetchData().then(() => setLoading(false));
         fetchItemDetails();
-        fetchData();
+
     }, [id]);
-    // useEffect Ingredients
     useEffect(() => {
-        ingredients.forEach((ingredient, index) => {
-            const input = inputRefs.current[index];
-            if (input) {
-                const tempSpan = document.createElement('span');
-                tempSpan.style.visibility = 'hidden';
-                tempSpan.style.position = 'absolute';
-                tempSpan.style.font = window.getComputedStyle(input).font;
-                tempSpan.innerText = ingredient || input.placeholder || '';
-                document.body.appendChild(tempSpan);
-                const newWidth = Math.max(tempSpan.offsetWidth + 30, 60);
-                input.style.minWidth = `${newWidth}px`;
-                document.body.removeChild(tempSpan);
-            }
-        });
+        // If we have both the item data and the addons list loaded
+        const itemAddOns = watch("addOn");
+        console.log('itemAddOns: ', itemAddOns);
+        if (addons.length > 0 && itemAddOns && itemAddOns.length > 0) {
+            const selected = addons.filter(addon =>
+                itemAddOns.some(id => id === addon._id)
+            );
+            console.log("selected: ", selected);
+            // setSelectedAddons(selected);
+        }
+    }, [addons]);
+
+    useEffect(() => {
+        // If we have both the item data and the ingredients list loaded
+        const itemIngredients = watch("ingredients");
+        if (ingredients.length > 0 && itemIngredients && itemIngredients.length > 0) {
+            const selected = ingredients.filter(ingredient =>
+                itemIngredients.some(id => id === ingredient._id)
+            );
+            setSelectedIngredients(selected);
+        }
     }, [ingredients]);
 
-    // Ingredients Functions
-    const handleIngredientChange = (index, newValue) => {
-        const updatedIngredients = [...ingredients];
-        updatedIngredients[index] = newValue;
-        setIngredients(updatedIngredients);
+    // handleInputFocus ingredients & Addons
+    const handleInputFocus = (type) => {
+        if (type === 'ingredient') {
+            setShowIngredientDropdown(true);
+            setFilteredIngredients(ingredients.slice(0, 3));
+        } else if (type === 'addon') {
+            setShowAddonDropdown(true);
+            setFilteredAddons(addons.slice(0, 3));
+        }
+    };
+    // Ingredients
+    const handleIngredientSearch = (e) => {
+        const term = e.target.value;
+        setIngredientSearchTerm(term);
+
+        // Always show dropdown when typing or clicking
+        setShowIngredientDropdown(true);
+
+        if (term.trim() === '') {
+            setFilteredIngredients(ingredients.slice(0, 3));
+        } else {
+            const filtered = ingredients
+                .filter(item => item.name.toLowerCase().includes(term.toLowerCase()))
+                .slice(0, 5);
+            setFilteredIngredients(filtered);
+        }
+    };
+    const addIngredient = (ingredient) => {
+        if (!selectedIngredients.some(item => item._id === ingredient._id)) {
+            const newSelected = [...selectedIngredients, ingredient];
+            setSelectedIngredients(newSelected);
+            // Update the form value with the new array of ingredient IDs
+            setValue("ingredients", newSelected.map(item => item._id));
+        }
+        setIngredientSearchTerm('');
+        setShowIngredientDropdown(false);
+    };
+    const removeIngredient = (ingredientId) => {
+        const newSelected = selectedIngredients.filter(item => item._id !== ingredientId);
+        setSelectedIngredients(newSelected);
+        // Update the form value with the new array of ingredient IDs
+        setValue("ingredients", newSelected.map(item => item._id));
+    };
+    const clearAllIngredients = () => {
+        setSelectedIngredients([]);
+        setValue("ingredients", []);
+    };
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setShowIngredientDropdown(false);
+            setShowAddonDropdown(false);
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+    // Addons
+    const handleAddonSearch = (e) => {
+        const term = e.target.value;
+        setAddonSearchTerm(term);
+
+
+        setShowAddonDropdown(true);
+
+        if (term.trim() === '') {
+            setFilteredAddons(addons.slice(0, 3));
+        } else {
+            const filtered = addons
+                .filter(item => item.name.toLowerCase().includes(term.toLowerCase()))
+                .slice(0, 3);
+            setFilteredAddons(filtered);
+        }
+    };
+    const addAddon = (addon) => {
+        if (!selectedAddons.some(item => item._id === addon._id)) {
+            const newSelected = [...selectedAddons, addon];
+            setSelectedAddons(newSelected);
+            setValue("addOns", newSelected.map(item => item._id));
+        }
+        setAddonSearchTerm('');
+        setShowAddonDropdown(false);
+    };
+    const removeAddon = (addonId) => {
+        const newSelected = selectedAddons.filter(item => item._id !== addonId);
+        setSelectedAddons(newSelected);
+        setValue("addOns", newSelected.map(item => item._id));
+    };
+    const clearAllAddons = () => {
+        setSelectedAddons([]);
+        setValue("addOns", []);
     };
 
-    const addIngredient = () => {
-        setIngredients([...ingredients, '']);
-    };
-
-    const removeIngredient = (index) => {
-        const updatedIngredients = ingredients.filter((_, i) => i !== index);
-        setIngredients(updatedIngredients);
-    };
-    // Ratings Functions
-    const handleRatingClick = (index) => {
-        setRating(index + 1);
-        setValue("ratings", index + 1);
-    };
-    // Variants Functions
-    const addPersonalVariant = () => {
-        const personalSizeArray = watch("personalSize");
-        personalSizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
-        setValue("personalSize", personalSizeArray);
-    };
     const addBusinessVariant = () => {
         const sizeArray = watch("size") || [];
         sizeArray.push({ sizeId: "", volume: "", sizePrice: "" });
@@ -185,13 +260,13 @@ function EditItem() {
             setValue("size", newArray);
         }
     };
-    const removePersonalVariant = (index) => {
-        const personalSizeArray = watch("personalSize");
-        if (personalSizeArray.length > 1) {
-            const newArray = personalSizeArray.filter((_, i) => i !== index);
-            setValue("personalSize", newArray);
-        }
-    };
+    // const removePersonalVariant = (index) => {
+    //     const personalSizeArray = watch("personalSize");
+    //     if (personalSizeArray.length > 1) {
+    //         const newArray = personalSizeArray.filter((_, i) => i !== index);
+    //         setValue("personalSize", newArray);
+    //     }
+    // };
     // Handle Active Status
     const handleActiveStatus = (sizeData) => {
         if (sizeData && sizeData.length === 0) {
@@ -374,20 +449,6 @@ function EditItem() {
         console.log(data.images, "data.images in onSubmit function");
         const formData = new FormData();
 
-        // Append images
-        data.images.forEach((image) => {
-            if (image instanceof File) {
-                formData.append("images", image);
-            }
-        });
-
-        // Ensure only non-empty ingredients are included
-        const filteredIngredients = ingredients.filter((item) => item.trim() !== "");
-
-
-        filteredIngredients.forEach((item, index) => {
-            formData.append(`ingredients[${index}]`, item);
-        });
         const businessStatus = handleActiveStatus(data.size);
         const personalStatus = handleActiveStatus(data.personalSize);
 
@@ -396,26 +457,40 @@ function EditItem() {
 
         data.isActiveForPersonal = personalStatus.isActive;
         data.personalSize = personalStatus.sizeData;
-
+        // Append images
+        data.images.forEach((image) => {
+            formData.append("images", image);
+        });
         // Append other fields
         formData.append("ratings", data.ratings);
         formData.append("categoryId", data.categoryId);
         formData.append("isActiveForBusiness", data.isActiveForBusiness);
         formData.append("isActiveForPersonal", data.isActiveForPersonal);
-        formData.append("itemName", data.itemName)
+        formData.append("itemName", data.itemName);
+        formData.append("description", data.description);
+
         data.size.forEach((item, index) => {
             formData.append(`size[${index}][sizeId]`, item.sizeId);
             formData.append(`size[${index}][volume]`, item.volume);
             formData.append(`size[${index}][sizePrice]`, item.sizePrice);
         });
-        // filteredIngredients.forEach((item, index) => {
-        //     formData.append(`ingredients[${index}]`, item);
-        // });
+
+        // Append ingredients
+        data.ingredients.forEach((item, index) => {
+            formData.append(`ingredients[${index}]`, item);
+        });
+
+        // Append add-ons
+        data.addOns.forEach((item, index) => {
+            formData.append(`addOn[${index}]`, item);
+        });
+        // Append personalSize 
         data.personalSize.forEach((item, index) => {
             formData.append(`personalSize[${index}][sizeId]`, item.sizeId);
             formData.append(`personalSize[${index}][volume]`, item.volume);
             formData.append(`personalSize[${index}][sizePrice]`, item.sizePrice);
         });
+
         try {
             const response = await axios.put(
                 `${baseUrl}/menu/update/${id}`,
@@ -433,8 +508,7 @@ function EditItem() {
                         color: '#000',
                     },
                 });
-                // reset();
-                setRating(0);
+                reset();
                 setImageList([]);
                 setCurrentImageIndex(null);
                 setSelectedImagesCount(0);
@@ -469,7 +543,7 @@ function EditItem() {
                                         type='text'
                                         name="itemName"
                                         {...register("itemName")}
-                                        className="form-control shadow"
+                                        className="form-control shadow text-capitalize"
                                         placeholder="e.g. Masala Tea"
                                     />
                                 </div>
@@ -481,7 +555,7 @@ function EditItem() {
                                         name='description'
                                         {...register("description")}
                                         // value="hello"
-                                        className="form-control shadow"
+                                        className="form-control shadow text-capitalize"
                                         rows="4"
                                         style={{
                                             resize: 'none',
@@ -492,73 +566,93 @@ function EditItem() {
                                         placeholder="Write a short description about this item..."
                                     />
                                 </div>
-
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
-                                    <label className="form-label">Ingredients:</label>
-                                    <div className="d-flex flex-wrap align-items-center">
-                                        {ingredients.map((ingredient, index) => (
-                                            <div key={index} className="d-flex align-items-center">
-                                                <div className="input-group mt-2" style={{ width: 'auto' }}>
-                                                    <input
-                                                        ref={(el) => (inputRefs.current[index] = el)}
-                                                        type="text"
-                                                        className="form-control shadow"
-                                                        placeholder="e.g. Tea"
-                                                        value={ingredient}
-                                                        onChange={(e) => handleIngredientChange(index, e.target.value)}
-                                                        style={{
-                                                            width: '60px',
-                                                            minWidth: '60px !important',
-                                                            transition: 'width 0.2s ease'
-                                                        }}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-link p-2 end-0"
-                                                        onClick={() =>
-                                                            index === ingredients.length - 1
-                                                                ? addIngredient()
-                                                                : removeIngredient(index)
+                                    <label className="form-label">Item Ingredients :</label>
+                                    <div className="position-relative">
+                                        <div className="input-container border border-2 border-dark rounded-pill  d-flex align-items-center shadow">
+                                            {/* Selected Ingredients */}
+                                            <div className="d-flex ms-1 fs-4 align-items-center">
+                                                {selectedIngredients.map(item => (
+                                                    <div key={item._id} className="me-1 mb-1">
+                                                        <span className="badge rounded-pill text-white fw-bold"
+                                                            style={{ backgroundColor: '#0B2545', }}>
+                                                            {item.name}
+                                                            <span
+                                                                className="ms-2 cursor-pointer"
+                                                                onClick={() => removeIngredient(item._id)}
+                                                            >×</span>
+                                                        </span>
+                                                    </div>
+                                                ))}
+
+                                                {/* Search Input */}
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-0"
+                                                    placeholder="Type To Search Ingredients"
+                                                    value={ingredientSearchTerm}
+                                                    onChange={handleIngredientSearch}
+                                                    onFocus={() => handleInputFocus('ingredient')}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowIngredientDropdown(true);
+                                                        if (filteredIngredients.length === 0) {
+                                                            setFilteredIngredients(ingredients.slice(0, 5));
                                                         }
-                                                    >
-                                                        {index === ingredients.length - 1 ? (
-                                                            <FiPlusCircle className="fs-5 text-primary" />
-                                                        ) : (
-                                                            <FiMinusCircle className="fs-5 text-danger" />
-                                                        )}
-                                                    </button>
-                                                </div>
+                                                    }}
+                                                    style={{ boxShadow: 'none' }}
+                                                />
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        {/* Hidden input for react-hook-form to register the ingredients */}
+                                        <input
+                                            type="hidden"
+                                            {...register("ingredients")}
+                                        />
+
+                                        {/* Ingredients Dropdown */}
+                                        {showIngredientDropdown && filteredIngredients.length > 0 && (
+                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                                style={{
+                                                    zIndex: 1000,
+                                                    maxHeight: '180px',
+                                                    overflowY: 'auto',
+                                                    top: '100%',
+
+                                                    left: 0
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}>
+                                                {filteredIngredients.map(item => (
+                                                    <div key={item._id}
+                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => addIngredient(item)}>
+                                                        {item.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Clear All Button for Ingredients */}
+                                        {selectedIngredients.length > 0 && (
+                                            <div className="d-flex justify-content-end ">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-link  "
+                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
+                                                    onClick={clearAllIngredients}
+                                                >
+                                                    Clear All
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-
-                                {/* Rating */}
-                                <div className="mb-4 rating d-flex align-items-center">
-                                    <label className="rating-label form-label">Ratings:</label>
-                                    <div className="rating-stars-container">
-                                        {[...Array(5)].map((_, index) => (
-                                            <span
-                                                key={index}
-                                                className={`rating-stars ${index < rating ? "selected" : ""}`}
-                                                onClick={() => handleRatingClick(index)}
-                                            >
-                                                ★
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <input
-                                    type="hidden"
-                                    name="ratings"
-
-                                    {...register("ratings", { required: true })}
-                                    value={rating}
-                                />
                             </div>
 
+                            {/* <div className="col-1"></div> */}
                             {/* Image Upload Section */}
                             <div className="col-md-4">
                                 <label className="form-label mb-3 ms-4">Images:</label>
@@ -746,19 +840,215 @@ function EditItem() {
 
                             </div>
                         </div>
-                        {/* Business Menu Variants */}
-                        <div className="variants-section col-12">
-                            <h3 className="variants-title">Business Menu Variants</h3>
-                            <div className="row">
-                                {watch("size").map((_, index) => (
-                                    <div key={index} className="row w-100 mx-0 mb-3">
+                        {/* Add Ons Section */}
+                        <div className="row ">
+                            <div className="col-md-8">
+                                <div className="mb-4">
+                                    <label className="form-label">Add-ons :</label>
+                                    <div className="position-relative">
+                                        <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
+                                            {/* Selected Add-ons */}
+                                            <div className="d-flex ms-1 fs-4 align-items-center">
+                                                {selectedAddons.map(item => (
+                                                    <div key={item._id} className="me-1 mb-1">
+                                                        <span className="badge rounded-pill text-white fw-bold"
+                                                            style={{ backgroundColor: '#0B2545', }}>
+                                                            {item.name}
+                                                            <span
+                                                                className="ms-2 cursor-pointer"
+                                                                onClick={() => removeAddon(item._id)}
+                                                            >×</span>
+                                                        </span>
+                                                    </div>
+                                                ))}
+
+                                                {/* Search Input */}
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-0"
+                                                    placeholder="Type To Search Add-ons"
+                                                    value={addonSearchTerm}
+                                                    onChange={handleAddonSearch}
+                                                    onFocus={() => handleInputFocus('addon')}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setShowAddonDropdown(true);
+                                                        if (filteredAddons.length === 0) {
+                                                            setFilteredAddons(addons.slice(0, 5));
+                                                        }
+                                                    }}
+                                                    style={{ boxShadow: 'none' }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Hidden input for react-hook-form to register the add-ons */}
+                                        <input
+                                            type="hidden"
+                                            {...register("addOn")}
+                                        />
+
+                                        {/* Add-ons Dropdown */}
+                                        {showAddonDropdown && filteredAddons.length > 0 && (
+                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                                style={{
+                                                    zIndex: 1000,
+                                                    maxHeight: '180px',
+                                                    overflowY: 'auto',
+                                                    top: '100%',
+                                                    left: 0
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}>
+                                                {filteredAddons.map(item => (
+                                                    <div key={item._id}
+                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                        style={{ cursor: 'pointer' }}
+                                                        onClick={() => addAddon(item)}>
+                                                        {item.name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Clear All Button for Add-ons */}
+                                        {selectedAddons.length > 0 && (
+                                            <div className="d-flex justify-content-end ">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-link"
+                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
+                                                    onClick={clearAllAddons}
+                                                >
+                                                    Clear All
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Rating */}
+                            <div className="col-md-4 mt-1">
+                                <div className="mb-2">
+                                    <label className="form-label">Ratings:</label>
+                                    <input
+                                        type="number"
+                                        name="ratings"
+                                        {...register("ratings", { required: true })}
+                                        className="form-control shadow"
+                                        placeholder=" E.g 4.5"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            {/* Business Menu Variants */}
+                            <div className="variants-section col-12">
+                                <h3 className="variants-title">Business Menu Variants</h3>
+                                <div className="row">
+                                    {watch("size").map((_, index) => (
+                                        <div key={index} className="row w-100 mx-0 mb-3">
+                                            <div className="col-md-3 mb-2">
+                                                <label className="form-label">Category :</label>
+                                                <select
+                                                    {...register('categoryId')}
+                                                    className="form-control shadow text-capitalize"
+                                                    name='categoryId'
+                                                    disabled={businessVariants.length > 1}
+                                                >
+                                                    <option value="">Select Any One</option>
+                                                    {categories.map((category) => (
+                                                        <option key={category._id} value={category._id}>
+                                                            {category.title}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="col-md-3">
+                                                <label className="form-label">Size :</label>
+                                                <select
+                                                    {...register(`size[${index}].sizeId`)}
+                                                    className="form-control shadow text-capitalize"
+                                                    name={`size[${index}].sizeId`}
+                                                >
+                                                    <option value="">Select Any One</option>
+                                                    {sizes.map((size) => (
+                                                        <option key={size._id} value={size._id}>{size.size}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="col-md-3">
+                                                <label className="form-label">Volume :</label>
+                                                <input
+                                                    type="text"
+                                                    {...register(`size[${index}].volume`)}
+                                                    name={`size[${index}].volume`}
+                                                    className="form-control shadow text-capitalize"
+                                                    placeholder="e.g. 60ml"
+                                                />
+                                            </div>
+
+                                            <div className="col-md-3">
+                                                <label className="form-label">Price :</label>
+                                                <input
+                                                    type="number"
+                                                    name={`size[${index}].sizePrice`}
+
+                                                    {...register(`size[${index}].sizePrice`)}
+                                                    className="form-control shadow"
+                                                    placeholder="₹ e.g. 100"
+                                                />
+                                            </div>
+
+                                            {watch("size").length > 1 && (
+                                                <div className="col-2 d-flex align-items-end">
+                                                    <button
+                                                        type="button"
+                                                        className="btn mb-2"
+                                                        onClick={() => removeBusinessVariant(index)}
+                                                    >
+                                                        <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                                    + ADD VARIANT
+                                </button>
+                            </div>
+                            {/* Recipe Field */}
+                            <div className="mb-4">
+                                <label className="form-label">Recipe :</label>
+                                <textarea
+                                    name='description'
+                                    {...register("recipe")}
+                                    // value="hello"
+                                    className="form-control shadow text-capitalize"
+                                    rows="4"
+                                    style={{
+                                        resize: 'none',
+                                        overflowY: 'auto',
+                                        scrollbarWidth: 'none',
+                                        msOverflowStyle: 'none'
+                                    }}
+                                    placeholder="Write the cooking instructions for this item..."
+                                />
+                            </div>
+                            {/* Personal Menu Variants */}
+                            {/* <div className="variants-section col-12">
+                                <h3 className="variants-title">Personal Menu Variants</h3>
+                                {watch("personalSize").map((_, index) => (
+                                    <div key={index} className="row">
                                         <div className="col-md-3 mb-2">
                                             <label className="form-label">Category :</label>
                                             <select
-                                                {...register('categoryId')}
+                                                // {...register(`personalSize[${index}].categoryId`)}
                                                 className="form-control shadow"
-                                                name='categoryId'
-                                                disabled={businessVariants.length > 1}
+                                                disabled
                                             >
                                                 <option value="">Select Any One</option>
                                                 {categories.map((category) => (
@@ -769,12 +1059,13 @@ function EditItem() {
                                             </select>
                                         </div>
 
-                                        <div className="col-md-3">
+                                        {/* Personal Size 
+                                        <div className="col-md-3 mb-2">
                                             <label className="form-label">Size :</label>
                                             <select
-                                                {...register(`size[${index}].sizeId`)}
+                                                name={`personalSize[${index}].sizeId`}
+                                                {...register(`personalSize[${index}].sizeId`)}
                                                 className="form-control shadow"
-                                                name={`size[${index}].sizeId`}
                                             >
                                                 <option value="">Select Any One</option>
                                                 {sizes.map((size) => (
@@ -783,35 +1074,37 @@ function EditItem() {
                                             </select>
                                         </div>
 
-                                        <div className="col-md-3">
+                                        {/* Personal Size - Volume 
+                                        <div className="col-md-3 mb-2">
                                             <label className="form-label">Volume :</label>
                                             <input
                                                 type="text"
-                                                {...register(`size[${index}].volume`)}
-                                                name={`size[${index}].volume`}
+                                                name={`personalSize[${index}].volume`}
+                                                {...register(`personalSize[${index}].volume`)}
+
                                                 className="form-control shadow"
                                                 placeholder="e.g. 60ml"
                                             />
                                         </div>
 
-                                        <div className="col-md-3">
+                                        {/* Personal Size - Price 
+                                        <div className="col-md-3 mb-2">
                                             <label className="form-label">Price :</label>
                                             <input
                                                 type="number"
-                                                name={`size[${index}].sizePrice`}
+                                                name={`personalSize[${index}].sizePrice`}
+                                                {...register(`personalSize[${index}].sizePrice`,)}
 
-                                                {...register(`size[${index}].sizePrice`)}
                                                 className="form-control shadow"
                                                 placeholder="₹ e.g. 100"
                                             />
                                         </div>
-
-                                        {watch("size").length > 1 && (
+                                        {watch("personalSize").length > 1 && (
                                             <div className="col-2 d-flex align-items-end">
                                                 <button
                                                     type="button"
                                                     className="btn mb-2"
-                                                    onClick={() => removeBusinessVariant(index)}
+                                                    onClick={() => removePersonalVariant(index)}
                                                 >
                                                     <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
                                                 </button>
@@ -819,98 +1112,18 @@ function EditItem() {
                                         )}
                                     </div>
                                 ))}
-                            </div>
+                                <button type="button" className="add-variant-btn mt-3" onClick={addPersonalVariant}>
+                                    + ADD VARIANT
+                                </button>
 
-                            <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
-                                + ADD VARIANT
-                            </button>
-                        </div>
-
-                        {/* Personal Menu Variants */}
-                        <div className="variants-section col-12">
-                            <h3 className="variants-title">Personal Menu Variants</h3>
-                            {watch("personalSize").map((_, index) => (
-                                <div key={index} className="row">
-                                    <div className="col-md-3 mb-2">
-                                        <label className="form-label">Category :</label>
-                                        <select
-                                            // {...register(`personalSize[${index}].categoryId`)}
-                                            className="form-control shadow"
-                                            disabled
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {categories.map((category) => (
-                                                <option key={category._id} value={category._id}>
-                                                    {category.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Personal Size */}
-                                    <div className="col-md-3 mb-2">
-                                        <label className="form-label">Size :</label>
-                                        <select
-                                            name={`personalSize[${index}].sizeId`}
-                                            {...register(`personalSize[${index}].sizeId`)}
-                                            className="form-control shadow"
-                                        >
-                                            <option value="">Select Any One</option>
-                                            {sizes.map((size) => (
-                                                <option key={size._id} value={size._id}>{size.size}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Personal Size - Volume */}
-                                    <div className="col-md-3 mb-2">
-                                        <label className="form-label">Volume :</label>
-                                        <input
-                                            type="text"
-                                            name={`personalSize[${index}].volume`}
-                                            {...register(`personalSize[${index}].volume`)}
-
-                                            className="form-control shadow"
-                                            placeholder="e.g. 60ml"
-                                        />
-                                    </div>
-
-                                    {/* Personal Size - Price */}
-                                    <div className="col-md-3 mb-2">
-                                        <label className="form-label">Price :</label>
-                                        <input
-                                            type="number"
-                                            name={`personalSize[${index}].sizePrice`}
-                                            {...register(`personalSize[${index}].sizePrice`,)}
-
-                                            className="form-control shadow"
-                                            placeholder="₹ e.g. 100"
-                                        />
-                                    </div>
-                                    {watch("personalSize").length > 1 && (
-                                        <div className="col-2 d-flex align-items-end">
-                                            <button
-                                                type="button"
-                                                className="btn mb-2"
-                                                onClick={() => removePersonalVariant(index)}
-                                            >
-                                                <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                            <button type="button" className="add-variant-btn mt-3" onClick={addPersonalVariant}>
-                                + ADD VARIANT
-                            </button>
+                            </div> */}
 
                         </div>
-
                         <div className="mt-4">
                             <button type="submit" className="submit-btn">UPDATE ITEM</button>
                         </div>
                     </form>
-                </div>
+                </div >
             </div >
             <ToastContainer />
         </div >

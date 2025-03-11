@@ -167,7 +167,7 @@ function NewUser() {
                                                 <label className="form-label">Business Name:</label>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control text-capitalize"
                                                     placeholder="Business Name"
                                                     {...register('businessName')}
                                                 />
@@ -177,7 +177,7 @@ function NewUser() {
                                                 <label className="form-label">Owner Name:</label>
                                                 <input
                                                     type="text"
-                                                    className="form-control"
+                                                    className="form-control text-capitalize"
                                                     placeholder="Owner Name"
                                                     {...register('ownerName')}
                                                 />
@@ -191,7 +191,7 @@ function NewUser() {
                                             <label className="form-label">Full Name:</label>
                                             <input
                                                 type="text"
-                                                className="form-control"
+                                                className="form-control text-capitalize"
                                                 placeholder="Full Name"
                                                 {...register('username')}
                                             />
@@ -232,7 +232,7 @@ function NewUser() {
                                         <input
                                             type="text"
                                             {...register("address")}
-                                            className="form-control shadow"
+                                            className="form-control shadow text-capitalize"
                                             placeholder="Full Address"
                                         />
                                     </div>

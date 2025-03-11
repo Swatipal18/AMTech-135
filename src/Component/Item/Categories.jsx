@@ -18,6 +18,7 @@ function Categories() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [limit, setLimit] = useState(10);
+    const [totalRecord, setTotalRecord] = useState(0);
     const { register, handleSubmit, setValue, reset } = useForm();
     useEffect(() => {
         setCurrentPage(1);
@@ -53,6 +54,7 @@ function Categories() {
             if (response.data.success) {
                 setItems(response.data.data.categories || []);
                 setTotalItems(response.data.data.categories.length || 0);
+                setTotalRecord(response.data.data.totalRecords || 0);
             } else {
                 setError('No data received from server');
                 toast.error('No data received from server');
@@ -139,11 +141,11 @@ function Categories() {
         const isNextButtonDisabled = totalItems < limit;
 
         return (
-            <div className="pagination-container d-flex align-items-center justify-content-between">
+            <div className="pagination-container ">
                 <div className="d-flex align-items-center">
 
                     <span className="showing-text">
-                        Showing {startIndex}-{endIndex} Of
+                        Showing {totalRecord} Of
                         <select
                             className="me-1 text-center customselect "
                             value={limit}
@@ -222,7 +224,7 @@ function Categories() {
                     <div className="modal-content">
                         <h3>{editCategory ? 'Edit Category' : 'Add New Category'}</h3>
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <input type="text" placeholder="Enter Category name" {...register('title', { required: true })} className="form-control" />
+                            <input type="text" placeholder="Enter Category name" {...register('title', { required: true })} className="form-control text-capitalize" />
                             <div className="modal-actions mt-3">
                                 <button type="submit" className="edit-btn">{editCategory ? 'Update' : 'Submit'}</button>
                                 <button type="button" onClick={() => setShowModal(false)} className="deletes-btn">Close</button>
@@ -249,7 +251,7 @@ function Categories() {
                         <tbody>
                             {items.map((item) => (
                                 <tr key={item._id}>
-                                    <td>{item.title}</td>
+                                    <td className='text-capitalize'>{item.title}</td>
                                     <td className="actions d-flex justify-content-end align-items-center">
                                         <button className="edit-btn" onClick={() => handleEdit(item)}>EDIT</button>
                                         <button className="deletes-btn ms-5" onClick={() => handleDelete(item._id)}>DELETE</button>

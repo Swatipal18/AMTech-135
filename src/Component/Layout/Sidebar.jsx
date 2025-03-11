@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Menu, Search, Store, Briefcase } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { RiUserStarFill } from "react-icons/ri";
@@ -27,7 +27,7 @@ const Sidebar = ({ onToggle, children }) => {
     const [length, setlenght] = useState()
     const tone = new Audio("/public/Audios/new-order-store-admin.mp3");
     const location = useLocation();
-    console.log('length: ', length);
+    // console.log('length: ', length);
     useEffect(() => {
         if (length > prevOrderLength.current) {
             tone.play().catch((error) => {
@@ -49,7 +49,7 @@ const Sidebar = ({ onToggle, children }) => {
         socket.emit("total-records", {});
         socket.on("total-records-received", (data) => {
             setlenght(data.data)
-            console.log('---------------- data.data: ', data.data);
+            // console.log('---------------- data.data: ', data.data);
 
         });
 
