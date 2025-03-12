@@ -27,7 +27,6 @@ const Sidebar = ({ onToggle, children }) => {
     const [length, setlenght] = useState()
     const tone = new Audio("/public/Audios/new-order-store-admin.mp3");
     const location = useLocation();
-    // console.log('length: ', length);
     useEffect(() => {
         if (length > prevOrderLength.current) {
             tone.play().catch((error) => {
@@ -49,8 +48,6 @@ const Sidebar = ({ onToggle, children }) => {
         socket.emit("total-records", {});
         socket.on("total-records-received", (data) => {
             setlenght(data.data)
-            // console.log('---------------- data.data: ', data.data);
-
         });
 
         const interval = setInterval(() => {
@@ -221,7 +218,7 @@ const Sidebar = ({ onToggle, children }) => {
                     </button>
                     {isOpen && (
                         <div className='mt-3 mx-2'>
-                            <Link to="/" className="logo ms-5">
+                            <Link to="/Admin" className="logo ms-5">
                                 <img src="/main-logo.png" alt="Logo" />
                             </Link>
                         </div>
