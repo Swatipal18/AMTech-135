@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { applyCropZoomRotation } from '../../../utils/getCroppedImg';
 import Cropper from 'react-easy-crop';
-import { FaArrowRotateRight } from "react-icons/fa6";
+import { FaArrowRotateRight, FaTrash } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import imageCompression from 'browser-image-compression';
@@ -15,7 +15,7 @@ import imageCompression from 'browser-image-compression';
 function NewUser() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [userType, setUserType] = useState('business');
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm();
     const [imagePreviews, setImagePreviews] = useState("");
     const [imageError, setImageError] = useState('');
     const [imageSelected, setImageSelected] = useState(false);
@@ -25,25 +25,16 @@ function NewUser() {
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const navigate = useNavigate();
+    
     const onSubmit = async (data) => {
         console.log('data: ', data);
 
         try {
-            // const formDatas = {
-            //     ...data,
-            //     type: userType
-            // };
-            // console.log('Form submitted:', formDatas);
-            // const formData = new FormData();
-            // formData.append('images', data.images);
-            // console.log(formData, "formData")
-            const response = await axios.post(`${baseUrl}/admin-business/create`, data
-                , {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
+            const response = await axios.post(`${baseUrl}/admin-business/create`, data, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
                 }
-            );
+            });
             console.log('response: ', response.data.data);
 
             if (response.data.success) {
@@ -117,9 +108,11 @@ function NewUser() {
             }
         }
     };
+    
     const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
+    
     const updateImagePreview = async () => {
         try {
             const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
@@ -128,14 +121,25 @@ function NewUser() {
             const blob = await base64Response.blob();
             const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
             setValue("images", croppedFile);
-            convertToBinary(croppedFile);
-
         } catch (error) {
             console.error("Error while cropping the image: ", error);
         }
     };
+    
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    // New function to delete the image
+    const deleteImage = () => {
+        setImagePreviews("");
+        setImageSelected(false);
+        setValue("images", null);  // Clear the form value
+        // Reset any file input
+        const fileInput = document.getElementById("fileInput");
+        if (fileInput) {
+            fileInput.value = "";
+        }
     };
 
     return (
@@ -207,7 +211,6 @@ function NewUser() {
                                                 {...register("contact")}
                                                 className="form-control shadow no-spinner"
                                                 placeholder="e.g. +91 1234567890"
-                                            // value="7894561309"
                                             />
                                         </div>
 
@@ -284,7 +287,7 @@ function NewUser() {
                                         </div>
                                         {imagePreviews ? (
                                             <>
-                                                <div className="image-preview-container mt-3">
+                                                <div className="image-preview-container mt-3 position-relative">
                                                     <img
                                                         src={imagePreviews}
                                                         alt="Uploaded Preview"
@@ -292,6 +295,20 @@ function NewUser() {
                                                         style={{ width: "200px", height: "200px", objectFit: "cover" }}
                                                         onClick={() => setIsModalOpen(true)}
                                                     />
+                                                    {/* Delete icon button */}
+                                                    <button 
+                                                        type="button"
+                                                        className="btn btn-danger position-absolute"
+                                                        style={{ 
+                                                            top: "5px", 
+                                                            right: "5px", 
+                                                            borderRadius: "50%",
+                                                            padding: "5px 8px"
+                                                        }}
+                                                        onClick={deleteImage}
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
                                                 </div>
 
                                                 {isModalOpen && (

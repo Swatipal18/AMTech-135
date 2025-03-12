@@ -68,7 +68,7 @@ function ActiveSubscription() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/EditItem/${id}`);
+        navigate(`/EditSubscription/${id}`);
     };
 
     const handleCheckboxChange = (itemId, type, item) => {
@@ -244,7 +244,7 @@ function ActiveSubscription() {
                         <div className="error-message">{error}</div>
                     ) : (
                         <>
-                            <table className="table mt-3 table-hover">
+                            <table className="table mt-3 ">
                                 <thead>
                                     <tr>
                                         <th>User</th>

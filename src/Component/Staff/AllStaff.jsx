@@ -37,7 +37,7 @@ const AllStaff = () => {
       fetchItems(currentPage, newSearchTerm);
     }
     if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
-      fetchItems(currentPage); // Reset to default items or handle as needed
+      fetchItems(currentPage); 
     }
   }
   const fetchStaff = async (page, search) => {
@@ -49,6 +49,7 @@ const AllStaff = () => {
       const response = await axios.get(`${baseUrl}/store/list`, {
         params: { page: pageNumber, limit: limitNumber, search: search || '' }
       });
+      // console.log(response.data.data.users,"data");
       if (response.data?.data?.users) {
         setStaff(response.data.data.users || []);
         setTotalItems(response.data.data.users.length || 0);

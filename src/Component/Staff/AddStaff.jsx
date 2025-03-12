@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import { GrUploadOption, GrClose } from "react-icons/gr";
+import { MdDelete } from "react-icons/md"; // Added delete icon import
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +33,19 @@ function AddStaff() {
         "Delivery Boy": 4,
     };
     const roles = ['Delivery Boy', 'Staff Member', 'Store Manager', 'Kitchen Member'];
+    
+    // Function to delete the selected image
+    const handleDeleteImage = () => {
+        setImagePreviews("");
+        setImageSelected(false);
+        setValue("images", null);
+        // Reset the file input value
+        const fileInput = document.getElementById("fileInput");
+        if (fileInput) {
+            fileInput.value = "";
+        }
+    };
+    
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -172,7 +186,7 @@ function AddStaff() {
                                     <div className="mb-4">
                                         <label className="form-label">Mobile Number :</label>
                                         <input
-                                            type='number'
+                                            type='text'
                                             {...register("contact")}
                                             className="form-control shadow no-spinner"
                                             placeholder="e.g. +91 1234567890"
@@ -232,7 +246,7 @@ function AddStaff() {
                                         </div>
                                         {imagePreviews ? (
                                             <>
-                                                <div className="image-preview-container mt-3">
+                                                <div className="image-preview-container mt-3 position-relative">
                                                     <img
                                                         src={imagePreviews}
                                                         alt="Uploaded Preview"
@@ -240,6 +254,20 @@ function AddStaff() {
                                                         style={{ width: "200px", height: "200px", objectFit: "cover" }}
                                                         onClick={() => setIsModalOpen(true)}
                                                     />
+                                                    {/* Delete icon button */}
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-danger btn-sm position-absolute"
+                                                        style={{ 
+                                                            top: "5px", 
+                                                            right: "5px", 
+                                                            borderRadius: "50%",
+                                                            padding: "5px"
+                                                        }}
+                                                        onClick={handleDeleteImage}
+                                                    >
+                                                        <MdDelete style={{ fontSize: "18px" }} />
+                                                    </button>
                                                 </div>
 
                                                 {isModalOpen && (

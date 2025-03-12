@@ -10,6 +10,7 @@ import Cropper from 'react-easy-crop';
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
+import { MdDelete } from "react-icons/md";
 
 function EditStaff() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -43,13 +44,28 @@ function EditStaff() {
             const staffData = response.data.data;
             if (staffData.role) {
                 staffData.role = roles[staffData.role - 1];
+                setSelectedRole(roles[staffData.role - 1]);
+            }
+            reset(staffData);
+            if (staffData.image) {
+                setImagePreviews(staffData.image);
+            } else if (staffData.imageUrl) {
+                setImagePreviews(staffData.imageUrl);
+            } else if (staffData.images) {
+                if (Array.isArray(staffData.images) && staffData.images.length > 0) {
+                    setImagePreviews(staffData.images[0]);
+                } else {
+                    setImagePreviews(staffData.images);
+                }
+            } else if (staffData.profileImage) {
+                setImagePreviews(staffData.profileImage);
+            } else {
+                console.log("No image property found in staffData");
             }
 
-            reset(staffData); // Reset the form with the fetched data
-
-            // If image URL exists, set the preview image
-            if (staffData.image) {
-                setImagePreviews(staffData.image); // Assuming 'image' is the URL in your response
+            // If the image URL is relative, prepend base URL
+            if (imagePreviews && typeof imagePreviews === 'string' && !imagePreviews.startsWith('http')) {
+                setImagePreviews(`${baseUrl}/${imagePreviews}`);
             }
 
         } catch (err) {
@@ -67,6 +83,13 @@ function EditStaff() {
     useEffect(() => {
         fetchStaffDetails();
     }, []);
+
+
+    const handleDeleteImage = () => {
+        setImagePreviews(null);
+        setImageSelected(false);
+        setValue("images", null);
+    };
 
     const submitData = async (data) => {
         try {
@@ -154,228 +177,266 @@ function EditStaff() {
         setIsModalOpen(false);
     };
 
+    // Debug loading state
+    // console.log("Current loading state:", loading);
+    // console.log("Current image preview state:", imagePreviews);
+
     return (
         <div className="container-fluid">
             <div className="row">
+                {/* Main Content */}
                 <div className="col-md-12 main-content">
                     <div className="form-container">
-                        <button className='edit-btn mb-4 fs-6' onClick={() => {
-                            console.log("Back Button Clicked"),
-                                navigate('/AllStaff')
-                        }}>Back</button>
-
+                        <button
+                            className='edit-btn mb-4 fs-6'
+                            onClick={() => navigate('/AllStaff')}
+                        >
+                            Back
+                        </button>
                         <h1 className="form-title">Edit Staff</h1>
-                        <form onSubmit={handleSubmit(submitData)}>
-                            <div className="row">
-                                <div className="col-md-8">
-                                    {/* Name Field */}
-                                    <div className="mb-4">
-                                        <label className="form-label">Name:</label>
-                                        <input
-                                            type="text"
-                                            {...register("username")}
-                                            className="form-control shadow text-capitalize"
-                                            placeholder="e.g. Full Name"
-                                        />
-                                    </div>
-
-                                    {/* Mobile Field */}
-                                    <div className="mb-4">
-                                        <label className="form-label">Mobile Number:</label>
-                                        <input
-                                            type="number"
-                                            {...register("contact")}
-                                            className="form-control shadow no-spinner"
-                                            placeholder="e.g. +91 1234567890"
-                                        />
-                                    </div>
-
-                                    {/* Email Field */}
-                                    <div className="mb-4">
-                                        <label className="form-label">E-Mail Address:</label>
-                                        <input
-                                            type="email"
-                                            {...register("email")}
-                                            className="form-control shadow"
-                                            placeholder="e.g. ABCD@example.com"
-                                        />
-                                    </div>
-
-                                    {/* Full Address */}
-                                    <div className="mb-4">
-                                        <label className="form-label">Full Address:</label>
-                                        <input
-                                            type="text"
-                                            {...register("address")}
-                                            className="form-control shadow text-capitalize"
-                                            placeholder="Full Address"
-                                        />
-                                    </div>
-
-                                    {/* Role */}
-                                    <label className="form-label">Role :</label>
-                                    <select
-                                        {...register("role")}
-                                        className="form-select form-control shadow"
-                                        style={{
-                                            marginLeft: '10px',
-                                            width: '400px',
-                                            color: selectedRole === "" ? '#8DA9C4 ' : 'inherit'
-                                        }}
-                                        value={selectedRole}
-                                        onChange={(e) => setSelectedRole(e.target.value)}
-                                    >
-                                        <option value="">Select Role</option>
-                                        {roles.map(role => (
-                                            <option key={role} value={role} className='text-dark'>{role}</option>
-                                        ))}
-                                    </select>
+                        {loading ? (
+                            <div className="text-center">
+                                <div className="spinner-border" role="status">
+                                    <span className="visually-hidden">Loading...</span>
                                 </div>
-
-                                {/* Image Upload Section */}
-                                <div className="col-md-4">
-                                    <label className="form-label mb-3 ms-4">Image:</label>
-                                    <div className="image-upload shadow ms-4">
-                                        <div className="upload-icon">
-                                            <GrUploadOption className="arrow-up" />
+                                <p>Loading staff details...</p>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit(submitData)}>
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        {/* Name Field */}
+                                        <div className="mb-4">
+                                            <label className="form-label">Name :</label>
+                                            <input
+                                                type="text"
+                                                {...register("username")}
+                                                className="form-control shadow text-capitalize"
+                                                placeholder="e.g. Full Name"
+                                            />
                                         </div>
-                                        {imagePreviews ? (
-                                            <>
-                                                <div className="image-preview-container mt-3">
-                                                    <img
-                                                        src={imagePreviews}
-                                                        alt="Uploaded Preview"
-                                                        className="img-thumbnail cursor-pointer"
-                                                        style={{ width: "200px", height: "200px", objectFit: "cover" }}
-                                                        onClick={() => setIsModalOpen(true)}
-                                                    />
-                                                </div>
 
-                                                {isModalOpen && (
-                                                    <div
-                                                        className="modal-overlay"
-                                                        onClick={(e) => {
-                                                            if (e.target === e.currentTarget) {
-                                                                closeModal();
-                                                            }
-                                                        }}
-                                                    >
-                                                        <div
-                                                            className="modal-div"
-                                                            onClick={(e) => e.stopPropagation()}
+                                        {/* Mobile Field */}
+                                        <div className="mb-4">
+                                            <label className="form-label">Mobile Number :</label>
+                                            <input
+                                                type='number'
+                                                {...register("contact")}
+                                                className="form-control shadow no-spinner"
+                                                placeholder="e.g. +91 1234567890"
+                                            />
+                                        </div>
+                                        {/* Email Field */}
+                                        <div className="mb-4">
+                                            <label className="form-label">E-Mail Address :</label>
+                                            <input
+                                                type="email"
+                                                {...register("email", {
+                                                    pattern: {
+                                                        value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                                        message: 'Invalid email address',
+                                                    }
+                                                })}
+                                                className="form-control shadow"
+                                                placeholder="e.g. ABCD@example.com"
+                                            />
+                                        </div>
+                                        {/* Full Address */}
+                                        <div className="mb-4">
+                                            <label className="form-label">Full Address :</label>
+                                            <input
+                                                type="text"
+                                                {...register("address")}
+                                                className="form-control shadow text-capitalize"
+                                                placeholder="Full Address"
+                                            />
+                                        </div>
+                                        {/* Role */}
+                                        <div className="mb-4">
+                                            <label className="form-label">Role :</label>
+                                            <select
+                                                {...register("role")}
+                                                className="form-select form-control shadow"
+                                                style={{
+                                                    marginLeft: '10px',
+                                                    width: '400px',
+                                                    color: selectedRole === "" ? '#8DA9C4' : 'inherit'
+                                                }}
+                                                value={selectedRole}
+                                                onChange={(e) => setSelectedRole(e.target.value)}
+                                            >
+                                                <option value="">Select Role</option>
+                                                {roles.map(role => (
+                                                    <option key={role} value={role} className='text-dark'>{role}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Image Upload Section */}
+                                    <div className="col-md-4">
+                                        <label className="form-label mb-3 ms-4">Image:</label>
+                                        <div className="image-upload shadow ms-4">
+                                            <div className="upload-icon">
+                                                <GrUploadOption className="arrow-up" />
+                                            </div>
+                                            {imagePreviews ? (
+                                                <>
+                                                    <div className="image-preview-container mt-3 position-relative">
+                                                        <img
+                                                            src={imagePreviews}
+                                                            alt="Uploaded Preview"
+                                                            className="img-thumbnail cursor-pointer"
+                                                            style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                            onClick={() => setIsModalOpen(true)}
+                                                            onError={(e) => {
+                                                                console.error("Image failed to load:", e);
+                                                                e.target.src = 'https://via.placeholder.com/200?text=Image+Error';
+                                                            }}
+                                                        />
+                                                        {/* Delete icon button */}
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-danger btn-sm position-absolute"
+                                                            style={{
+                                                                top: "5px",
+                                                                right: "5px",
+                                                                borderRadius: "50%",
+                                                                padding: "5px"
+                                                            }}
+                                                            onClick={handleDeleteImage}
                                                         >
-                                                            <button
-                                                                type='button'
-                                                                onClick={closeModal}
-                                                                className="close-button"
+                                                            <MdDelete style={{ fontSize: "18px" }} />
+                                                        </button>
+                                                    </div>
+
+                                                    {isModalOpen && (
+                                                        <div
+                                                            className="modal-overlay"
+                                                            onClick={(e) => {
+                                                                if (e.target === e.currentTarget) {
+                                                                    closeModal();
+                                                                }
+                                                            }}
+                                                        >
+                                                            <div
+                                                                className="modal-div"
+                                                                onClick={(e) => e.stopPropagation()}
                                                             >
-                                                                <GrClose />
-                                                            </button>
-                                                            <Cropper
-                                                                image={imagePreviews}
-                                                                crop={crop}
-                                                                zoom={zoom}
-                                                                rotation={rotation}
-                                                                aspect={5 / 3}
-                                                                onCropChange={setCrop}
-                                                                onZoomChange={setZoom}
-                                                                onRotationChange={setRotation}
-                                                                onCropComplete={onCropComplete}
-                                                            />
-                                                            <div className="crop-controls">
-                                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon    " style={{ width: "180px", fontSize: "15px" }}>
-                                                                    <label className="form-labels me-2">Zoom</label>
+                                                                <button
+                                                                    type='button'
+                                                                    onClick={closeModal}
+                                                                    className="close-button"
+                                                                >
+                                                                    <GrClose />
+                                                                </button>
+                                                                <Cropper
+                                                                    image={imagePreviews}
+                                                                    crop={crop}
+                                                                    zoom={zoom}
+                                                                    rotation={rotation}
+                                                                    aspect={5 / 3}
+                                                                    onCropChange={setCrop}
+                                                                    onZoomChange={setZoom}
+                                                                    onRotationChange={setRotation}
+                                                                    onCropComplete={onCropComplete}
+                                                                />
+                                                                <div className="crop-controls">
+                                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon" style={{ width: "180px", fontSize: "15px" }}>
+                                                                        <label className="form-labels me-2">Zoom</label>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm border-0"
+                                                                            onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                        >
+                                                                            <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                        </button>
+                                                                        <span className="mx-2">{zoom.toFixed(1)}x</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm border-0"
+                                                                            onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                        >
+                                                                            <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon" style={{ width: "130px", fontSize: "15px" }}>
+                                                                        <label className="form-labels">Rotation</label>
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm mx-2 border-0"
+                                                                            onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                                        >
+                                                                            <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                                        </button>
+                                                                    </div>
                                                                     <button
                                                                         type="button"
-                                                                        className="btn btn-sm border-0 "
-                                                                        onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                                        style={{ fontSize: "15px" }}
+                                                                        className="edit-btn"
+                                                                        onClick={async () => {
+                                                                            console.log("Done button clicked");
+                                                                            await updateImagePreview();
+                                                                            closeModal();
+                                                                        }}
                                                                     >
-                                                                        <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                        Done
                                                                     </button>
-                                                                    <span className="mx-2">{zoom.toFixed(1)}x</span>
                                                                     <button
                                                                         type="button"
-                                                                        className="btn btn-sm border-0"
-                                                                        onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                                        style={{ fontSize: "15px" }}
+                                                                        className="edit-btn full-size-btn"
+                                                                        onClick={() => {
+                                                                            setZoom(1);
+                                                                            setRotation(0);
+                                                                        }}
                                                                     >
-                                                                        <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                                        Real Size
                                                                     </button>
                                                                 </div>
-                                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon  " style={{ width: "130px", fontSize: "15px" }} >
-                                                                    <label className="form-labels">Rotation</label>
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-sm  mx-2 border-0"
-                                                                        onClick={() => setRotation((prev) => (prev + 90) % 360)}
-                                                                    >
-                                                                        <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
-                                                                    </button>
-                                                                </div>
-                                                                <button
-                                                                    type="button"
-                                                                    style={{ fontSize: "15px" }}
-                                                                    className="edit-btn"
-                                                                    onClick={async () => {
-                                                                        console.log("Done button clicked");
-                                                                        await updateImagePreview();
-                                                                        closeModal();
-                                                                    }}
-                                                                >
-                                                                    Done
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    style={{ fontSize: "15px" }}
-                                                                    className="edit-btn full-size-btn"
-                                                                    onClick={() => {
-                                                                        setZoom(1);
-                                                                        setRotation(0);
-                                                                    }}
-                                                                >
-                                                                    Real Size
-                                                                </button>
                                                             </div>
                                                         </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="upload-text fs-5">Upload Image Here</div>
+                                                    <div className="upload-subtext fs-6">
+                                                        (Jpg, png files supported only)
+                                                        <br />
+                                                        (Max File Size 10 MB)
                                                     </div>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="upload-text fs-5">Upload Image Here</div>
-                                                <div className="upload-subtext fs-6">
-                                                    (Jpg, png files supported only)
-                                                    <br />
-                                                    (Max File Size 10 MB)
-                                                </div>
-                                            </>
-                                        )}
-                                        <input
-                                            type="file"
-                                            className="form-control d-none"
-                                            id="fileInput"
-                                            {...register("images")}
-                                            onChange={handleImageChange}
-                                        />
-                                        <button
-                                            type="button"
-                                            className="edit-btn mt-4"
-                                            onClick={() => document.getElementById("fileInput").click()}
-                                        >
-                                            Select File
-                                        </button>
+                                                </>
+                                            )}
+                                            <input
+                                                type="file"
+                                                className="form-control d-none"
+                                                id="fileInput"
+                                                {...register("images")}
+                                                onChange={handleImageChange}
+                                            />
+                                            <button
+                                                type="button"
+                                                className="edit-btn mt-4"
+                                                onClick={() => document.getElementById("fileInput").click()}
+                                            >
+                                                Select File
+                                            </button>
+                                        </div>
+                                        {imageError && <div className="text-danger mt-2">{imageError}</div>}
                                     </div>
-                                    {imageError && <div className="text-danger mt-2">{imageError}</div>}
-                                </div>
 
-                                {/* Button Section */}
-                                <div className="mt-4">
-                                    <button type="submit" className="submit-btn">UPDATE STAFF</button>
+                                    {/* Button Section */}
+                                    <div className="mt-4">
+                                        <button type="submit" className="submit-btn">UPDATE STAFF</button>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        )}
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }

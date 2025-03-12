@@ -931,7 +931,7 @@ function EditItem() {
                                 <div className="mb-2">
                                     <label className="form-label">Ratings:</label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         name="ratings"
                                         {...register("ratings", { required: true })}
                                         className="form-control shadow"
@@ -992,7 +992,7 @@ function EditItem() {
                                             <div className="col-md-3">
                                                 <label className="form-label">Price :</label>
                                                 <input
-                                                    type="number"
+                                                    type="text"
                                                     name={`size[${index}].sizePrice`}
 
                                                     {...register(`size[${index}].sizePrice`)}
@@ -1091,7 +1091,7 @@ function EditItem() {
                                         <div className="col-md-3 mb-2">
                                             <label className="form-label">Price :</label>
                                             <input
-                                                type="number"
+                                                type="text"
                                                 name={`personalSize[${index}].sizePrice`}
                                                 {...register(`personalSize[${index}].sizePrice`,)}
 

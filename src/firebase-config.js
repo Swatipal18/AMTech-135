@@ -44,7 +44,7 @@ export const requestNotificationToken = async () => {
             });
             if (token) {
                 // Show token received notification
-                showNotification('Notification Token Received', 'You will now receive notifications');
+                // showNotification('Notification Token Received', 'You will now receive notifications');
                 // console.log('Notification Token:', token);
                 return token;
             } else {
@@ -54,7 +54,7 @@ export const requestNotificationToken = async () => {
             }
         } else {
             console.log('Notification permission denied.');
-            showNotification('Permission Denied', 'Notification permission was denied');
+            // showNotification('Permission Denied', 'Notification permission was denied');
             return null;
         }
     } catch (error) {
