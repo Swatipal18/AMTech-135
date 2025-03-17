@@ -29,7 +29,9 @@ function EditItem() {
                 sizeId: "",
                 volume: "",
                 sizePrice: ""
-            }]
+            }],
+            ingredients: [],
+            addOn: [],
         }
     });
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -63,7 +65,7 @@ function EditItem() {
         try {
             const response = await axios.get(`${baseUrl}/menu/details/${id}`);
             const ItemData = response.data.data;
-            console.log('ItemData: ', ItemData);
+            // console.log('ItemData: ', ItemData);
 
             // Ensure we always have at least one empty size entry
             const defaultSize = [{ sizeId: "", volume: "", sizePrice: "" }];
@@ -75,9 +77,6 @@ function EditItem() {
                 size: ItemData.size?.length > 0 ? ItemData.size : defaultSize,
                 personalSize: ItemData.personalSize?.length > 0 ? ItemData.personalSize : defaultSize,
             });
-            // console.log(ItemData.ingredients[0], "ItemData.ingredients in fetchItemDetails function");
-            // {_id: '67cae4c2b7ee23856822d941', name: 'Apple'}
-            // In your fetchItemDetails function, modify the code like this:
             if (ItemData.ingredients && Array.isArray(ItemData.ingredients)) {
                 setSelectedIngredients(ItemData.ingredients);
                 setValue("ingredients", ItemData.ingredients.map(item => item._id || item));
@@ -86,8 +85,9 @@ function EditItem() {
             // For addons, update the code to:
             if (ItemData.addOn && Array.isArray(ItemData.addOn)) {
                 setSelectedAddons(ItemData.addOn);
-                setValue("addOns", ItemData.addOn.map(item => item._id || item));
+                setValue("addOn", ItemData.addOn.map(item => item._id || item));
             }
+            // for images
             if (ItemData.images && ItemData.images.length > 0) {
                 const imageObjects = ItemData.images.map(img => ({
                     file: null, // You won't have the file object for existing images
@@ -117,6 +117,7 @@ function EditItem() {
             const ingredientsResponse = await axios.get(`${baseUrl}/menu/ingredient/list`);
             setIngredients(ingredientsResponse.data.data.ingredients);
             const addonsResponse = await axios.get(`${baseUrl}/menu/addOn/list`);
+            // console.log("addonsResponse.data.data.addOns: ", addonsResponse.data.data.addOns);
             setAddons(addonsResponse.data.data.addOns);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -133,12 +134,12 @@ function EditItem() {
     useEffect(() => {
         // If we have both the item data and the addons list loaded
         const itemAddOns = watch("addOn");
-        console.log('itemAddOns: ', itemAddOns);
+        // console.log('itemAddOns: ', itemAddOns);
         if (addons.length > 0 && itemAddOns && itemAddOns.length > 0) {
             const selected = addons.filter(addon =>
                 itemAddOns.some(id => id === addon._id)
             );
-            console.log("selected: ", selected);
+            // console.log("selected: ", selected);
             // setSelectedAddons(selected);
         }
     }, [addons]);
@@ -233,7 +234,8 @@ function EditItem() {
         if (!selectedAddons.some(item => item._id === addon._id)) {
             const newSelected = [...selectedAddons, addon];
             setSelectedAddons(newSelected);
-            setValue("addOns", newSelected.map(item => item._id));
+            // Use addOn instead of addOns
+            setValue("addOn", newSelected.map(item => item._id));
         }
         setAddonSearchTerm('');
         setShowAddonDropdown(false);
@@ -241,11 +243,13 @@ function EditItem() {
     const removeAddon = (addonId) => {
         const newSelected = selectedAddons.filter(item => item._id !== addonId);
         setSelectedAddons(newSelected);
-        setValue("addOns", newSelected.map(item => item._id));
+        // Use addOn instead of addOns
+        setValue("addOn", newSelected.map(item => item._id));
     };
     const clearAllAddons = () => {
         setSelectedAddons([]);
-        setValue("addOns", []);
+        // Use addOn instead of addOns
+        setValue("addOn", []);
     };
 
     const addBusinessVariant = () => {
@@ -446,7 +450,7 @@ function EditItem() {
     // main function
     const onSubmit = async (data) => {
         // Prepare the submission data
-        console.log(data.images, "data.images in onSubmit function");
+        // console.log(data.images, "data.images in onSubmit function");
         const formData = new FormData();
 
         const businessStatus = handleActiveStatus(data.size);
@@ -480,8 +484,8 @@ function EditItem() {
             formData.append(`ingredients[${index}]`, item);
         });
 
-        // Append add-ons
-        data.addOns.forEach((item, index) => {
+        // Append addOns
+        data.addOn.forEach((item, index) => {
             formData.append(`addOn[${index}]`, item);
         });
         // Append personalSize 
@@ -490,13 +494,15 @@ function EditItem() {
             formData.append(`personalSize[${index}][volume]`, item.volume);
             formData.append(`personalSize[${index}][sizePrice]`, item.sizePrice);
         });
-
+        console.log(data, "data");
+        // console.log(formData, "formdata");
         try {
             const response = await axios.put(
                 `${baseUrl}/menu/update/${id}`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
+            console.log('response: ', response);
 
             if (response.data.success) {
                 toast.success(response.data.message || "Item updated successfully!", {
@@ -1016,9 +1022,9 @@ function EditItem() {
                                     ))}
                                 </div>
 
-                                <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                                {/* <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
                                     + ADD VARIANT
-                                </button>
+                                </button> */}
                             </div>
                             {/* Recipe Field */}
                             <div className="mb-4">
