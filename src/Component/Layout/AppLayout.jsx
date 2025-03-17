@@ -8,7 +8,25 @@ function AppLayout() {
     const navigator = useNavigate();
     const location = useLocation();
     const outletRef = useRef(null);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000); // Update every second
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, []);
+
+    const formattedTime = currentTime.toLocaleString("en-US", {
+        weekday: "long", // Show full day name (e.g., Monday)
+        month: "long", // Show full month name
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true, // 12-hour format
+    });
     // Function to handle sidebar state
     const handleSidebarState = (isOpen) => {
         setSidebarOpen(isOpen);
@@ -76,6 +94,11 @@ function AppLayout() {
                                         onClick={handleToggle}
                                     >
                                         <div className="toggle-knob"></div>
+                                    </div>
+                                </div>
+                                <div className="time-container">
+                                    <div style={{ fontSize: "20px", fontWeight: "bold" }}>
+                                        {formattedTime}
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center">

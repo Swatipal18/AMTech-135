@@ -29,7 +29,7 @@ function Users() {
 
     useEffect(() => {
         fetchItems(currentPage, searchTerm);
-    }, [currentPage, limit]);
+    }, [currentPage, limit,role]);
 
     function Allitemsearch(e) {
         const newSearchTerm = e.target.value;
@@ -59,7 +59,7 @@ function Users() {
             const pageNumber = Math.max(Number(page), 1);
             const limitNumber = Number(limit);
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
-                params: { page: pageNumber, limit: limitNumber, search: search || '' }
+                params: { page: pageNumber, limit: limitNumber, search: search || '',role:role }
             });
             console.log('response: ', response.data);
             if (response.data?.data?.businessList) {

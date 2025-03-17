@@ -28,7 +28,7 @@ function AddItem() {
                 sizePrice: ""
             }],
             ingredients: [],
-            addOns: []
+            addOns: [],
         }
     });
     const baseUrl = import.meta.env.VITE_API_URL;

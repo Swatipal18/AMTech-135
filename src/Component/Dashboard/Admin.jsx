@@ -39,15 +39,29 @@ const Admin = () => {
     { name: "Vikas Soni", value: "₹1,00,00,000" },
     { name: "Rahul Sharma", value: "₹1,00,00,000" },
     { name: "LoansMitra", value: "₹1,00,00,000" },
+
   ]);
   const [HighValueItem, SetHighValueItem] = useState([
-    { name: "Anup Parekh", value: "₹1,00,00,000" },
-    { name: "Mahmed Hussain", value: "₹1,00,00,000" },
-    { name: "AMTech Design", value: "₹1,00,00,000" },
-    { name: "Vikas Soni", value: "₹1,00,00,000" },
-    { name: "Rahul Sharma", value: "₹1,00,00,000" },
-    { name: "LoansMitra", value: "₹1,00,00,000" },
+    {
+      name: "Anup Parekh",
+      items: ["Product A", "Product B", "Product C"],
+      timeSlots: ["10:00 AM - 11:00 AM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM"],
+      value: "₹1,00,00,000",
+    },
+    {
+      name: "Mahmed Hussain",
+      items: ["Product X", "Product Y"],
+      timeSlots: ["3:00 PM - 4:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM"],
+      value: "₹1,00,00,000",
+    },
+    {
+      name: "AMTech Design",
+      items: ["Product P", "Product Q", "Product R"],
+      timeSlots: ["5:00 PM - 6:00 PM", "7:00 PM - 8:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM", "2:00 PM - 3:00 PM"],
+      value: "₹1,00,00,000",
+    },
   ]);
+
 
   const chartData = [
     { name: "Jan", value: 30000 },
@@ -240,8 +254,8 @@ const Admin = () => {
                     <tr>
                       <th>No</th>
                       <th>Customer Name</th>
-                      <th>Item name</th>
-                      <th>Time Slot</th>
+                      <th>Item Names</th>
+                      <th>Time Slots</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -249,12 +263,35 @@ const Admin = () => {
                       <tr key={index}>
                         <td>{index + 1}.</td>
                         <td>{user.name}</td>
-                        <td>{user.name}</td>
-                        <td>{user.value}</td>
+
+                        {/* Items Column with Hover Effect */}
+                        <td className="hover-container">
+                          {user.items[0]} {/* Pehla item hamesha dikhega */}
+                          {user.items.length > 1 && (
+                            <div className="hover-item-box">
+                              {user.items.slice(1).map((item, i) => (
+                                <div key={i}>{item}</div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Time Slot Column with Hover Effect */}
+                        <td className="hover-container">
+                          {user.timeSlots[0]} {/* Pehla time slot hamesha dikhega */}
+                          {user.timeSlots.length > 1 && (
+                            <div className="hover-box">
+                              {user.timeSlots.slice(1).map((slot, i) => (
+                                <div key={i}>{slot}</div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+
                 <div
                   className="view-all "
                   onClick={() => url("/OrderManagement")}
@@ -277,7 +314,7 @@ const Admin = () => {
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Subscription Name</th>
+                      <th>item  Name</th>
                       <th>Quntity</th>
                       {/* <th>Price</th> */}
                     </tr>
@@ -288,7 +325,6 @@ const Admin = () => {
                         <td>{index + 1}.</td>
                         <td>{user.name}</td>
                         <td>{user.value}</td>
-                        {/* <td>{user.value}</td> */}
                       </tr>
                     ))}
                   </tbody>

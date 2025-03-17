@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
+import Swal from "sweetalert2";
 
 const socket_url = import.meta.env.VITE_SOCKET_URL
 // console.log('socket_url: ', socket_url);
@@ -90,10 +91,15 @@ export default function PreperingOrder() {
   };
 
   const handleAcceptSingle = async (orderId, deliveryBoyName) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to accept this order?"
-    );
-    if (isConfirmed) {
+    const result = await Swal.fire({
+      title: 'Are you sure you want to accept this order?',
+      text: "This action cannot be undone!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+  });
+    if (result.isConfirmed) {
       // setLoading(true)
       socket.emit("ready-accept", {
         orderIds: [orderId],
@@ -134,7 +140,6 @@ export default function PreperingOrder() {
   const preparedOrders = CurrentOrder.filter(
     (order) => order.currentStatus === "Prepared"
   );
-  // console.log(preparedOrders)
 
   /*  this logic for delivery boy time API calling  */
 
@@ -217,7 +222,7 @@ export default function PreperingOrder() {
         orderId: order_id,
       });
       socket.on("delivery-boy-assigned", (data) => {
-        // console.log("data: ", data);
+        
       });
     } else {
       socket.emit("assign-delivery-boy", {
@@ -285,9 +290,9 @@ export default function PreperingOrder() {
             preparing Orders ({currentOrders.length})
             <span className="line"></span>
           </h2>
-          <h1 className="text-center">
+          <div className="text-center no-data mt-4 text-center text-danger fw-bold fs-4 ">
             {currentOrders.length === 0 ? "No orders are Preparing yet" : ""}
-          </h1>
+          </div>
           <div className="order-list">
             {currentOrders.map((v, i) => (
               <div className="order-card" key={`received-${i}`}>
@@ -341,7 +346,6 @@ export default function PreperingOrder() {
                     </span>{" "}
                   </span>{" "}
                   &nbsp;— &nbsp;
-
                   <span
                     className="ressign"
                     onClick={() => AssignDeliveryBoy(v)} // Open only this specific box
@@ -425,9 +429,9 @@ export default function PreperingOrder() {
             Prepared Orders ({preparedOrders.length})
             <span className="line"></span>
           </h2>
-          <h1 className="text-center no-order">
+          <div className="text-center  no-data mt-4 text-center text-danger fw-bold fs-4 ">
             {preparedOrders.length === 0 ? " No orders are prepared yet" : ""}
-          </h1>
+          </div>
           <div className="order-list">
             {preparedOrders.map((v, i) => (
               <div
@@ -514,10 +518,8 @@ export default function PreperingOrder() {
                                   v.deliveryBoyId,
                                   v._id,
                                   v.deliveryBoyName
-
                                 )
                               }
-
                             >
                               <td className={`fw-bold text-start`}>
                                 {DeliveryBoy.username}

@@ -15,6 +15,7 @@ const AllStaff = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [limit, setLimit] = useState(10);
+  const [role, setrole] = useState("")
   const navigate = useNavigate();
   useEffect(() => {
     setCurrentPage(1);
@@ -29,17 +30,17 @@ const AllStaff = () => {
   };
   useEffect(() => {
     fetchStaff(currentPage, searchTerm);
-  }, [currentPage, limit]);
-  function Allitemsearch(e) {
-    const newSearchTerm = e.target.value;
-    setSearchTerm(newSearchTerm);
-    if (newSearchTerm.length > 2) {
-      fetchItems(currentPage, newSearchTerm);
-    }
-    if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
-      fetchItems(currentPage); 
-    }
-  }
+  }, [currentPage, limit,role]);
+  // function Allitemsearch(e) {
+  //   const newSearchTerm = e.target.value;
+  //   setSearchTerm(newSearchTerm);
+  //   if (newSearchTerm.length > 2) {
+  //     fetchItems(currentPage, newSearchTerm);
+  //   }
+  //   if (newSearchTerm.length <= 2 && searchTerm.length > 2) {
+  //     fetchItems(currentPage);
+  //   }
+  // }
   const fetchStaff = async (page, search) => {
     try {
       setLoading(true);
@@ -47,7 +48,7 @@ const AllStaff = () => {
       const pageNumber = Math.max(Number(page), 1);
       const limitNumber = Number(limit);
       const response = await axios.get(`${baseUrl}/store/list`, {
-        params: { page: pageNumber, limit: limitNumber, search: search || '' }
+        params: { page: pageNumber, limit: limitNumber, search: search || '',role:role }
       });
       // console.log(response.data.data.users,"data");
       if (response.data?.data?.users) {

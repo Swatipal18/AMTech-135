@@ -101,13 +101,10 @@
 
  .users-table td:nth-child(2) {
    text-align: left;
-   width: 60%;
+   /* width: 60%; */
  }
 
- .users-table td:nth-child(3) {
-   /* text-align: right; */
-   width: 30%;
- }
+
 
  .view-all {
    margin-top: 10px;
@@ -216,6 +213,7 @@
    position: fixed;
    top: 0;
    z-index: 1;
+   background-color: #4241412b;
    left: -150px;
  }
 
@@ -277,8 +275,12 @@
  .submenu-item.active {
    background-color: #0B2545 !important;
    /* border-radius: 5px; */
+  
  }
 
+ .menu-item {
+  padding: 0.4rem 1rem;
+ }
  .items-dropdown {
    top: 82px !important;
    border-radius: 10px;
@@ -328,21 +330,15 @@
  }
 
  .ingredients-container {
-   /* min-height: 100vh; */
    display: flex;
    justify-content: center;
    align-items: center;
-   /* padding: 20px; */
-
  }
 
  .ingredients-card {
-   /* max-width: 900px; */
    width: 100%;
-
    padding: 20px;
    border-radius: 10px;
-
  }
 
  .ingredients-title {
@@ -373,7 +369,6 @@
    border-radius: 30px;
    font-size: 16px;
  }
-
 
  .add-button {
    background-color: #0B2545;
@@ -508,7 +503,6 @@
    width: auto;
    max-height: 300px;
    overflow-y: auto;
-
    margin-top: 5px;
    padding: 20px;
  }
@@ -558,3 +552,58 @@
    border-radius: 30px;
    cursor: pointer;
  }
+
+ .time-container{
+  position: absolute;
+  left: 50%; 
+  top: -30px; /* Adjust as needed */
+  transform: translateX(-50%); 
+  height: 72.0px;
+  background-color: #0B2545;
+  color: white;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 400px;
+border-radius: 10px 10px 10px 10px;
+ }
+ /* Container for hover effect */
+.hover-container {
+  position: relative;
+  cursor: pointer;
+  /* padding: 5px; */
+}
+
+/* Hidden by default */
+.hover-box {
+  display: none;
+  position: absolute;
+  left: 130px;
+  top: 0%;
+  background: #fff;
+  padding: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 100;
+}
+.hover-item-box {
+  display: none;
+  position: absolute;
+  left: 80px;
+  top: 0%;
+  background: #fff;
+  padding: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* Show hover-box on hover */
+.hover-container:hover .hover-box {
+  display: block;
+}
+.hover-container:hover .hover-item-box{
+  display: block;
+}
