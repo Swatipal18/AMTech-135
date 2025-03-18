@@ -125,6 +125,11 @@ input[type="text"] {
     /* text-transform: capitalize; */
 }
 
+input[type="url"] {
+    color: rgb(1, 1, 1) !important;
+    margin-left: 10px;
+}
+
 input[type="date"] {
     color: rgb(1, 1, 1) !important;
     margin-left: 10px;
@@ -271,7 +276,7 @@ input::placeholder {
     display: flex;
     align-items: center;
     padding: 0.6rem 1rem;
-    margin: 1.2rem 0 !important;
+    margin: 1.25rem 0 0 0 !important;
     cursor: pointer;
     transition: all 0.2s;
     /* gap: 1rem; */
@@ -1043,8 +1048,8 @@ input:checked~.slider {
 .edit-btn {
     background-color: #EEF4ED;
     color: #0B2545;
-    border: 2px solid #0B2545;
-    border-radius: 30px;
+    border: 2px solid #0B2545 !important;
+    border-radius: 30px !important;
     padding: 6px 12px;
     font-size: 12px;
     font-weight: bold;
@@ -1077,6 +1082,20 @@ input:checked~.slider {
     width: 100px;
     height: 40px;
     margin-right: 10px;
+}
+
+.Send-time {
+    background-color: #1e3a5f !important;
+    color: #EEF4ED !important;
+    border-radius: 30px !important;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100px;
+    height: 40px;
 }
 
 .deletes-btn {

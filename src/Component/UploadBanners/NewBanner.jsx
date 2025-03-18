@@ -11,17 +11,13 @@ import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import imageCompression from 'browser-image-compression';
-// import React, { useCallback, useState } from 'react'
-// import { useForm } from 'react-hook-form';
-// import { useNavigate } from 'react-router-dom';
 
 function NewBanner() {
+    const baseUrl = import.meta.env.VITE_API_URL;
     const [imagePreviews, setImagePreviews] = useState("");
     const [imageError, setImageError] = useState('');
-    const { register, handleSubmit, reset } = useForm();
-    const [sends, setSends] = useState('');
+    const { register, handleSubmit, setValue, reset, watch } = useForm();
     const [imagePreview, setImagePreview] = useState(null);
-    const send = ['All Users', 'Personal', 'Business', 'Delivery Boy'];
     const [imageSelected, setImageSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -29,7 +25,32 @@ function NewBanner() {
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
+
+    const [sends, setSends] = useState('');
+    const send = ['active', 'Inactive', 'scheduled'];
+    const [sendType, setSendType] = useState('now'); // Default to 'now'
     const navigate = useNavigate();
+
+    // Format the date and time for the backend
+    const formatDateTime = (date, hour, minute, ampm) => {
+        if (!date) return null;
+
+        let hours = parseInt(hour || 0);
+        const minutes = parseInt(minute || 0);
+
+        // Convert 12-hour format to 24-hour format
+        if (ampm === 'PM' && hours < 12) {
+            hours += 12;
+        } else if (ampm === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        const formattedDate = new Date(date);
+        formattedDate.setHours(hours, minutes, 0, 0);
+
+        return formattedDate.toISOString();
+    };
+
     const handleImageChange = async (event) => {
         const file = event.target.files[0];
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -46,7 +67,7 @@ function NewBanner() {
             console.log('Original file size:', fileSizeInKB.toFixed(2), 'KB');
             if (fileSizeInKB <= maxFileSizeInKB) {
                 setImagePreviews(URL.createObjectURL(file));
-                setValue("images", file);
+                setValue("imageUrl", file);
                 setImageSelected(true);
                 setImageError('');
             } else {
@@ -69,7 +90,7 @@ function NewBanner() {
                     }
                     const compressedImageURL = URL.createObjectURL(compressedFile);
                     setImagePreviews(compressedImageURL);
-                    setValue("images", compressedFile);
+                    setValue("imageUrl", compressedFile);
                     setImageSelected(true);
                     setImageError('');
                 } catch (error) {
@@ -81,9 +102,11 @@ function NewBanner() {
             }
         }
     };
+
     const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
+
     const updateImagePreview = async () => {
         try {
             const croppedImage = await applyCropZoomRotation(imagePreviews, crop, zoom, rotation);
@@ -91,17 +114,90 @@ function NewBanner() {
             const base64Response = await fetch(croppedImage);
             const blob = await base64Response.blob();
             const croppedFile = new File([blob], 'cropped_image.jpg', { type: 'image/jpeg' });
-            setValue("images", croppedFile);
+            setValue("imageUrl", croppedFile);
 
         } catch (error) {
             console.error("Error while cropping the image: ", error);
         }
     };
+
     const closeModal = () => {
         setIsModalOpen(false);
-    }; const onSubmit = async (data) => {
-        console.log(data);
+    };
+
+    const handleSendTypeChange = (type) => {
+        setSendType(type);
+        if (type === 'now') {
+            // Keep the current status when switching to "now"
+            // Don't change the "activity" field
+        } else {
+            // If switching to schedule mode, set activity to "scheduled"
+            setValue("activity", "scheduled");
+            setSends('scheduled');
+        }
+    };
+
+    // Handle status change
+    const handleStatusChange = (e) => {
+        const value = e.target.value;
+        setSends(value);
+
+        // If status is changed to "scheduled", also update the sendType
+        if (value === 'scheduled') {
+            setSendType('schedule');
+        } else if (sendType === 'schedule') {
+            // If changing from "scheduled" to something else, reset to "now"
+            setSendType('now');
+        }
+    };
+
+    const onSubmit = async (data) => {
+        // If scheduled, format the date and time
+        if (sendType === 'schedule') {
+            const formattedDateTime = formatDateTime(
+                data.scheduleDate,
+                data.scheduleHour,
+                data.scheduleMinute,
+                data.scheduleAmPm
+            );
+
+            if (formattedDateTime) {
+                // Set the formatted date time string to a single field
+                setValue("scheduleTime", formattedDateTime);
+                data.scheduleTime = formattedDateTime;
+            }
+            console.log('formattedDateTime: ', formattedDateTime);
+        }
+
+        console.log(data, "data");
+        try {
+            const response = await axios.post(`${baseUrl}/create/banner`, data, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            console.log(response.data, "response");
+            if (response.data.success) {
+                toast.success(response.data.message || "Item added successfully!", {
+                    position: "top-right",
+                    autoClose: 1000,
+                    theme: "colored",
+                    style: {
+                        backgroundColor: 'green',
+                        color: '#000',
+                    },
+                });
+                reset();
+                setTimeout(() => {
+                    navigate('/AllBanners');
+                }, 1000);
+            }
+        } catch (error) {
+            console.error("Error details:", error.response ? error.response.data : error);
+            toast.error(error.response?.data?.message || "Failed to submit the form. Please try again.");
+        }
     }
+
     return (
         <div className="container-fluid">
             <div className="row">
@@ -111,9 +207,6 @@ function NewBanner() {
                         <h1 className="form-title">Add New Banner</h1>
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="row">
-                                {/* <div className="col-md-8">
-                                </div> */}
-
                                 {/* Image Upload Section */}
                                 <div className="col-md-11 ">
                                     <label className="form-label mb-3 ms-4">Image:</label>
@@ -123,12 +216,12 @@ function NewBanner() {
                                         </div>
                                         {imagePreviews ? (
                                             <>
-                                                <div className="image-preview-container mt-3">
+                                                <div className="image-preview-container mt-3 ">
                                                     <img
                                                         src={imagePreviews}
                                                         alt="Uploaded Preview"
-                                                        className="img-thumbnail cursor-pointer"
-                                                        style={{ width: "200px", height: "200px", objectFit: "cover" }}
+                                                        className="img-thumbnail cursor-pointer "
+                                                        style={{ width: "925px", height: "264px" }}
                                                         onClick={() => setIsModalOpen(true)}
                                                     />
                                                 </div>
@@ -235,7 +328,7 @@ function NewBanner() {
                                             type="file"
                                             className="form-control d-none"
                                             id="fileInput"
-                                            {...register("images")}
+                                            {...register("imageUrl")}
                                             onChange={handleImageChange}
                                         />
                                         <button
@@ -247,59 +340,154 @@ function NewBanner() {
                                         </button>
                                     </div>
                                     {imageError && <div className="text-danger mt-2">{imageError}</div>}
-                                    {/* traget Field */}
-                                    <div className="mb-4  ms-4 ">
-                                        <label className="form-label">Target Link :</label>
+
+                                    {/* Target Field */}
+                                    <div className="mb-4 ms-4">
+                                        <label className="form-label">Target Link:</label>
                                         <input
                                             type="url"
-                                            {...register("url")}
+                                            {...register("targetLink")}
                                             className="form-control shadow"
                                             placeholder="Add a Target Link Here..."
                                         />
                                     </div>
                                 </div>
-                                {/* Sends */}
-                                <div className="col-md-11  ms-4 ">
-                                    <label className="form-label">Status  :</label>
-                                    <select
-                                        {...register("Sends")}
-                                        className="form-select form-control shadow"
-                                        style={{
-                                            width: '400px',
-                                            color: sends === "" ? '#8DA9C4 ' : 'inherit'
-                                        }}
-                                        value={sends}
-                                        onChange={(e) => setSends(e.target.value)}
-                                    >
-                                        <option value="" className="default-option">Select User To Send</option>
-                                        {send.map((sends) => (
-                                            <option key={sends} className='text-dark' value={sends}>
-                                                {sends}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                                {/* Button Section */}
-                                <div className="mt-4">
-                                    <button type="submit" className="submit-btn ms-3 rounded-pill"
-                                        style={{
-                                            textTransform: "uppercase"
-                                        }}
-                                    >Add Banner</button>
-                                    <button type="button" className="submit-btn  rounded-pill "
-                                        style={{
-                                            backgroundColor: "#8DA9C4",
-                                            color: "#0B2545",
-                                            textTransform: "uppercase"
-                                        }}
-                                    >SCHEDULE</button>
 
+                                {/* Status Dropdown - Kept as requested */}
+                                <div className="col-md-11 ms-4 mb-4  d-flex  gap-5">
+                                    <div className=''>
+                                        <label className="form-label">Status:</label>
+                                        <select
+                                            {...register("activity")}
+                                            className="form-select form-control shadow"
+                                            style={{
+                                                width: '400px',
+                                                color: sends === "" ? '#8DA9C4' : 'inherit'
+                                            }}
+                                            value={sends}
+                                            onChange={handleStatusChange}
+                                        >
+                                            <option value="" className="default-option">Select Any One</option>
+                                            {send.map((status) => (
+                                                <option key={status} className='text-dark' value={status}>
+                                                    {status}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {/* Send Time Options */}
+                                    <div className="  mb-2">
+                                        <label className="form-label">Send Time:</label>
+                                        <div className="d-flex gap-3">
+                                            <button
+                                                type="button"
+                                                className={`btn ${sendType === 'now' ? 'Send-time' : 'edit-btn'}`}
+                                                onClick={() => handleSendTypeChange('now')}
+                                            >
+                                                Now
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`btn ${sendType === 'schedule' ? 'Send-time' : 'edit-btn'}`}
+                                                onClick={() => handleSendTypeChange('schedule')}
+                                            >
+                                                Schedule
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                {/* Schedule Fields - Show only when Schedule is selected */}
+                                {sendType === 'schedule' && (
+                                    <div className="col-md-11 ms-4  schedule-container ">
+                                        <div className=" p-1 bg-transparent border-none">
+                                            <h5 className="mb-3">Schedule Details</h5>
+                                            <div className="row">
+                                                <div className="col-md-6 mb-3">
+                                                    <label className="form-label">Date:</label>
+                                                    <input
+                                                        type="date"
+                                                        {...register("scheduleDate")}
+                                                        className="form-control"
+                                                        min={new Date().toISOString().split('T')[0]}
+                                                        required={sendType === 'schedule'}
+                                                    />
+                                                </div>
+                                                <div className="col-md-6 ">
+                                                    <label className="form-label"> Time:</label>
+                                                    <div className="d-flex gap-2">
+                                                        {/* Hour */}
+                                                        <select
+                                                            {...register("scheduleHour")}
+                                                            className="form-select bg-transparent "
+                                                            style={{ border: '2px solid #0B2545', borderRadius: '30px' }}
+                                                            required={sendType === 'schedule'}
+                                                        >
+                                                            <option value="">Hour</option>
+                                                            {Array.from({ length: 12 }, (_, i) => i + 1).map(hour => (
+                                                                <option key={hour} value={hour}>
+                                                                    {hour.toString().padStart(2, '0')}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        {/* Minute */}
+                                                        <select
+                                                            {...register("scheduleMinute")}
+                                                            className="form-select bg-transparent"
+                                                            style={{ border: '2px solid #0B2545', borderRadius: '30px' }}
+                                                            required={sendType === 'schedule'}
+                                                        >
+                                                            <option value="">Min</option>
+                                                            {Array.from({ length: 60 }, (_, i) => i).map(minute => (
+                                                                <option key={minute} value={minute}>
+                                                                    {minute.toString().padStart(2, '0')}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+
+                                                        {/* AM/PM */}
+                                                        <select
+                                                            {...register("scheduleAmPm")}
+                                                            className="form-select bg-transparent"
+                                                            style={{ border: '2px solid #0B2545', borderRadius: '30px' }}
+                                                            required={sendType === 'schedule'}
+                                                        >
+                                                            <option value="AM">AM</option>
+                                                            <option value="PM">PM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* Hidden field to store the formatted date+time */}
+                                            <input
+                                                type="hidden"
+                                                {...register("scheduleTime")}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+
+                                {/* Button Section */}
+                                <div className="mt-4 ms-4">
+                                    <button
+                                        type="submit"
+                                        className="submit-btn rounded-pill"
+                                        style={{
+                                            textTransform: "uppercase"
+                                        }}
+                                    >
+                                        Add Banner
+                                    </button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     )
 }

@@ -41,6 +41,7 @@ import ActiveSubscription from '../Component/subscription/ActiveSubscription'
 import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm'
 import AddOns from '../Component/Item/AddOns'
 import Ingredients from '../Component/Item/Ingredients'
+import EditBanners from '../Component/UploadBanners/EditBanners'
 
 // Protected Route Component
 const ProtectedRoute = () => {
@@ -183,6 +184,10 @@ function Navbar() {
                         {
                             path: "/NewBanner",
                             element: <NewBanner />
+                        },
+                        {
+                            path: "/EditBanner/:id",
+                            element: <EditBanners />
                         },
                         {
                             path: "/business",

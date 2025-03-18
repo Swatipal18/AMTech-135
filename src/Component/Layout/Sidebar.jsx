@@ -74,14 +74,7 @@ const Sidebar = ({ onToggle, children }) => {
             ,
             path: '/Admin'
         },
-        {
-            title: 'Franchise Management',
-            icon: <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg" className='m-2 sidebar-icon'>
-                <path d="M17.5002 2.33329V14.6012C17.5002 14.766 17.4029 14.9155 17.2522 14.9822L10.0002 18.1927L2.74815 14.9822C2.59739 14.9155 2.50016 14.766 2.50016 14.6012V2.33329H0.833496V0.666626H19.1668V2.33329H17.5002ZM6.66683 8.99996V10.6666H13.3335V8.99996H6.66683ZM6.66683 5.66663V7.33329H13.3335V5.66663H6.66683Z" fill="#8DA9C4" />
-            </svg>,
 
-            path: '/franchise'
-        },
         {
             title: 'History Management',
             icon: <GiWallet size={20} className='m-2 sidebar-icon' />,
@@ -158,17 +151,6 @@ const Sidebar = ({ onToggle, children }) => {
             ],
             isDropdown: true
         },
-
-        {
-            title: 'Sales Management',
-            icon: <RiBarChartFill size={20} className='m-2 sidebar-icon' />,
-            path: '/sales'
-        },
-        {
-            title: 'Reports & Analytics',
-            icon: <AiFillPieChart size={20} className='m-2 sidebar-icon' />,
-            path: '/reports'
-        },
         {
             title: 'Push Notifications',
             icon: <RiNotification2Fill size={20} className='m-2 sidebar-icon' />,
@@ -187,6 +169,26 @@ const Sidebar = ({ onToggle, children }) => {
             ],
             isDropdown: true
         },
+        {
+            title: 'Franchise Management',
+            icon: <svg width="20" height="19" viewBox="0 0 20 19" fill="none" xmlns="http://www.w3.org/2000/svg" className='m-2 sidebar-icon'>
+                <path d="M17.5002 2.33329V14.6012C17.5002 14.766 17.4029 14.9155 17.2522 14.9822L10.0002 18.1927L2.74815 14.9822C2.59739 14.9155 2.50016 14.766 2.50016 14.6012V2.33329H0.833496V0.666626H19.1668V2.33329H17.5002ZM6.66683 8.99996V10.6666H13.3335V8.99996H6.66683ZM6.66683 5.66663V7.33329H13.3335V5.66663H6.66683Z" fill="#8DA9C4" />
+            </svg>,
+
+            path: '/franchise'
+        },
+        {
+            title: 'Sales Management',
+            icon: <RiBarChartFill size={20} className='m-2 sidebar-icon' />,
+            path: '/sales'
+        },
+        {
+            title: 'Reports & Analytics',
+            icon: <AiFillPieChart size={20} className='m-2 sidebar-icon' />,
+            path: '/reports'
+        },
+
+
         {
             title: 'Business Management',
             icon: <RiBuilding2Fill size={20} className='m-2 sidebar-icon' />,
