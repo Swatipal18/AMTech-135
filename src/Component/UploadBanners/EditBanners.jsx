@@ -296,11 +296,8 @@ function EditBanners() {
                         </button>
                         {/* Loading Indicator */}
                         {loading ? (
-                            <div className="text-center py-5">
-                                <div className="spinner-border" role="status" style={{ color: '#0B2545' }}>
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
-                                <p className="mt-3">Loading banner details...</p>
+                            <div className="loader-container d-flex justify-content-center">
+                                <div className="loader"></div>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit(onSubmit)}>

@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { HiOutlineInformationCircle } from "react-icons/hi2";
+
 
 function ActiveSubscription() {
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -276,6 +278,11 @@ function ActiveSubscription() {
                                                     EDIT
                                                 </button>
 
+                                            </td>
+                                            <td>
+                                                <button className='btn' onClick={() => handleInfoClick(item._id)}>
+                                                    <HiOutlineInformationCircle className='fs-3' />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

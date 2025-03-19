@@ -100,7 +100,7 @@ function AddItem() {
         } else {
             const filtered = ingredients
                 .filter(item => item.name.toLowerCase().includes(term.toLowerCase()))
-                .slice(0, 5);
+                .slice(0, 3);
             setFilteredIngredients(filtered);
         }
     };
@@ -489,24 +489,7 @@ function AddItem() {
                                         placeholder="Write a short description about this item..."
                                     />
                                 </div>
-                                {/* Recipe Field */}
-                                {/* <div className="mb-4">
-                                    <label className="form-label">Recipe :</label>
-                                    <textarea
-                                        name='description'
-                                        {...register("recipe")}
-                                        // value="hello"
-                                        className="form-control shadow text-capitalize"
-                                        rows="4"
-                                        style={{
-                                            resize: 'none',
-                                            overflowY: 'auto',
-                                            scrollbarWidth: 'none',
-                                            msOverflowStyle: 'none'
-                                        }}
-                                        placeholder="Write a short description about this item..."
-                                    />
-                                </div> */}
+
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
                                     <label className="form-label">Item Ingredients :</label>
@@ -520,7 +503,7 @@ function AddItem() {
                                                             style={{ backgroundColor: '#0B2545', }}>
                                                             {item.name}
                                                             <span
-                                                                className="ms-2 cursor-pointer"
+                                                                className="ms-2 cursor-pointer text-capitalize"
                                                                 onClick={() => removeIngredient(item._id)}
                                                             >×</span>
                                                         </span>
@@ -530,7 +513,7 @@ function AddItem() {
                                                 {/* Search Input */}
                                                 <input
                                                     type="text"
-                                                    className="form-control border-0"
+                                                    className="form-control border-0 text-capitalize"
                                                     placeholder=" Search Ingredients"
                                                     value={ingredientSearchTerm}
                                                     onChange={handleIngredientSearch}
@@ -555,8 +538,11 @@ function AddItem() {
 
                                         {/* Ingredients Dropdown */}
                                         {showIngredientDropdown && filteredIngredients.length > 0 && (
-                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                            <div className="position-absolute w-100 shadow mt-4 pt-2"
                                                 style={{
+                                                    backgroundColor: '#EEF4ED',
+                                                    textTransform: 'capitalize',
+                                                    borderRadius: '28px',
                                                     zIndex: 1000,
                                                     maxHeight: '180px',
                                                     overflowY: 'auto',
@@ -567,7 +553,7 @@ function AddItem() {
                                                 onClick={(e) => e.stopPropagation()}>
                                                 {filteredIngredients.map(item => (
                                                     <div key={item._id}
-                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light text-capitalize"
                                                         style={{ cursor: 'pointer' }}
                                                         onClick={() => addIngredient(item)}>
                                                         {item.name}
@@ -789,7 +775,7 @@ function AddItem() {
                                     <div className="position-relative">
                                         <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
                                             {/* Selected Add-ons */}
-                                            <div className="d-flex ms-1 fs-4 align-items-center">
+                                            <div className="d-flex ms-1 fs-4 align-items-center  ">
                                                 {selectedAddons.map(item => (
                                                     <div key={item._id} className="me-1 mb-1">
                                                         <span className="badge rounded-pill text-white fw-bold"
@@ -806,7 +792,7 @@ function AddItem() {
                                                 {/* Search Input */}
                                                 <input
                                                     type="text"
-                                                    className="form-control border-0"
+                                                    className="form-control border-0 "
                                                     placeholder=" Search Add-ons"
                                                     value={addonSearchTerm}
                                                     onChange={handleAddonSearch}
@@ -831,13 +817,16 @@ function AddItem() {
 
                                         {/* Add-ons Dropdown */}
                                         {showAddonDropdown && filteredAddons.length > 0 && (
-                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                            <div className="position-absolute w-100  shadow-sm mt-4 pt-2 "
                                                 style={{
+                                                    backgroundColor: '#EEF4ED',
+                                                    textTransform: 'capitalize',
+                                                    borderRadius: '28px',
                                                     zIndex: 1000,
                                                     maxHeight: '180px',
                                                     overflowY: 'auto',
                                                     top: '100%',
-                                                    left: 0
+                                                    left: 0,
                                                 }}
                                                 onClick={(e) => e.stopPropagation()}>
                                                 {filteredAddons.map(item => (
@@ -845,7 +834,7 @@ function AddItem() {
                                                         className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
                                                         style={{ cursor: 'pointer' }}
                                                         onClick={() => addAddon(item)}>
-                                                        {item.name}
+                                                        <h6>{item.name}</h6>
                                                     </div>
                                                 ))}
                                             </div>
@@ -884,10 +873,10 @@ function AddItem() {
                         <div className="row">
                             {/* Business Menu Variants */}
                             <div className="variants-section col-12">
-                                <h3 className="variants-title">Business Menu Variants</h3>
-                                <div className="row">
+                                {/* <h3 className="variants-title">Business Menu Variants</h3> */}
+                                <div className="row mt-2">
                                     {watch("size").map((_, index) => (
-                                        <div key={index} className="row w-100 mx-0 mb-3">
+                                        <div key={index} className="row w-100 mx-0 mb-2">
                                             <div className="col-md-3 mb-2">
                                                 <label className="form-label">Category :</label>
                                                 <select
@@ -1060,8 +1049,8 @@ function AddItem() {
                             </div> */}
 
                         </div>
-                        <div className="mt-4">
-                            <button type="submit" className="submit-btn">ADD ITEM</button>
+                        <div className="mt-4 ">
+                            <button type="submit" className="submit-btn mb-5">ADD ITEM</button>
                         </div>
                     </form>
                 </div >

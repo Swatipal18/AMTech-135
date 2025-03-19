@@ -195,11 +195,8 @@ function EditStaff() {
                         </button>
                         <h1 className="form-title">Edit Staff</h1>
                         {loading ? (
-                            <div className="text-center">
-                                <div className="spinner-border" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
-                                <p>Loading staff details...</p>
+                            <div className="loader-container d-flex justify-content-center">
+                                <div className="loader"></div>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit(submitData)}>

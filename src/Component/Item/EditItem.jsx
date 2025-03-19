@@ -539,27 +539,504 @@ function EditItem() {
                         Back
                     </button>
                     <h1 className="form-title">Edit Item</h1>
-                    <form action="/menu/update" method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-                        {/* Name Field */}
-                        <div className="row g-0">
-                            <div className="col-md-8 form-size">
-                                <div className="mb-4">
-                                    <label className="form-label">Name :</label>
-                                    <input
-                                        type='text'
-                                        name="itemName"
-                                        {...register("itemName")}
-                                        className="form-control shadow text-capitalize"
-                                        placeholder="e.g. Masala Tea"
-                                    />
+                    {loading ? (
+                        <div className="loader-container d-flex justify-content-center">
+                            <div className="loader"></div>
+                        </div>
+                    ) : (
+                        <form action="/menu/update" method='POST' onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+                            {/* Name Field */}
+                            <div className="row g-0">
+                                <div className="col-md-8 form-size">
+                                    <div className="mb-4">
+                                        <label className="form-label">Name :</label>
+                                        <input
+                                            type='text'
+                                            name="itemName"
+                                            {...register("itemName")}
+                                            className="form-control shadow text-capitalize"
+                                            placeholder="e.g. Masala Tea"
+                                        />
+                                    </div>
+
+                                    {/* Description Field */}
+                                    <div className="mb-4">
+                                        <label className="form-label">Description :</label>
+                                        <textarea
+                                            name='description'
+                                            {...register("description")}
+                                            // value="hello"
+                                            className="form-control shadow text-capitalize"
+                                            rows="4"
+                                            style={{
+                                                resize: 'none',
+                                                overflowY: 'auto',
+                                                scrollbarWidth: 'none',
+                                                msOverflowStyle: 'none'
+                                            }}
+                                            placeholder="Write a short description about this item..."
+                                        />
+                                    </div>
+                                    {/* Ingredients Field */}
+                                    <div className="mb-4">
+                                        <label className="form-label">Item Ingredients :</label>
+                                        <div className="position-relative">
+                                            <div className="input-container border border-2 border-dark rounded-pill  d-flex align-items-center shadow">
+                                                {/* Selected Ingredients */}
+                                                <div className="d-flex ms-1 fs-4 align-items-center">
+                                                    {selectedIngredients.map(item => (
+                                                        <div key={item._id} className="me-1 mb-1">
+                                                            <span className="badge rounded-pill text-white fw-bold"
+                                                                style={{ backgroundColor: '#0B2545', }}>
+                                                                {item.name}
+                                                                <span
+                                                                    className="ms-2 cursor-pointer"
+                                                                    onClick={() => removeIngredient(item._id)}
+                                                                >×</span>
+                                                            </span>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Search Input */}
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-0"
+                                                        placeholder="Type To Search Ingredients"
+                                                        value={ingredientSearchTerm}
+                                                        onChange={handleIngredientSearch}
+                                                        onFocus={() => handleInputFocus('ingredient')}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setShowIngredientDropdown(true);
+                                                            if (filteredIngredients.length === 0) {
+                                                                setFilteredIngredients(ingredients.slice(0, 5));
+                                                            }
+                                                        }}
+                                                        style={{ boxShadow: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Hidden input for react-hook-form to register the ingredients */}
+                                            <input
+                                                type="hidden"
+                                                {...register("ingredients")}
+                                            />
+
+                                            {/* Ingredients Dropdown */}
+                                            {showIngredientDropdown && filteredIngredients.length > 0 && (
+                                                <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                                    style={{
+                                                        zIndex: 1000,
+                                                        maxHeight: '180px',
+                                                        overflowY: 'auto',
+                                                        top: '100%',
+
+                                                        left: 0
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}>
+                                                    {filteredIngredients.map(item => (
+                                                        <div key={item._id}
+                                                            className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                            style={{ cursor: 'pointer' }}
+                                                            onClick={() => addIngredient(item)}>
+                                                            {item.name}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Clear All Button for Ingredients */}
+                                            {selectedIngredients.length > 0 && (
+                                                <div className="d-flex justify-content-end ">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link  "
+                                                        style={{ textDecoration: 'none', color: '#0B2545' }}
+                                                        onClick={clearAllIngredients}
+                                                    >
+                                                        Clear All
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {/* Description Field */}
+                                {/* <div className="col-1"></div> */}
+                                {/* Image Upload Section */}
+                                <div className="col-md-4">
+                                    <label className="form-label mb-3 ms-4">Images:</label>
+                                    <div className="image-upload shadow ms-4">
+                                        <div className="upload-icon">
+                                            <GrUploadOption className="arrow-up" />
+                                        </div>
+
+                                        {/* Image previews */}
+                                        <div className="image-preview-container  mt-3">
+                                            {imageList.length > 0 && (
+                                                <>
+                                                    <div className="featured-image">
+                                                        <div className="image-preview-item position-relative">
+                                                            <img
+                                                                src={imageList[0].preview}
+                                                                alt={`Preview 1`}
+                                                                className="img-thumbnail cursor-pointer img-fluid"
+                                                                onClick={() => openImageEditor(0)}
+                                                            />
+                                                            <h5 className='mt-2'>Main Image</h5>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-danger btn-sm position-absolute  remove-button"
+                                                                onClick={() => removeImage(0)}
+                                                            >
+                                                                <MdDelete />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    {imageList.length > 1 && (
+                                                        <div className="remaining-images">
+                                                            {imageList.slice(1).map((image, index) => (
+                                                                <div key={index + 1} className="image-preview-item position-relative">
+                                                                    <img
+                                                                        src={image.preview}
+                                                                        alt={`Preview ${index + 2}`}
+                                                                        className="img-thumbnail cursor-pointer img-fluid"
+                                                                        onClick={() => openImageEditor(index + 1)}
+                                                                    />
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-danger btn-sm position-absolute remove-button"
+                                                                        onClick={() => removeImage(index + 1)}
+                                                                    >
+                                                                        <MdDelete />
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+
+                                                    <button
+                                                        type="button"
+                                                        className="edit-btn mt-3 w-50"
+                                                        onClick={() => document.getElementById("fileInput").click()}
+                                                    >
+                                                        Add More Images
+                                                    </button>
+
+                                                    <div className="mt-2 text-muted text-center">
+                                                        {imageList.length} image{imageList.length > 1 ? 's' : ''} selected
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {imageList.length === 0 && (
+                                                <>
+                                                    <div className="upload-text fs-5">Upload Multiple Images Here</div>
+                                                    <div className="upload-subtext fs-6">
+                                                        (Jpg, Jpeg, Png files supported only)
+                                                        <br />
+                                                        (Max File Size 10 MB per image)
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="edit-btn mt-4 w-50 fs-6"
+                                                        onClick={() => document.getElementById("fileInput").click()}
+                                                    >
+                                                        Select Images
+                                                    </button>
+                                                </>
+                                            )}
+
+
+                                            <input
+                                                type="file"
+                                                className="form-control d-none"
+                                                id="fileInput"
+                                                multiple
+                                                accept="image/jpeg,image/png,image/jpg"
+                                                {...register("images")}
+                                                onChange={handleImageChange}
+                                            />
+                                        </div>
+                                        {imageError && <div className="text-danger mt-2">{imageError}</div>}
+                                    </div>
+
+                                    {/* Image Editing Modal */}
+                                    {isModalOpen && currentImageIndex !== null && (
+                                        <div
+                                            className="modal-overlay"
+                                            onClick={(e) => {
+                                                if (e.target === e.currentTarget) {
+                                                    closeModal();
+                                                }
+                                            }}
+                                        >
+                                            <div className="modal-div" onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    type="button"
+                                                    onClick={closeModal}
+                                                    className="close-button"
+                                                >
+                                                    <GrClose />
+                                                </button>
+                                                <Cropper
+                                                    image={imageList[currentImageIndex].preview}
+                                                    crop={crop}
+                                                    zoom={zoom}
+                                                    rotation={rotation}
+                                                    aspect={5 / 3}
+                                                    onCropChange={setCrop}
+                                                    onZoomChange={setZoom}
+                                                    onRotationChange={setRotation}
+                                                    onCropComplete={onCropComplete}
+                                                />
+                                                <div className="crop-controls">
+                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon" style={{ width: "180px", fontSize: "15px" }}>
+                                                        <label className="form-labels me-2">Zoom</label>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm border-0"
+                                                            onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                        >
+                                                            <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                        </button>
+                                                        <span className="mx-2">{zoom.toFixed(1)}x</span>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm border-0"
+                                                            onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                        >
+                                                            <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                        </button>
+                                                    </div>
+                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon" style={{ width: "130px", fontSize: "15px" }}>
+                                                        <label className="form-labels">Rotation</label>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-sm mx-2 border-0"
+                                                            onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                        >
+                                                            <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                        </button>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        style={{ fontSize: "15px" }}
+                                                        className="edit-btn "
+                                                        onClick={async () => {
+                                                            await updateImagePreview();
+                                                            closeModal();
+                                                        }}
+                                                    >
+                                                        Done
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        style={{ fontSize: "15px" }}
+                                                        className="edit-btn full-size-btn"
+                                                        onClick={() => {
+                                                            setZoom(1);
+                                                            setRotation(0);
+                                                        }}
+                                                    >
+                                                        Real Size
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+
+                                </div>
+                            </div>
+                            {/* Add Ons Section */}
+                            <div className="row ">
+                                <div className="col-md-8">
+                                    <div className="mb-4">
+                                        <label className="form-label">Add-ons :</label>
+                                        <div className="position-relative">
+                                            <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
+                                                {/* Selected Add-ons */}
+                                                <div className="d-flex ms-1 fs-4 align-items-center">
+                                                    {selectedAddons.map(item => (
+                                                        <div key={item._id} className="me-1 mb-1">
+                                                            <span className="badge rounded-pill text-white fw-bold"
+                                                                style={{ backgroundColor: '#0B2545', }}>
+                                                                {item.name}
+                                                                <span
+                                                                    className="ms-2 cursor-pointer"
+                                                                    onClick={() => removeAddon(item._id)}
+                                                                >×</span>
+                                                            </span>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Search Input */}
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-0"
+                                                        placeholder="Type To Search Add-ons"
+                                                        value={addonSearchTerm}
+                                                        onChange={handleAddonSearch}
+                                                        onFocus={() => handleInputFocus('addon')}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setShowAddonDropdown(true);
+                                                            if (filteredAddons.length === 0) {
+                                                                setFilteredAddons(addons.slice(0, 5));
+                                                            }
+                                                        }}
+                                                        style={{ boxShadow: 'none' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Hidden input for react-hook-form to register the add-ons */}
+                                            <input
+                                                type="hidden"
+                                                {...register("addOn")}
+                                            />
+
+                                            {/* Add-ons Dropdown */}
+                                            {showAddonDropdown && filteredAddons.length > 0 && (
+                                                <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
+                                                    style={{
+                                                        zIndex: 1000,
+                                                        maxHeight: '180px',
+                                                        overflowY: 'auto',
+                                                        top: '100%',
+                                                        left: 0
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}>
+                                                    {filteredAddons.map(item => (
+                                                        <div key={item._id}
+                                                            className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
+                                                            style={{ cursor: 'pointer' }}
+                                                            onClick={() => addAddon(item)}>
+                                                            {item.name}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Clear All Button for Add-ons */}
+                                            {selectedAddons.length > 0 && (
+                                                <div className="d-flex justify-content-end ">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link"
+                                                        style={{ textDecoration: 'none', color: '#0B2545' }}
+                                                        onClick={clearAllAddons}
+                                                    >
+                                                        Clear All
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* Rating */}
+                                <div className="col-md-4 mt-1">
+                                    <div className="mb-2">
+                                        <label className="form-label">Ratings:</label>
+                                        <input
+                                            type="text"
+                                            name="ratings"
+                                            {...register("ratings", { required: true })}
+                                            className="form-control shadow"
+                                            placeholder=" E.g 4.5"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                {/* Business Menu Variants */}
+                                <div className="variants-section col-12">
+                                    <h3 className="variants-title">Business Menu Variants</h3>
+                                    <div className="row">
+                                        {watch("size").map((_, index) => (
+                                            <div key={index} className="row w-100 mx-0 mb-3">
+                                                <div className="col-md-3 mb-2">
+                                                    <label className="form-label">Category :</label>
+                                                    <select
+                                                        {...register('categoryId')}
+                                                        className="form-control shadow text-capitalize"
+                                                        name='categoryId'
+                                                        disabled={businessVariants.length > 1}
+                                                    >
+                                                        <option value="">Select Any One</option>
+                                                        {categories.map((category) => (
+                                                            <option key={category._id} value={category._id}>
+                                                                {category.title}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div className="col-md-3">
+                                                    <label className="form-label">Size :</label>
+                                                    <select
+                                                        {...register(`size[${index}].sizeId`)}
+                                                        className="form-control shadow text-capitalize"
+                                                        name={`size[${index}].sizeId`}
+                                                    >
+                                                        <option value="">Select Any One</option>
+                                                        {sizes.map((size) => (
+                                                            <option key={size._id} value={size._id}>{size.size}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div className="col-md-3">
+                                                    <label className="form-label">Volume :</label>
+                                                    <input
+                                                        type="text"
+                                                        {...register(`size[${index}].volume`)}
+                                                        name={`size[${index}].volume`}
+                                                        className="form-control shadow text-capitalize"
+                                                        placeholder="e.g. 60ml"
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-3">
+                                                    <label className="form-label">Price :</label>
+                                                    <input
+                                                        type="text"
+                                                        name={`size[${index}].sizePrice`}
+
+                                                        {...register(`size[${index}].sizePrice`)}
+                                                        className="form-control shadow"
+                                                        placeholder="₹ e.g. 100"
+                                                    />
+                                                </div>
+
+                                                {watch("size").length > 1 && (
+                                                    <div className="col-2 d-flex align-items-end">
+                                                        <button
+                                                            type="button"
+                                                            className="btn mb-2"
+                                                            onClick={() => removeBusinessVariant(index)}
+                                                        >
+                                                            <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
+                                    + ADD VARIANT
+                                </button> */}
+                                </div>
+                                {/* Recipe Field */}
                                 <div className="mb-4">
-                                    <label className="form-label">Description :</label>
+                                    <label className="form-label">Recipe :</label>
                                     <textarea
                                         name='description'
-                                        {...register("description")}
+                                        {...register("recipe")}
                                         // value="hello"
                                         className="form-control shadow text-capitalize"
                                         rows="4"
@@ -569,483 +1046,11 @@ function EditItem() {
                                             scrollbarWidth: 'none',
                                             msOverflowStyle: 'none'
                                         }}
-                                        placeholder="Write a short description about this item..."
+                                        placeholder="Write the cooking instructions for this item..."
                                     />
                                 </div>
-                                {/* Ingredients Field */}
-                                <div className="mb-4">
-                                    <label className="form-label">Item Ingredients :</label>
-                                    <div className="position-relative">
-                                        <div className="input-container border border-2 border-dark rounded-pill  d-flex align-items-center shadow">
-                                            {/* Selected Ingredients */}
-                                            <div className="d-flex ms-1 fs-4 align-items-center">
-                                                {selectedIngredients.map(item => (
-                                                    <div key={item._id} className="me-1 mb-1">
-                                                        <span className="badge rounded-pill text-white fw-bold"
-                                                            style={{ backgroundColor: '#0B2545', }}>
-                                                            {item.name}
-                                                            <span
-                                                                className="ms-2 cursor-pointer"
-                                                                onClick={() => removeIngredient(item._id)}
-                                                            >×</span>
-                                                        </span>
-                                                    </div>
-                                                ))}
-
-                                                {/* Search Input */}
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-0"
-                                                    placeholder="Type To Search Ingredients"
-                                                    value={ingredientSearchTerm}
-                                                    onChange={handleIngredientSearch}
-                                                    onFocus={() => handleInputFocus('ingredient')}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setShowIngredientDropdown(true);
-                                                        if (filteredIngredients.length === 0) {
-                                                            setFilteredIngredients(ingredients.slice(0, 5));
-                                                        }
-                                                    }}
-                                                    style={{ boxShadow: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Hidden input for react-hook-form to register the ingredients */}
-                                        <input
-                                            type="hidden"
-                                            {...register("ingredients")}
-                                        />
-
-                                        {/* Ingredients Dropdown */}
-                                        {showIngredientDropdown && filteredIngredients.length > 0 && (
-                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
-                                                style={{
-                                                    zIndex: 1000,
-                                                    maxHeight: '180px',
-                                                    overflowY: 'auto',
-                                                    top: '100%',
-
-                                                    left: 0
-                                                }}
-                                                onClick={(e) => e.stopPropagation()}>
-                                                {filteredIngredients.map(item => (
-                                                    <div key={item._id}
-                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
-                                                        style={{ cursor: 'pointer' }}
-                                                        onClick={() => addIngredient(item)}>
-                                                        {item.name}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* Clear All Button for Ingredients */}
-                                        {selectedIngredients.length > 0 && (
-                                            <div className="d-flex justify-content-end ">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-link  "
-                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
-                                                    onClick={clearAllIngredients}
-                                                >
-                                                    Clear All
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* <div className="col-1"></div> */}
-                            {/* Image Upload Section */}
-                            <div className="col-md-4">
-                                <label className="form-label mb-3 ms-4">Images:</label>
-                                <div className="image-upload shadow ms-4">
-                                    <div className="upload-icon">
-                                        <GrUploadOption className="arrow-up" />
-                                    </div>
-
-                                    {/* Image previews */}
-                                    <div className="image-preview-container  mt-3">
-                                        {imageList.length > 0 && (
-                                            <>
-                                                <div className="featured-image">
-                                                    <div className="image-preview-item position-relative">
-                                                        <img
-                                                            src={imageList[0].preview}
-                                                            alt={`Preview 1`}
-                                                            className="img-thumbnail cursor-pointer img-fluid"
-                                                            onClick={() => openImageEditor(0)}
-                                                        />
-                                                        <h5 className='mt-2'>Main Image</h5>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-danger btn-sm position-absolute  remove-button"
-                                                            onClick={() => removeImage(0)}
-                                                        >
-                                                            <MdDelete />
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                {imageList.length > 1 && (
-                                                    <div className="remaining-images">
-                                                        {imageList.slice(1).map((image, index) => (
-                                                            <div key={index + 1} className="image-preview-item position-relative">
-                                                                <img
-                                                                    src={image.preview}
-                                                                    alt={`Preview ${index + 2}`}
-                                                                    className="img-thumbnail cursor-pointer img-fluid"
-                                                                    onClick={() => openImageEditor(index + 1)}
-                                                                />
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-danger btn-sm position-absolute remove-button"
-                                                                    onClick={() => removeImage(index + 1)}
-                                                                >
-                                                                    <MdDelete />
-                                                                </button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-
-                                                <button
-                                                    type="button"
-                                                    className="edit-btn mt-3 w-50"
-                                                    onClick={() => document.getElementById("fileInput").click()}
-                                                >
-                                                    Add More Images
-                                                </button>
-
-                                                <div className="mt-2 text-muted text-center">
-                                                    {imageList.length} image{imageList.length > 1 ? 's' : ''} selected
-                                                </div>
-                                            </>
-                                        )}
-
-                                        {imageList.length === 0 && (
-                                            <>
-                                                <div className="upload-text fs-5">Upload Multiple Images Here</div>
-                                                <div className="upload-subtext fs-6">
-                                                    (Jpg, Jpeg, Png files supported only)
-                                                    <br />
-                                                    (Max File Size 10 MB per image)
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    className="edit-btn mt-4 w-50 fs-6"
-                                                    onClick={() => document.getElementById("fileInput").click()}
-                                                >
-                                                    Select Images
-                                                </button>
-                                            </>
-                                        )}
-
-
-                                        <input
-                                            type="file"
-                                            className="form-control d-none"
-                                            id="fileInput"
-                                            multiple
-                                            accept="image/jpeg,image/png,image/jpg"
-                                            {...register("images")}
-                                            onChange={handleImageChange}
-                                        />
-                                    </div>
-                                    {imageError && <div className="text-danger mt-2">{imageError}</div>}
-                                </div>
-
-                                {/* Image Editing Modal */}
-                                {isModalOpen && currentImageIndex !== null && (
-                                    <div
-                                        className="modal-overlay"
-                                        onClick={(e) => {
-                                            if (e.target === e.currentTarget) {
-                                                closeModal();
-                                            }
-                                        }}
-                                    >
-                                        <div className="modal-div" onClick={(e) => e.stopPropagation()}>
-                                            <button
-                                                type="button"
-                                                onClick={closeModal}
-                                                className="close-button"
-                                            >
-                                                <GrClose />
-                                            </button>
-                                            <Cropper
-                                                image={imageList[currentImageIndex].preview}
-                                                crop={crop}
-                                                zoom={zoom}
-                                                rotation={rotation}
-                                                aspect={5 / 3}
-                                                onCropChange={setCrop}
-                                                onZoomChange={setZoom}
-                                                onRotationChange={setRotation}
-                                                onCropComplete={onCropComplete}
-                                            />
-                                            <div className="crop-controls">
-                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon" style={{ width: "180px", fontSize: "15px" }}>
-                                                    <label className="form-labels me-2">Zoom</label>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm border-0"
-                                                        onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
-                                                    >
-                                                        <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
-                                                    </button>
-                                                    <span className="mx-2">{zoom.toFixed(1)}x</span>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm border-0"
-                                                        onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
-                                                    >
-                                                        <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
-                                                    </button>
-                                                </div>
-                                                <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon" style={{ width: "130px", fontSize: "15px" }}>
-                                                    <label className="form-labels">Rotation</label>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-sm mx-2 border-0"
-                                                        onClick={() => setRotation((prev) => (prev + 90) % 360)}
-                                                    >
-                                                        <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
-                                                    </button>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    style={{ fontSize: "15px" }}
-                                                    className="edit-btn "
-                                                    onClick={async () => {
-                                                        await updateImagePreview();
-                                                        closeModal();
-                                                    }}
-                                                >
-                                                    Done
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    style={{ fontSize: "15px" }}
-                                                    className="edit-btn full-size-btn"
-                                                    onClick={() => {
-                                                        setZoom(1);
-                                                        setRotation(0);
-                                                    }}
-                                                >
-                                                    Real Size
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-
-                            </div>
-                        </div>
-                        {/* Add Ons Section */}
-                        <div className="row ">
-                            <div className="col-md-8">
-                                <div className="mb-4">
-                                    <label className="form-label">Add-ons :</label>
-                                    <div className="position-relative">
-                                        <div className="input-container border border-2 border-dark rounded-pill d-flex align-items-center shadow">
-                                            {/* Selected Add-ons */}
-                                            <div className="d-flex ms-1 fs-4 align-items-center">
-                                                {selectedAddons.map(item => (
-                                                    <div key={item._id} className="me-1 mb-1">
-                                                        <span className="badge rounded-pill text-white fw-bold"
-                                                            style={{ backgroundColor: '#0B2545', }}>
-                                                            {item.name}
-                                                            <span
-                                                                className="ms-2 cursor-pointer"
-                                                                onClick={() => removeAddon(item._id)}
-                                                            >×</span>
-                                                        </span>
-                                                    </div>
-                                                ))}
-
-                                                {/* Search Input */}
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-0"
-                                                    placeholder="Type To Search Add-ons"
-                                                    value={addonSearchTerm}
-                                                    onChange={handleAddonSearch}
-                                                    onFocus={() => handleInputFocus('addon')}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setShowAddonDropdown(true);
-                                                        if (filteredAddons.length === 0) {
-                                                            setFilteredAddons(addons.slice(0, 5));
-                                                        }
-                                                    }}
-                                                    style={{ boxShadow: 'none' }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Hidden input for react-hook-form to register the add-ons */}
-                                        <input
-                                            type="hidden"
-                                            {...register("addOn")}
-                                        />
-
-                                        {/* Add-ons Dropdown */}
-                                        {showAddonDropdown && filteredAddons.length > 0 && (
-                                            <div className="position-absolute w-100 border rounded bg-white shadow-sm mt-4 pt-2"
-                                                style={{
-                                                    zIndex: 1000,
-                                                    maxHeight: '180px',
-                                                    overflowY: 'auto',
-                                                    top: '100%',
-                                                    left: 0
-                                                }}
-                                                onClick={(e) => e.stopPropagation()}>
-                                                {filteredAddons.map(item => (
-                                                    <div key={item._id}
-                                                        className="dropdown-item py-2 px-3 cursor-pointer hover-bg-light"
-                                                        style={{ cursor: 'pointer' }}
-                                                        onClick={() => addAddon(item)}>
-                                                        {item.name}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        {/* Clear All Button for Add-ons */}
-                                        {selectedAddons.length > 0 && (
-                                            <div className="d-flex justify-content-end ">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-link"
-                                                    style={{ textDecoration: 'none', color: '#0B2545' }}
-                                                    onClick={clearAllAddons}
-                                                >
-                                                    Clear All
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Rating */}
-                            <div className="col-md-4 mt-1">
-                                <div className="mb-2">
-                                    <label className="form-label">Ratings:</label>
-                                    <input
-                                        type="text"
-                                        name="ratings"
-                                        {...register("ratings", { required: true })}
-                                        className="form-control shadow"
-                                        placeholder=" E.g 4.5"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row">
-                            {/* Business Menu Variants */}
-                            <div className="variants-section col-12">
-                                <h3 className="variants-title">Business Menu Variants</h3>
-                                <div className="row">
-                                    {watch("size").map((_, index) => (
-                                        <div key={index} className="row w-100 mx-0 mb-3">
-                                            <div className="col-md-3 mb-2">
-                                                <label className="form-label">Category :</label>
-                                                <select
-                                                    {...register('categoryId')}
-                                                    className="form-control shadow text-capitalize"
-                                                    name='categoryId'
-                                                    disabled={businessVariants.length > 1}
-                                                >
-                                                    <option value="">Select Any One</option>
-                                                    {categories.map((category) => (
-                                                        <option key={category._id} value={category._id}>
-                                                            {category.title}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div className="col-md-3">
-                                                <label className="form-label">Size :</label>
-                                                <select
-                                                    {...register(`size[${index}].sizeId`)}
-                                                    className="form-control shadow text-capitalize"
-                                                    name={`size[${index}].sizeId`}
-                                                >
-                                                    <option value="">Select Any One</option>
-                                                    {sizes.map((size) => (
-                                                        <option key={size._id} value={size._id}>{size.size}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            <div className="col-md-3">
-                                                <label className="form-label">Volume :</label>
-                                                <input
-                                                    type="text"
-                                                    {...register(`size[${index}].volume`)}
-                                                    name={`size[${index}].volume`}
-                                                    className="form-control shadow text-capitalize"
-                                                    placeholder="e.g. 60ml"
-                                                />
-                                            </div>
-
-                                            <div className="col-md-3">
-                                                <label className="form-label">Price :</label>
-                                                <input
-                                                    type="text"
-                                                    name={`size[${index}].sizePrice`}
-
-                                                    {...register(`size[${index}].sizePrice`)}
-                                                    className="form-control shadow"
-                                                    placeholder="₹ e.g. 100"
-                                                />
-                                            </div>
-
-                                            {watch("size").length > 1 && (
-                                                <div className="col-2 d-flex align-items-end">
-                                                    <button
-                                                        type="button"
-                                                        className="btn mb-2"
-                                                        onClick={() => removeBusinessVariant(index)}
-                                                    >
-                                                        <FiMinusCircle className='text-danger  fs-5' /><b className='ms-2'>Remove Variant</b>
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* <button type="button" className="add-variant-btn" onClick={addBusinessVariant}>
-                                    + ADD VARIANT
-                                </button> */}
-                            </div>
-                            {/* Recipe Field */}
-                            <div className="mb-4">
-                                <label className="form-label">Recipe :</label>
-                                <textarea
-                                    name='description'
-                                    {...register("recipe")}
-                                    // value="hello"
-                                    className="form-control shadow text-capitalize"
-                                    rows="4"
-                                    style={{
-                                        resize: 'none',
-                                        overflowY: 'auto',
-                                        scrollbarWidth: 'none',
-                                        msOverflowStyle: 'none'
-                                    }}
-                                    placeholder="Write the cooking instructions for this item..."
-                                />
-                            </div>
-                            {/* Personal Menu Variants */}
-                            {/* <div className="variants-section col-12">
+                                {/* Personal Menu Variants */}
+                                {/* <div className="variants-section col-12">
                                 <h3 className="variants-title">Personal Menu Variants</h3>
                                 {watch("personalSize").map((_, index) => (
                                     <div key={index} className="row">
@@ -1124,11 +1129,12 @@ function EditItem() {
 
                             </div> */}
 
-                        </div>
-                        <div className="mt-4">
-                            <button type="submit" className="submit-btn">UPDATE ITEM</button>
-                        </div>
-                    </form>
+                            </div>
+                            <div className="mt-4">
+                                <button type="submit" className="submit-btn">UPDATE ITEM</button>
+                            </div>
+                        </form>
+                    )}
                 </div >
             </div >
             <ToastContainer />
