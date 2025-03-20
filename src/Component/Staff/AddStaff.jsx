@@ -145,7 +145,7 @@ function AddStaff() {
                     theme: "colored",
                     style: {
                         backgroundColor: ' green',
-                        color: '#000',
+                        color: 'white',
                     },
                 });
                 reset();

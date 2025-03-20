@@ -179,7 +179,6 @@ const AllItem = () => {
     }
 
     try {
-      // Prepare the payload based on Postman screenshot
       const payload = {
         menuId: itemId
       };

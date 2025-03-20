@@ -12,7 +12,7 @@ import { FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import imageCompression from 'browser-image-compression';
 import { MdDelete } from "react-icons/md";
 function AddItem() {
-    const { register, handleSubmit, setValue, reset, watch } = useForm({
+    const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm({
         defaultValues: {
             ratings: "",
             images: [],
@@ -57,6 +57,7 @@ function AddItem() {
     const [addonSearchTerm, setAddonSearchTerm] = useState('');
     const [showAddonDropdown, setShowAddonDropdown] = useState(false);
     const [filteredAddons, setFilteredAddons] = useState([]);
+    const [validationErrors, setValidationErrors] = useState({});
     // useEffect
     useEffect(() => {
         const fetchData = async () => {
@@ -432,7 +433,7 @@ function AddItem() {
                     theme: "colored",
                     style: {
                         backgroundColor: 'green',
-                        color: '#000',
+                        color: 'white',
                     },
                 });
                 reset();
@@ -492,7 +493,7 @@ function AddItem() {
 
                                 {/* Ingredients Field */}
                                 <div className="mb-4">
-                                    <label className="form-label">Item Ingredients :</label>
+                                    <label className="form-label"> Ingredients :</label>
                                     <div className="position-relative">
                                         <div className="input-container border border-2 border-dark rounded-pill  d-flex align-items-center shadow">
                                             {/* Selected Ingredients */}

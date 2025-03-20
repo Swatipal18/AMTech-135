@@ -287,13 +287,14 @@ function EditBanners() {
                 {/* Main Content */}
                 <div className="col-md-12 main-content">
                     <div className="form-container">
-                        <h1 className="form-title">Edit Banner</h1>
                         <button
                             className='edit-btn mb-4 fs-6'
                             onClick={() => navigate('/AllBanners')}
                         >
                             Back
                         </button>
+                        <h1 className="form-title">Edit Banner</h1>
+
                         {/* Loading Indicator */}
                         {loading ? (
                             <div className="loader-container d-flex justify-content-center">

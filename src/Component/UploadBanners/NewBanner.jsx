@@ -27,7 +27,7 @@ function NewBanner() {
 
 
     const [sends, setSends] = useState('');
-    const send = ['active', 'Inactive', 'scheduled'];
+    const send = ['active', 'scheduled'];
     const [sendType, setSendType] = useState('now'); // Default to 'now'
     const navigate = useNavigate();
 
@@ -184,7 +184,7 @@ function NewBanner() {
                     theme: "colored",
                     style: {
                         backgroundColor: 'green',
-                        color: '#000',
+                        color: 'white',
                     },
                 });
                 reset();

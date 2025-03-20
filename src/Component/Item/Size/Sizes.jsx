@@ -128,7 +128,7 @@ function Sizes() {
                         theme: "colored",
                         style: {
                             backgroundColor: '#FFEB3B',
-                            color: '#000',
+                            color: 'white',
                         },
                     });
                     reset();

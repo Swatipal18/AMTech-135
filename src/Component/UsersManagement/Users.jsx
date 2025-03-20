@@ -191,6 +191,39 @@ function Users() {
             setLoadingDetails(false);
         }
     };
+    const handleCheckboxChange = async (userId, type, item) => {
+        // Get current active state from the item directly
+        const isCurrentlyActive = item.isActive;
+
+        try {
+            // Call the API to update the status (toggle isActive)
+            const payload = {
+                userId: userId,
+                isActive: !isCurrentlyActive // Toggle the current state
+            };
+
+            // Update the endpoint to match your user status update API
+            const response = await axios.put(`${baseUrl}/admin-business/update-status`, payload);
+
+            // Show success message
+            toast.success(`User ${isCurrentlyActive ? 'deactivated' : 'activated'} successfully!`, {
+                position: "top-right",
+                autoClose: 1000,
+                theme: "colored",
+            });
+
+            // Refresh the items list to get updated data
+            fetchItems(currentPage, searchTerm);
+
+        } catch (error) {
+            console.error(`Error updating user status:`, error);
+            toast.error(`Failed to update user status. Please try again.`, {
+                position: "top-right",
+                autoClose: 3000,
+                theme: "colored",
+            });
+        }
+    };
 
     return (
         <div className="page-container">
@@ -270,11 +303,13 @@ function Users() {
                                                         <label className={`switch`}>
                                                             <input
                                                                 type="checkbox"
+                                                                checked={item.isActive}
+                                                                onChange={() => handleCheckboxChange(item._id, 'business', item)}
                                                             />
                                                             <div
                                                                 className="slider"
                                                                 style={{
-                                                                    backgroundColor: item.isActiveForPersonal ? '#FF3B30' : '#4CAF50'
+                                                                    backgroundColor: item.isActive ? '#FF3B30' : '#4CAF50'
                                                                 }}
                                                             ></div>
                                                             <div className="slider-card">
