@@ -250,7 +250,7 @@
  }
 
  .red {
-   background-color: #ff0000 !important;
+   background-color: #ff00007d !important;
    color: red !important;
 
  }
@@ -603,3 +603,38 @@ border-radius: 10px 10px 10px 10px;
 .hover-container:hover .hover-item-box{
   display: block;
 }
+
+ .schedule-btn {
+   background-color: transparent;
+   border: 2px solid #0B2545;
+   border-radius: 30px;
+ }
+
+ .now-btn {
+   background-color: transparent;
+   border: 2px solid #0B2545;
+   border-radius: 30px;
+ }
+
+ .active-now-btn {
+   color: white;
+   background-color: #0B2545 !important;
+ }
+
+ .active-schedule-btn {
+   color: white;
+   background-color: #0B2545 !important;
+ }
+
+ input.form-control {
+   color: black !important;
+   /* Ensure text remains black */
+ }
+
+ input.form-control:focus {
+   color: black !important;
+   /* Keep text black even on focus */
+   box-shadow: none !important;
+   /* Remove extra shadow if needed */
+
+ }

@@ -796,7 +796,7 @@ input[type="range"] {
 }
 
 .submit-btn {
-    background-color: #1e3a5f;
+    background-color: var(--backdround-color);
     color: #EEF4ED;
     padding: 10px 30px;
     border-radius: 30px;
@@ -842,7 +842,7 @@ input[type="range"] {
     align-items: center;
     justify-content: center;
     gap: 20px;
-    background-color: var(--backdround-color);
+    background-color: #0B2545;
     color: #EEF4ED;
     border: none;
     padding: 0.2rem 1rem;
@@ -956,10 +956,12 @@ input[type="range"] {
 
 .filled {
     color: var(--success-color);
+    font-size: 1.5rem;
 }
 
 .empty {
     color: #ccc;
+    font-size: 1.5rem;
 }
 
 /* business & Personal toggle */
@@ -1064,7 +1066,7 @@ input:checked~.slider {
 .edit-btn:hover {
     background-color: #0B2545 !important;
     color: #EEF4ED !important;
-    border: 2px solid #000080;
+    border: 2px solid #0B2545 !important;
     opacity: 0.9;
 }
 
@@ -1085,7 +1087,7 @@ input:checked~.slider {
 }
 
 .Send-time {
-    background-color: #1e3a5f !important;
+    background-color: var(--backdround-color) !important;
     color: #EEF4ED !important;
     border-radius: 30px !important;
     padding: 6px 12px;
@@ -1094,7 +1096,7 @@ input:checked~.slider {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    width: 100px;
+    width: 160px;
     height: 40px;
 }
 
@@ -1403,9 +1405,9 @@ input:checked~.slider {
     position: sticky;
     z-index: 11;
     top: 93px;
-    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.82);
+    -webkit-box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.767);
+    -moz-box-shadow: 1px 10px 1px 5px rgb(238, 244, 237);
 }
 
 .checkbox-container>button {
@@ -1440,9 +1442,9 @@ input:checked~.slider {
     position: sticky;
     top: 113px;
     background-color: #8DA9C4;
-    box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-    -webkit-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
-    -moz-box-shadow: 1px 10px 1px 5px rgb(255, 255, 255);
+    box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.82);
+    -webkit-box-shadow: 1px 10px 1px 5px rgba(238, 244, 237, 0.767);
+    -moz-box-shadow: 1px 10px 1px 5px rgb(238, 244, 237);
 }
 
 .order-filter-btn {

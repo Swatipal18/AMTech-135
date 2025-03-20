@@ -61,7 +61,7 @@ function Users() {
             const response = await axios.get(`${baseUrl}/admin-business/list`, {
                 params: { page: pageNumber, limit: limitNumber, search: search || '',role:role }
             });
-            console.log('response: ', response.data);
+            // console.log('response: ', response.data);
             if (response.data?.data?.businessList) {
                 setItems(response.data.data.businessList || []);
                 setTotalItems(response.data.data.businessList.length || 0);
@@ -341,51 +341,194 @@ function Users() {
                                                 <div
                                                     className={`modal-slide-backdrop ${showModal ? 'show' : ''}`}
                                                     onClick={() => setShowModal(false)}
+                                                    style={{
+                                                        position: 'fixed',
+                                                        top: 0,
+                                                        left: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                                        zIndex: 1000,
+                                                        opacity: showModal ? 1 : 0,
+                                                        transition: 'opacity 0.3s ease-in-out'
+                                                    }}
                                                 />
-                                                <div className={`modal-slide ${showModal ? 'show' : ''}`}>
-                                                    <div className="modal-slide-header ">
-                                                        <h5 className="m-0 bg-transparent">
+                                                <div
+                                                    className={`modal-slide ${showModal ? 'show' : ''}`}
+                                                    style={{
+                                                        position: 'fixed',
+                                                        top: 0,
+                                                        right: 0,
+                                                        bottom: 0,
+                                                        width: '600px',
+                                                        maxWidth: '90%',
+                                                        backgroundColor: '#fff',
+                                                        boxShadow: '-5px 0 15px rgba(0, 0, 0, 0.2)',
+                                                        zIndex: 1001,
+                                                        transform: showModal ? 'translateX(0)' : 'translateX(100%)',
+                                                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        borderRadius: '12px 0 0 12px',
+                                                        overflow: 'hidden'
+                                                    }}
+                                                >
+                                                    <div
+                                                        className="modal-slide-header"
+                                                        style={{
+                                                            padding: '16px 20px',
+                                                            borderBottom: '1px solid #e0e0e0',
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'center',
+                                                            backgroundColor: '#f8f9fa'
+                                                        }}
+                                                    >
+                                                        <h5
+                                                            className="m-0 bg-transparent"
+                                                            style={{
+                                                                fontSize: '1.25rem',
+                                                                fontWeight: 600,
+                                                                color: '#11325a'
+                                                            }}
+                                                        >
                                                             {selectedUserData?.businessUser ? 'Business Information' : 'Personal Information'}
                                                         </h5>
                                                         <button
-                                                            className="modal-slide-close text-danger fs-2 bg-transparent"
+                                                            className="modal-slide-close"
                                                             onClick={() => setShowModal(false)}
+                                                            style={{
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                fontSize: '1.75rem',
+                                                                color: '#dc3545',
+                                                                cursor: 'pointer',
+                                                                transition: 'transform 0.2s',
+                                                                padding: '0 8px',
+                                                                outline: 'none'
+                                                            }}
+                                                            onMouseOver={(e) => e.target.style.transform = 'rotate(90deg)'}
+                                                            onMouseOut={(e) => e.target.style.transform = 'rotate(0deg)'}
                                                         >
                                                             ×
                                                         </button>
                                                     </div>
-                                                    <div className="modal-slide-body ">
+                                                    <div
+                                                        className="modal-slide-body"
+                                                        style={{
+                                                            padding: '20px',
+                                                            overflowY: 'auto',
+                                                            flex: 1
+                                                        }}
+                                                    >
                                                         {loadingDetails ? (
-                                                            <div className="text-center p-4 bg-transparent">
-                                                                <div className="spinner-border text-primary" role="status">
-                                                                    <span className="visually-hidden">Loading...</span>
-                                                                </div>
+                                                            <div
+                                                                className="text-center p-4"
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center',
+                                                                    height: '100%'
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    className="spinner"
+                                                                    style={{
+                                                                        width: '50px',
+                                                                        height: '50px',
+                                                                        border: '5px solid rgba(0, 123, 255, 0.1)',
+                                                                        borderRadius: '50%',
+                                                                        borderTop: '5px solid #007bff',
+                                                                        animation: 'spin 1s linear infinite'
+                                                                    }}
+                                                                />
                                                             </div>
                                                         ) : selectedUserData ? (
-                                                            <div className="row g-3 bg-transparent">
+                                                            <div
+                                                                className="row g-4"
+                                                                style={{
+                                                                    opacity: 0,
+                                                                    animation: 'fadeIn 0.5s forwards',
+                                                                    animationDelay: '0.2s'
+                                                                }}
+                                                            >
                                                                 {selectedUserData.businessUser ? (
                                                                     <>
                                                                         {/* Images Section */}
                                                                         <div className="col-12">
-                                                                            <div className="info-card">
-                                                                                <div className="card-body">
-                                                                                    <h3 className="card-title text-center">Business Images</h3>
-                                                                                    <div className="d-flex flex-wrap gap-3 mt-3">
+                                                                            <div
+                                                                                className="info-card"
+                                                                                style={{
+                                                                                    backgroundColor: '#fff',
+                                                                                    borderRadius: '12px',
+                                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                                    transition: 'transform 0.3s, box-shadow 0.3s',
+                                                                                    overflow: 'hidden'
+                                                                                }}
+                                                                                onMouseOver={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                                }}
+                                                                                onMouseOut={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                                }}
+                                                                            >
+                                                                                <div className="card-body" style={{ padding: '20px' }}>
+                                                                                    <h3
+                                                                                        className="card-title text-center"
+                                                                                        style={{
+                                                                                            fontSize: '1.5rem',
+                                                                                            fontWeight: '600',
+                                                                                            marginBottom: '15px',
+                                                                                            color: '#333',
+                                                                                            borderBottom: '2px solid #f0f0f0',
+                                                                                            paddingBottom: '10px'
+                                                                                        }}
+                                                                                    >
+                                                                                        Business Images
+                                                                                    </h3>
+                                                                                    <div
+                                                                                        className="d-flex flex-wrap gap-3 mt-3 justify-content-center"
+                                                                                        style={{
+                                                                                            maxHeight: '300px',
+                                                                                            overflowY: 'auto',
+                                                                                            padding: '5px',
+                                                                                            scrollbarWidth: 'thin',
+                                                                                            scrollbarColor: '#888 #f1f1f1'
+                                                                                        }}
+                                                                                    >
                                                                                         {selectedUserData.businessUser.images?.map((image, index) => (
-                                                                                            <div key={index} style={{ width: '200px', height: '150px' }}>
+                                                                                            <div
+                                                                                                key={index}
+                                                                                                style={{
+                                                                                                    width: '200px',
+                                                                                                    height: '150px',
+                                                                                                    opacity: 0,
+                                                                                                    animation: 'fadeInUp 0.5s forwards',
+                                                                                                    animationDelay: `${0.1 * index}s`
+                                                                                                }}
+                                                                                            >
                                                                                                 <img
                                                                                                     src={`${baseUrl}/${image}`}
                                                                                                     alt={`Business ${index + 1}`}
-                                                                                                    className="img-fluid rounded"
+                                                                                                    className="rounded"
                                                                                                     style={{
                                                                                                         width: '100%',
                                                                                                         height: '100%',
                                                                                                         objectFit: 'cover',
-                                                                                                        transition: 'transform 0.3s ease',
-                                                                                                        cursor: 'pointer'
+                                                                                                        transition: 'all 0.3s ease',
+                                                                                                        cursor: 'pointer',
+                                                                                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                                                                                     }}
-                                                                                                    onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                                                                                                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                                                                                                    onMouseOver={(e) => {
+                                                                                                        e.target.style.transform = 'scale(1.05)';
+                                                                                                        e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                                                                                    }}
+                                                                                                    onMouseOut={(e) => {
+                                                                                                        e.target.style.transform = 'scale(1)';
+                                                                                                        e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                                                                                                    }}
                                                                                                 />
                                                                                             </div>
                                                                                         ))}
@@ -396,20 +539,76 @@ function Users() {
 
                                                                         {/* Business Information */}
                                                                         <div className="col-md-6">
-                                                                            <div className="info-card">
-                                                                                <div className="card-body fs-6">
-                                                                                    <h6 className="card-title text-center">Basic Information</h6>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Business Name:</strong>
-                                                                                        <span>{selectedUserData.businessUser.businessName}</span>
+                                                                            <div
+                                                                                className="info-card"
+                                                                                style={{
+                                                                                    backgroundColor: '#fff',
+                                                                                    borderRadius: '12px',
+                                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                                    height: '100%',
+                                                                                    transition: 'transform 0.3s, box-shadow 0.3s'
+                                                                                }}
+                                                                                onMouseOver={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                                }}
+                                                                                onMouseOut={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                                }}
+                                                                            >
+                                                                                <div className="card-body fs-6" style={{ padding: '20px' }}>
+                                                                                    <h6
+                                                                                        className="card-title text-center"
+                                                                                        style={{
+                                                                                            fontSize: '1.1rem',
+                                                                                            fontWeight: '600',
+                                                                                            marginBottom: '15px',
+                                                                                            color: '#333',
+                                                                                            borderBottom: '2px solid #f0f0f0',
+                                                                                            paddingBottom: '10px'
+                                                                                        }}
+                                                                                    >
+                                                                                        Basic Information
+                                                                                    </h6>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Business Name:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.businessUser.businessName}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Owner Name:</strong>
-                                                                                        <span>{selectedUserData.businessUser.ownerName}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Owner Name:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.businessUser.ownerName}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Ocupant:</strong>
-                                                                                        <span>{selectedUserData.businessUser.ocupant}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Occupant:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.businessUser.ocupant}</span>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -417,16 +616,63 @@ function Users() {
 
                                                                         {/* Contact Information */}
                                                                         <div className="col-md-6">
-                                                                            <div className="info-card">
-                                                                                <div className="card-body">
-                                                                                    <h3 className="card-title text-center">Contact Information</h3>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Contact:</strong>
-                                                                                        <span>{selectedUserData.businessUser.contact}</span>
+                                                                            <div
+                                                                                className="info-card"
+                                                                                style={{
+                                                                                    backgroundColor: '#fff',
+                                                                                    borderRadius: '12px',
+                                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                                    height: '100%',
+                                                                                    transition: 'transform 0.3s, box-shadow 0.3s'
+                                                                                }}
+                                                                                onMouseOver={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                                }}
+                                                                                onMouseOut={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                                }}
+                                                                            >
+                                                                                <div className="card-body" style={{ padding: '20px' }}>
+                                                                                    <h6
+                                                                                        className="card-title text-center"
+                                                                                        style={{
+                                                                                            fontSize: '1.1rem',
+                                                                                            fontWeight: '600',
+                                                                                            // marginBottom: '15px',
+                                                                                            color: '#333',
+                                                                                            borderBottom: '2px solid #f0f0f0',
+                                                                                            // paddingBottom: '10px'
+                                                                                        }}
+                                                                                    >
+                                                                                        Contact Information
+                                                                                    </h6>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Contact:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '400' }}>{selectedUserData.businessUser.contact}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Address:</strong>
-                                                                                        <span>{selectedUserData.businessUser.address}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Address:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.businessUser.address}</span>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -436,19 +682,65 @@ function Users() {
                                                                     <>
                                                                         {selectedUserData.normalUser.profileImage && (
                                                                             <div className="col-12">
-                                                                                <div className="info-card">
-                                                                                    <div className="card-body">
-                                                                                        <h3 className="card-title text-center">Profile Image</h3>
-                                                                                        <div className="d-flex justify-content-center mt-3">
+                                                                                <div
+                                                                                    className="info-card"
+                                                                                    style={{
+                                                                                        backgroundColor: '#fff',
+                                                                                        borderRadius: '12px',
+                                                                                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                                        transition: 'transform 0.3s, box-shadow 0.3s',
+                                                                                        overflow: 'hidden'
+                                                                                    }}
+                                                                                    onMouseOver={(e) => {
+                                                                                        e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                                        e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                                    }}
+                                                                                    onMouseOut={(e) => {
+                                                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                                    }}
+                                                                                >
+                                                                                    <div className="card-body" style={{ padding: '20px' }}>
+                                                                                        <h3
+                                                                                            className="card-title text-center"
+                                                                                            style={{
+                                                                                                fontSize: '1.5rem',
+                                                                                                fontWeight: '600',
+                                                                                                marginBottom: '15px',
+                                                                                                color: '#333',
+                                                                                                borderBottom: '2px solid #f0f0f0',
+                                                                                                paddingBottom: '10px'
+                                                                                            }}
+                                                                                        >
+                                                                                            Profile Image
+                                                                                        </h3>
+                                                                                        <div
+                                                                                            className="d-flex justify-content-center mt-3"
+                                                                                            style={{
+                                                                                                opacity: 0,
+                                                                                                animation: 'fadeInUp 0.5s forwards',
+                                                                                                animationDelay: '0.1s'
+                                                                                            }}
+                                                                                        >
                                                                                             <div style={{ width: '200px', height: '200px' }}>
                                                                                                 <img
                                                                                                     src={`${selectedUserData.normalUser.profileImage}`}
                                                                                                     alt="Profile"
-                                                                                                    className="img-fluid rounded-circle"
+                                                                                                    className="rounded-circle"
                                                                                                     style={{
                                                                                                         width: '100%',
                                                                                                         height: '100%',
-                                                                                                        objectFit: 'cover'
+                                                                                                        objectFit: 'cover',
+                                                                                                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                                                                                                        transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                                                                                    }}
+                                                                                                    onMouseOver={(e) => {
+                                                                                                        e.target.style.transform = 'scale(1.05)';
+                                                                                                        e.target.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
+                                                                                                    }}
+                                                                                                    onMouseOut={(e) => {
+                                                                                                        e.target.style.transform = 'scale(1)';
+                                                                                                        e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
                                                                                                     }}
                                                                                                 />
                                                                                             </div>
@@ -460,24 +752,89 @@ function Users() {
 
                                                                         {/* Personal Information */}
                                                                         <div className="col-md-6">
-                                                                            <div className="info-card">
-                                                                                <div className="card-body">
-                                                                                    <h6 className="card-title text-center">Personal Information</h6>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>First Name:</strong>
-                                                                                        <span>{selectedUserData.normalUser.firstName}</span>
+                                                                            <div
+                                                                                className="info-card"
+                                                                                style={{
+                                                                                    backgroundColor: '#fff',
+                                                                                    borderRadius: '12px',
+                                                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                                    height: '100%',
+                                                                                    transition: 'transform 0.3s, box-shadow 0.3s'
+                                                                                }}
+                                                                                onMouseOver={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                                }}
+                                                                                onMouseOut={(e) => {
+                                                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                                }}
+                                                                            >
+                                                                                <div className="card-body" style={{ padding: '20px' }}>
+                                                                                    <h6
+                                                                                        className="card-title text-center"
+                                                                                        style={{
+                                                                                            fontSize: '1.1rem',
+                                                                                            fontWeight: '600',
+                                                                                            marginBottom: '15px',
+                                                                                            color: '#333',
+                                                                                            borderBottom: '2px solid #f0f0f0',
+                                                                                            paddingBottom: '10px'
+                                                                                        }}
+                                                                                    >
+                                                                                        Personal Information
+                                                                                    </h6>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>First Name:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.normalUser.firstName}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Last Name:</strong>
-                                                                                        <span>{selectedUserData.normalUser.lastName}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Last Name:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.normalUser.lastName}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Contact:</strong>
-                                                                                        <span>{selectedUserData.normalUser.contact}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Contact:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.normalUser.contact}</span>
                                                                                     </div>
-                                                                                    <div className="info-field mb-2">
-                                                                                        <strong>Address:</strong>
-                                                                                        <span>{selectedUserData.normalUser.address}</span>
+                                                                                    <div
+                                                                                        className="info-field mb-3"
+                                                                                        style={{
+                                                                                            display: 'flex',
+                                                                                            justifyContent: 'space-between',
+                                                                                            alignItems: 'center',
+                                                                                            padding: '8px 0',
+                                                                                            borderBottom: '1px dashed #eee'
+                                                                                        }}
+                                                                                    >
+                                                                                        <strong style={{ color: '#555' }}>Address:</strong>
+                                                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedUserData.normalUser.address}</span>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -487,18 +844,75 @@ function Users() {
 
                                                                 {/* Account Status - Common for both types */}
                                                                 <div className="col-md-6">
-                                                                    <div className="info-card">
-                                                                        <div className="card-body">
-                                                                            <h6 className="card-title text-center">Account Status</h6>
-                                                                            <div className="info-field mb-2">
-                                                                                <strong>Status:</strong>
-                                                                                <span className={`badge ${selectedUserData.businessUser?.isActive || selectedUserData.normalUser?.isActive ? 'bg-success' : 'bg-danger'} ms-2 fs-6 text-white`}>
+                                                                    <div
+                                                                        className="info-card"
+                                                                        style={{
+                                                                            backgroundColor: '#fff',
+                                                                            borderRadius: '12px',
+                                                                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                                                                            height: '100%',
+                                                                            transition: 'transform 0.3s, box-shadow 0.3s'
+                                                                        }}
+                                                                        onMouseOver={(e) => {
+                                                                            e.currentTarget.style.transform = 'translateY(-5px)';
+                                                                            e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.12)';
+                                                                        }}
+                                                                        onMouseOut={(e) => {
+                                                                            e.currentTarget.style.transform = 'translateY(0)';
+                                                                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                                                                        }}
+                                                                    >
+                                                                        <div className="card-body" style={{ padding: '20px' }}>
+                                                                            <h6
+                                                                                className="card-title text-center"
+                                                                                style={{
+                                                                                    fontSize: '1.1rem',
+                                                                                    fontWeight: '600',
+                                                                                    marginBottom: '15px',
+                                                                                    color: '#333',
+                                                                                    borderBottom: '2px solid #f0f0f0',
+                                                                                    paddingBottom: '10px'
+                                                                                }}
+                                                                            >
+                                                                                Account Status
+                                                                            </h6>
+                                                                            <div
+                                                                                className="info-field mb-3"
+                                                                                style={{
+                                                                                    display: 'flex',
+                                                                                    justifyContent: 'space-between',
+                                                                                    alignItems: 'center',
+                                                                                    padding: '8px 0',
+                                                                                    borderBottom: '1px dashed #eee'
+                                                                                }}
+                                                                            >
+                                                                                <strong style={{ color: '#555' }}>Status:</strong>
+                                                                                <span
+                                                                                    style={{
+                                                                                        padding: '4px 10px',
+                                                                                        borderRadius: '50px',
+                                                                                        fontSize: '0.85rem',
+                                                                                        fontWeight: '500',
+                                                                                        color: '#fff',
+                                                                                        backgroundColor: selectedUserData.businessUser?.isActive || selectedUserData.normalUser?.isActive ? '#34C759' : '#FF3B30',
+                                                                                        boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+                                                                                    }}
+                                                                                >
                                                                                     {selectedUserData.businessUser?.isActive || selectedUserData.normalUser?.isActive ? 'Active' : 'Inactive'}
                                                                                 </span>
                                                                             </div>
-                                                                            <div className="info-field mb-2">
-                                                                                <strong>Created At:</strong>
-                                                                                <span>
+                                                                            <div
+                                                                                className="info-field mb-3"
+                                                                                style={{
+                                                                                    display: 'flex',
+                                                                                    justifyContent: 'space-between',
+                                                                                    alignItems: 'center',
+                                                                                    padding: '8px 0',
+                                                                                    borderBottom: '1px dashed #eee'
+                                                                                }}
+                                                                            >
+                                                                                <strong style={{ color: '#555' }}>Created At:</strong>
+                                                                                <span style={{ color: '#333', fontWeight: '500' }}>
                                                                                     {formatDate(selectedUserData.businessUser?.createdAt || selectedUserData.normalUser?.createdAt)}
                                                                                 </span>
                                                                             </div>
@@ -507,12 +921,74 @@ function Users() {
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="text-center p-4">
-                                                                <p>No data available</p>
+                                                            <div
+                                                                className="text-center p-4"
+                                                                style={{
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center',
+                                                                    height: '100%',
+                                                                    color: '#6c757d'
+                                                                }}
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="64"
+                                                                    height="64"
+                                                                    fill="currentColor"
+                                                                    viewBox="0 0 16 16"
+                                                                    style={{ marginBottom: '15px', opacity: 0.5 }}
+                                                                >
+                                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z" />
+                                                                </svg>
+                                                                <p style={{ fontSize: '1.1rem' }}>No data available</p>
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
+                                                <style jsx>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes fadeInUp {
+        from { 
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* Custom scrollbar styles */
+      .modal-slide-body::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      .modal-slide-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      
+      .modal-slide-body::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+      
+      .modal-slide-body::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+    `}</style>
                                             </>
                                         )}
                                     </table>

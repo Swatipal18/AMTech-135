@@ -1,9 +1,10 @@
-import { Button, colors, Pagination, TextField, Modal, Box } from "@mui/material";
+import { Button, colors, TextField, Modal, Box } from "@mui/material";
 import React, { useEffect, useState, useCallback } from "react";
 import { io } from "socket.io-client";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 // const socket_url = ''
 const socket_url =  import.meta.env.VITE_SOCKET_URL
-console.log('socket_url: ', socket_url);
+// console.log('socket_url: ', socket_url);
 const socket = io(socket_url, {
   transports: ["websocket"],
 });
@@ -27,8 +28,10 @@ const AllOrder = () => {
     paymentMethod: "all",
   });
 
-  const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
+  // Updated pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +43,7 @@ const AllOrder = () => {
         TotalSales: data.totalSales,
         TotalOrders: data.totalOrders,
       });
+      setTotalItems(data.totalOrders || data.data.length);
     });
     return () => {
       socket.off("all-order-complete-list-response");
@@ -52,8 +56,8 @@ const AllOrder = () => {
 
   useEffect(() => {
     const filters = {
-      page: page,
-      limit: 10,
+      page: currentPage,
+      limit: limit,
     };
      
     setLoading(true);
@@ -90,13 +94,14 @@ const AllOrder = () => {
     const handleOrderResponse = (Allorders) => {
       setAllorder(Allorders.data);
       setLoading(false);
+      setTotalItems(Allorders.totalOrders || Allorders.data.length);
     };
 
     socket.on("all-order-complete-list-response", handleOrderResponse);
     return () => {
       socket.off("all-order-complete-list-response", handleOrderResponse);
     };
-  }, [dropdownValues, page]);
+  }, [dropdownValues, currentPage, limit]);
 
   const convertToIST = (utcTime) => {
     const options = {
@@ -146,6 +151,70 @@ const AllOrder = () => {
     }));
   };
 
+  // Custom Pagination Component
+  const Pagination = () => {
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (currentPage - 1) * limit + 1;
+    const endIndex = Math.min(currentPage * limit, totalItems);
+    const isNextButtonDisabled = currentPage >= totalPages;
+
+    return (
+      <div className="pagination-container ">
+        <div className="d-flex align-items-center">
+          <span className="showing-text">
+            Showing {startIndex} Of
+            <select
+              className="me-1 text-center customselect border-0"
+              value={limit}
+              style={{ width: '-80px', border: 'none', backgroundColor: '#EEF4ED', color: '#0B2545' }}
+              onChange={(e) => {
+                const newLimit = Number(e.target.value);
+                setLimit(newLimit);
+                setCurrentPage(1);
+              }}>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>orders
+          </span>
+        </div>
+
+        <div className="pagination-controls">
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <FaChevronLeft />
+          </button>
+          <span
+            style={{
+              fontWeight: 'bold',
+              backgroundColor: '#8DA9C4',
+              color: '#0B2545',
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {currentPage}
+          </span>
+          <button
+            className='pagination-button'
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={isNextButtonDisabled}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <>
@@ -232,7 +301,7 @@ const AllOrder = () => {
                       : row.businessName}
                   </td>
                   <td className="fw-bold">{convertToIST(row.createdAt)}</td>
-                  <td className="fw-bold">{row.paymentMethod}</td>
+                  <td className="fw-bold text-center">{row.paymentMethod}</td>
                   <td className="fw-bold">{row.items.length}</td>
                   <td className="fw-bold">
                     {convertToIST(row.orderReceivedTime)}
@@ -251,109 +320,92 @@ const AllOrder = () => {
         )}
       </div>
       <Modal
-  open={isModalOpen}
-  onClose={handleModalClose}
-  sx={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backdropFilter: "blur(5px)", // Blurred background effect
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent overlay
-  }}
->
-  <Box
-    sx={{
-      width: 600,
-      bgcolor: "#8DA9C4",
-      p: 5,
-      borderRadius: 2,
-      boxShadow: 24,
-      textAlign: "center",
-    }}
-  >
-    <h2 style={{ marginBottom: "10px", color: "#0B2545" }}>Select Date Range</h2>
-    <div className="d-flex gap-5">
-    <TextField
-        type="date"
-        label="First Date"
-        name="firstDate"
-        value={dateRange.firstDate}
-        onChange={handleDateChange}
-        fullWidth
-        margin="normal"
-        // Trigger the date picker on click
+        open={isModalOpen}
+        onClose={handleModalClose}
         sx={{
-          '& input': {
-            '-webkit-text-fill-color': 'black', // Ensures text remains black while typing
-            caretColor: 'black',
-            color: 'black',
-          },'& label': {
-      transform: 'translate(14px, -16px) scale(0.75)', // Label ko upar set karna
-      transformOrigin: 'top left',
-    },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backdropFilter: "blur(5px)", // Blurred background effect
+          backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent overlay
         }}
-      />
-      <TextField
-        type="date"
-        label="Last Date" 
-        name="lastDate"
-        value={dateRange.lastDate}
-        onChange={handleDateChange}
-        fullWidth
-        margin="normal"
-        sx={{
-          '& input': {
-            color: 'black',
-            '-webkit-text-fill-color': 'black', // Ensures text remains black while typing
-            caretColor: 'black', // Keeps the cursor visible
-          },'& label': {
-      transform: 'translate(14px, -16px) scale(0.75)', // Label ko upar set karna
-      transformOrigin: 'top left',
-    },
-        }}
-      />
-
-    </div>
-    <Box display="flex" justifyContent="space-between" mt={2}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={applyCustomDateFilter}
-        sx={{ borderRadius: "8px", textTransform: "none" , width:200 }}
       >
-        Apply
-      </Button>
-      <Button
-        variant="outlined"
-        color="secondary"
-        onClick={handleModalClose}
-        sx={{ borderRadius: "8px", textTransform: "none" }}
-      >
-        Cancel
-      </Button>
-    </Box>
-  </Box>
-</Modal>
-
-      <Pagination
-        count={Math.ceil(allorder.length / rowsPerPage)}
-        onChange={handlePageChange}
-        variant="outlined"
-        sx={{
-          "& .MuiPaginationItem-root": {
-            color: "white",
-            borderColor: "#0B2545",
-            backgroundColor: "blue",
-            "&:hover": {
-              backgroundColor: "blue",
-              borderColor: "#0B2545",
-            },
+        <Box
+          sx={{
+            width: 600,
+            bgcolor: "#8DA9C4",
+            p: 5,
+            borderRadius: 2,
+            boxShadow: 24,
+            textAlign: "center",
+          }}
+        >
+          <h2 style={{ marginBottom: "10px", color: "#0B2545" }}>Select Date Range</h2>
+          <div className="d-flex gap-5">
+          <TextField
+              type="date"
+              label="First Date"
+              name="firstDate"
+              value={dateRange.firstDate}
+              onChange={handleDateChange}
+              fullWidth
+              margin="normal"
+              // Trigger the date picker on click
+              sx={{
+                '& input': {
+                  '-webkit-text-fill-color': 'black', // Ensures text remains black while typing
+                  caretColor: 'black',
+                  color: 'black',
+                },'& label': {
+            transform: 'translate(14px, -16px) scale(0.75)', // Label ko upar set karna
+            transformOrigin: 'top left',
           },
-        }}
-        className="Paginition-for-AllOrder"
-      />
+              }}
+            />
+            <TextField
+              type="date"
+              label="Last Date" 
+              name="lastDate"
+              value={dateRange.lastDate}
+              onChange={handleDateChange}
+              fullWidth
+              margin="normal"
+              sx={{
+                '& input': {
+                  color: 'black',
+                  '-webkit-text-fill-color': 'black', // Ensures text remains black while typing
+                  caretColor: 'black', // Keeps the cursor visible
+                },'& label': {
+            transform: 'translate(14px, -16px) scale(0.75)', // Label ko upar set karna
+            transformOrigin: 'top left',
+          },
+              }}
+            />
+          </div>
+          <Box display="flex" justifyContent="space-between" mt={2}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={applyCustomDateFilter}
+              sx={{ borderRadius: "8px", textTransform: "none" , width:200 }}
+            >
+              Apply
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleModalClose}
+              sx={{ borderRadius: "8px", textTransform: "none" }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      <Pagination />
     </>
   );
 };
 
-export default AllOrder;
+export default AllOrder;  

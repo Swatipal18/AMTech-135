@@ -378,18 +378,19 @@ function NewBanner() {
                                     {/* Send Time Options */}
                                     <div className="  mb-2">
                                         <label className="form-label">Send Time:</label>
-                                        <div className="d-flex gap-3">
+                                        <div className="d-flex gap-3 align-items-center justify-content-center  ">
                                             <button
                                                 type="button"
-                                                className={`btn ${sendType === 'now' ? 'Send-time' : 'edit-btn'}`}
+                                                className={`btn  ${sendType === 'now' ? 'Send-time' : 'edit-btn'}`}
                                                 onClick={() => handleSendTypeChange('now')}
                                             >
                                                 Now
                                             </button>
                                             <button
                                                 type="button"
-                                                className={`btn ${sendType === 'schedule' ? 'Send-time' : 'edit-btn'}`}
+                                                className={`btn  ${sendType === 'schedule' ? 'Send-time' : 'edit-btn'}`}
                                                 onClick={() => handleSendTypeChange('schedule')}
+                                                style={{ width : '160px' }}
                                             >
                                                 Schedule
                                             </button>

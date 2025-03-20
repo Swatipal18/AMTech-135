@@ -42,6 +42,7 @@ import EditSubscriptionForm from '../Component/subscription/EditSubscriptionForm
 import AddOns from '../Component/Item/AddOns'
 import Ingredients from '../Component/Item/Ingredients'
 import EditBanners from '../Component/UploadBanners/EditBanners'
+import EditNotification from '../Component/Notifications/EditNotification'
 
 // Protected Route Component
 const ProtectedRoute = () => {
@@ -176,6 +177,10 @@ function Navbar() {
                         {
                             path: "/NewNotification",
                             element: <NewNotification />
+                        },
+                        {
+                            path: "/EditNotification/:id",
+                            element: <EditNotification />
                         },
                         {
                             path: "/AllBanners",

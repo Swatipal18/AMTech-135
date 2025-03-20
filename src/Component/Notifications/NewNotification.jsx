@@ -1,22 +1,22 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import React, { useEffect, useState, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 import { GrUploadOption, GrClose } from "react-icons/gr";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
-import Cropper from 'react-easy-crop';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+import Cropper from "react-easy-crop";
 import { FaArrowRotateRight } from "react-icons/fa6";
 import { GoPlusCircle } from "react-icons/go";
 import { FiMinusCircle } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
-import imageCompression from 'browser-image-compression';
+import imageCompression from "browser-image-compression";
 function NewNotification() {
     const baseUrl = import.meta.env.VITE_API_URL;
     const [imageList, setImageList] = useState([]);
-    const [imageError, setImageError] = useState('');
-    const { register, handleSubmit, setValue, watch } = useForm();
-    const [sends, setSends] = useState('');
+    const [imageError, setImageError] = useState("");
+    const { register, handleSubmit, setValue, watch, reset } = useForm();
+    const [sends, setSends] = useState("");
     const [imageSelected, setImageSelected] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(null);
@@ -25,18 +25,27 @@ function NewNotification() {
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const navigate = useNavigate();
-    const send = ['All Users', 'Personal', 'Business', 'Delivery Boy'];
+    //   const send = {["all", "Personal", "Business", "Delivery Boy"]};
+    const send = [
+        { name: "all", num: "all" },
+        { name: "Personal", num: 1 },
+        { name: "Business", num: 0 },
+        { name: "Delivery Boy", num: 4 },
+    ];
     const watchImages = watch("images");
+    const [activeButton, setActiveButton] = useState("not-schedule");
+
+    console.log("activeButton: ", activeButton);
 
     const handleImageChange = async (event) => {
         const files = Array.from(event.target.files);
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
         const maxFileSizeInKB = 10240; // 10 MB
         const newImages = [];
 
         for (const file of files) {
             if (!allowedTypes.includes(file.type)) {
-                setImageError('Only image files (JPG, PNG) are allowed!');
+                setImageError("Only image files (JPG, PNG) are allowed!");
                 continue;
             }
 
@@ -44,7 +53,7 @@ function NewNotification() {
             if (fileSizeInKB <= maxFileSizeInKB) {
                 newImages.push({
                     file: file,
-                    preview: URL.createObjectURL(file)
+                    preview: URL.createObjectURL(file),
                 });
             } else {
                 try {
@@ -58,36 +67,42 @@ function NewNotification() {
                     const compressedFileSizeInKB = compressedFile.size / 1024;
 
                     if (compressedFileSizeInKB > maxFileSizeInKB) {
-                        setImageError('Compressed file size should not exceed 10 MB.');
+                        setImageError("Compressed file size should not exceed 10 MB.");
                         continue;
                     }
 
                     newImages.push({
                         file: compressedFile,
-                        preview: URL.createObjectURL(compressedFile)
+                        preview: URL.createObjectURL(compressedFile),
                     });
                 } catch (error) {
-                    console.error('Error during image compression:', error);
-                    setImageError('Error while compressing image.');
+                    console.error("Error during image compression:", error);
+                    setImageError("Error while compressing image.");
                 }
             }
         }
 
         // Update imageList state with all new images
-        setImageList(prev => [...prev, ...newImages]);
+        setImageList((prev) => [...prev, ...newImages]);
         setImageSelected(true);
-        setImageError('');
+        setImageError("");
 
         // Update form value with all files (existing + new)
-        const allFiles = [...(watchImages || []), ...newImages.map(img => img.file)];
+        const allFiles = [
+            ...(watchImages || []),
+            ...newImages.map((img) => img.file),
+        ];
         setValue("images", allFiles);
     };
 
     const removeImage = (index) => {
-        setImageList(prev => {
+        setImageList((prev) => {
             const newList = prev.filter((_, i) => i !== index);
             // Update form value with remaining files
-            setValue("images", newList.map(img => img.file));
+            setValue(
+                "images",
+                newList.map((img) => img.file)
+            );
             return newList;
         });
 
@@ -95,7 +110,6 @@ function NewNotification() {
             setImageSelected(false);
         }
     };
-
 
     const openImageEditor = (index) => {
         setCurrentImageIndex(index);
@@ -114,7 +128,6 @@ function NewNotification() {
     const updateImagePreview = async () => {
         try {
             if (!croppedAreaPixels) return;
-
             const croppedImage = await applyCropZoomRotation(
                 imageList[currentImageIndex].preview,
                 croppedAreaPixels,
@@ -125,14 +138,14 @@ function NewNotification() {
             const response = await fetch(croppedImage);
             const blob = await response.blob();
             const fileName = imageList[currentImageIndex].file.name;
-            const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+            const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
 
             // Update the image list with the new cropped image
-            setImageList(prev => {
+            setImageList((prev) => {
                 const newList = [...prev];
                 newList[currentImageIndex] = {
                     file: croppedFile,
-                    preview: croppedImage
+                    preview: croppedImage,
                 };
                 return newList;
             });
@@ -142,9 +155,8 @@ function NewNotification() {
                 i === currentImageIndex ? croppedFile : img.file
             );
             setValue("images", allFiles);
-
         } catch (error) {
-            console.error('Error updating image preview:', error);
+            console.error("Error updating image preview:", error);
         }
     };
 
@@ -156,16 +168,16 @@ function NewNotification() {
     const createImage = (url) =>
         new Promise((resolve, reject) => {
             const image = new Image();
-            image.addEventListener('load', () => resolve(image));
-            image.addEventListener('error', (error) => reject(error));
+            image.addEventListener("load", () => resolve(image));
+            image.addEventListener("error", (error) => reject(error));
             image.src = url;
         });
 
     // In your utils/getCroppedImg.js file:
     const applyCropZoomRotation = async (imageSrc, pixelCrop, rotation = 0) => {
         const image = await createImage(imageSrc);
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
         const maxSize = Math.max(image.width, image.height);
         const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
@@ -188,8 +200,8 @@ function NewNotification() {
 
         // extract cropped image
         const data = ctx.getImageData(
-            safeArea / 2 - (pixelCrop.width / 2),
-            safeArea / 2 - (pixelCrop.height / 2),
+            safeArea / 2 - pixelCrop.width / 2,
+            safeArea / 2 - pixelCrop.height / 2,
             pixelCrop.width,
             pixelCrop.height
         );
@@ -200,44 +212,87 @@ function NewNotification() {
 
         // place image data in the new canvas
         ctx.putImageData(data, 0, 0);
-
         return new Promise((resolve) => {
             canvas.toBlob((blob) => {
                 resolve(URL.createObjectURL(blob));
-            }, 'image/jpeg');
+            }, "image/jpeg");
         });
     };
-    const onSubmit = async (data) => {
-        const formData = new FormData();
-        if (data.images) {
-            data.images.forEach((file, index) => {
-                formData.append(`images[${index}]`, file);
-            });
+
+    const [scheduledDate, setScheduledDate] = useState("");
+    const [hour, setHour] = useState("");
+    const [minutes, setMinutes] = useState("");
+    const [period, setPeriod] = useState("AM");
+
+
+
+
+    const formatDateToISO = () => {
+        if (!scheduledDate || !hour || !minutes) return "";
+
+        let formattedHour = parseInt(hour, 10);
+        if (period === "PM" && formattedHour !== 12) {
+            formattedHour += 12;
+        } else if (period === "AM" && formattedHour === 12) {
+            formattedHour = 0;
         }
-        console.log(data, "data");
-        console.log(formData, "formData");
-        // const response = await axios.post(`${baseUrl}/menu/create`, data, {
-        //     headers: {
-        //         "Content-Type": "multipart/form-data"
-        //     }
-        // });
 
-        // if (response.data.success) {
-        //     toast.success(response.data.message || "Item added successfully!", {
-        //         position: "top-right",
-        //         autoClose: 1000,
-        //         theme: "colored",
-        //         style: {
-        //             backgroundColor: 'green',
-        //             color: '#000',
-        //         },
-        //     });
-        //     reset();
+        // Create date in local timezone
+        const localDate = new Date(
+            scheduledDate + `T${String(formattedHour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`
+        );
 
-        //     // Handle form submission
-        // };
-    }
+        // Convert to UTC
+        return localDate.toISOString();
+    };
 
+
+    console.log("formatDateToISO:", formatDateToISO());
+
+    const onSubmit = async (data) => {
+        console.log("data: ", data);
+
+        let main = {
+            ...data,
+            isScheduled: activeButton,
+            ...(activeButton !== "not-schedule" && {
+                scheduleDateTime: formatDateToISO(),
+            }),
+        };
+        // Ensure only one image is sent instead of an array
+        if (
+            data.images &&
+            data.images.length > 0 &&
+            data.images[0] instanceof File
+        ) {
+            // delete main.images; // Remove `images` key to avoid array issue
+            main.images = data.images[0]; // Send single file instead of array
+        }
+        console.log("main: ", main);
+
+        const response = await axios.post(`${baseUrl}/notifications/create`, main, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+        console.log({
+            ...data,
+            scheduleDateTime: formatDateToISO(),
+            isScheduled: activeButton,
+        });
+        console.log("response: ", response);
+
+        if (response.data.success) {
+            toast.success(response.data.message || "Item added successfully!", {
+                position: "top-right",
+                autoClose: 1000,
+                theme: "colored",
+                style: {
+                    backgroundColor: "green",
+                    color: "#000",
+                },
+            });
+            reset();
+        }
+    };
 
     return (
         <div className="container-fluid">
@@ -253,25 +308,23 @@ function NewNotification() {
                                         <label className="form-label">Title:</label>
                                         <input
                                             type="text"
-                                            {...register("username")}
+                                            {...register("title")}
                                             className="form-control shadow text-capitalize"
                                             placeholder="Add A Title Here"
                                         />
-
                                     </div>
-
                                     {/* Description Field */}
                                     <div className="mb-4">
                                         <label className="form-label">Message :</label>
                                         <textarea
-                                            {...register("description")}
+                                            {...register("body")}
                                             className="form-control shadow text-capitalize"
                                             rows="8"
                                             style={{
-                                                resize: 'none',
-                                                overflowY: 'auto',
-                                                scrollbarWidth: 'none',
-                                                msOverflowStyle: 'none'
+                                                resize: "none",
+                                                overflowY: "auto",
+                                                scrollbarWidth: "none",
+                                                msOverflowStyle: "none",
                                             }}
                                             placeholder="Write A Message Here..."
                                         />
@@ -282,33 +335,119 @@ function NewNotification() {
                                         <label className="form-label">Target Link :</label>
                                         <input
                                             type="url"
-                                            {...register("url")}
+                                            {...register("link")}
                                             className="form-control shadow"
                                             placeholder="Add a Target Link Here..."
+                                            color="black"
                                         />
                                     </div>
 
                                     {/* Sends */}
-                                    <div className="mb-4">
-                                        <label className="form-label">Send To :</label>
-                                        <select
-                                            {...register("Sends")}
-                                            className="form-select form-control shadow text-capitalize"
-                                            style={{
-                                                width: '400px',
-                                                color: sends === "" ? '#8DA9C4' : 'inherit'
-                                            }}
-                                            value={sends}
-                                            onChange={(e) => setSends(e.target.value)}
-                                        >
-                                            <option value="" className="default-option">Select User To Send</option>
-                                            {send.map((option) => (
-                                                <option key={option} className='text-dark' value={option}>
-                                                    {option}
+                                    <div className="mb-4 d-flex align-items-center justify-content-between ">
+                                        <div className="">
+                                            <label className="form-label">Send To :</label>
+                                            <select
+                                                {...register("userType")}
+                                                className="form-select form-control shadow text-capitalize"
+                                                style={{
+                                                    width: "400px",
+                                                    color: sends === "" ? "#8DA9C4" : "inherit",
+                                                }}
+                                                value={sends}
+                                                onChange={(e) => setSends(e.target.value)}
+                                            >
+                                                <option value="" className="default-option">
+                                                    Select User To Send
                                                 </option>
-                                            ))}
-                                        </select>
+                                                {send.map((option) => (
+                                                    <option
+                                                        key={option.name}
+                                                        className="text-dark"
+                                                        value={option.num}
+                                                    >
+                                                        {option.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="w-50 ms-3 ">
+                                            <label className="form-label">Send Time</label>
+                                            <br />
+                                            <div className="btn-group-container d-flex gap-2 ">
+                                                <button
+                                                    className={`now-btn col-6 p-2 ${activeButton === "not-schedule"
+                                                            ? "active  active-now-btn"
+                                                            : ""
+                                                        }`}
+                                                    type="button"
+                                                    onClick={() => setActiveButton("not-schedule")}
+                                                >
+                                                    Now
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={`schedule-btn col-6 p-2 ${activeButton === "schedule"
+                                                            ? " active active-schedule-btn"
+                                                            : ""
+                                                        }`}
+                                                    onClick={() => setActiveButton("schedule")}
+                                                >
+                                                    Schedule
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
+                                    {activeButton === "schedule" && (
+                                        <div className="row  ">
+                                            <div className="col-6">
+                                                <label>Scheduled Date</label>
+                                                <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    onChange={(e) => setScheduledDate(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="col-6">
+                                                <label>Send Time</label>
+                                                <div className="d-flex gap-2 ">
+                                                    {/* Hour Dropdown */}
+                                                    <select
+                                                        className="form-control"
+                                                        onChange={(e) => setHour(e.target.value)}
+                                                    >
+                                                        <option value="">Select Hour</option>
+                                                        {[...Array(12).keys()].map((h, i) => (
+                                                            <option key={i + h + 1} value={h + 1}>
+                                                                {h + 1}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+
+                                                    {/* Minutes Dropdown */}
+                                                    <select
+                                                        className="form-control"
+                                                        onChange={(e) => setMinutes(e.target.value)}
+                                                    >
+                                                        <option value="">Select Minutes</option>
+                                                        {[...Array(60).keys()].map((m, i) => (
+                                                            <option key={i + m + 3} value={m}>
+                                                                {m}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+
+                                                    {/* AM/PM Dropdown */}
+                                                    <select
+                                                        className="form-control"
+                                                        onChange={(e) => setPeriod(e.target.value)}
+                                                    >
+                                                        <option value="AM">AM</option>
+                                                        <option value="PM">PM</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Image Upload Section */}
@@ -318,7 +457,6 @@ function NewNotification() {
                                         <div className="upload-icon">
                                             <GrUploadOption className="arrow-up" />
                                         </div>
-
                                         {/* Image previews */}
                                         <div className="image-preview-container  mt-3">
                                             {imageList.length > 0 && (
@@ -331,7 +469,7 @@ function NewNotification() {
                                                                 className="img-thumbnail cursor-pointer img-fluid"
                                                                 onClick={() => openImageEditor(0)}
                                                             />
-                                                            <h5 className='mt-2'>Main Image</h5>
+                                                            <h5 className="mt-2">Main Image</h5>
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-danger btn-sm position-absolute  remove-button"
@@ -342,45 +480,18 @@ function NewNotification() {
                                                         </div>
                                                     </div>
 
-                                                    {imageList.length > 1 && (
-                                                        <div className="remaining-images">
-                                                            {imageList.slice(1).map((image, index) => (
-                                                                <div key={index + 1} className="image-preview-item position-relative">
-                                                                    <img
-                                                                        src={image.preview}
-                                                                        alt={`Preview ${index + 2}`}
-                                                                        className="img-thumbnail cursor-pointer img-fluid"
-                                                                        onClick={() => openImageEditor(index + 1)}
-                                                                    />
-                                                                    <button
-                                                                        type="button"
-                                                                        className="btn btn-danger btn-sm position-absolute remove-button"
-                                                                        onClick={() => removeImage(index + 1)}
-                                                                    >
-                                                                        <MdDelete />
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-
-                                                    <button
-                                                        type="button"
-                                                        className="edit-btn mt-3 w-50"
-                                                        onClick={() => document.getElementById("fileInput").click()}
-                                                    >
-                                                        Add More Images
-                                                    </button>
-
                                                     <div className="mt-2 text-muted text-center">
-                                                        {imageList.length} image{imageList.length > 1 ? 's' : ''} selected
+                                                        {imageList.length} image
+                                                        {imageList.length > 1 ? "s" : ""} selected
                                                     </div>
                                                 </>
                                             )}
 
                                             {imageList.length === 0 && (
                                                 <>
-                                                    <div className="upload-text fs-5">Upload Multiple Images Here</div>
+                                                    <div className="upload-text fs-5">
+                                                        Upload Multiple Images Here
+                                                    </div>
                                                     <div className="upload-subtext fs-6">
                                                         (Jpg, png files supported only)
                                                         <br />
@@ -389,25 +500,27 @@ function NewNotification() {
                                                     <button
                                                         type="button"
                                                         className="edit-btn mt-4 w-50 fs-6"
-                                                        onClick={() => document.getElementById("fileInput").click()}
+                                                        onClick={() =>
+                                                            document.getElementById("fileInput").click()
+                                                        }
                                                     >
                                                         Select Images
                                                     </button>
                                                 </>
                                             )}
 
-
                                             <input
                                                 type="file"
                                                 className="form-control d-none"
                                                 id="fileInput"
-                                                multiple
                                                 accept="image/jpeg,image/png,image/jpg"
                                                 {...register("images")}
                                                 onChange={handleImageChange}
                                             />
                                         </div>
-                                        {imageError && <div className="text-danger mt-2">{imageError}</div>}
+                                        {imageError && (
+                                            <div className="text-danger mt-2">{imageError}</div>
+                                        )}
                                     </div>
 
                                     {/* Image Editing Modal */}
@@ -420,7 +533,10 @@ function NewNotification() {
                                                 }
                                             }}
                                         >
-                                            <div className="modal-div" onClick={(e) => e.stopPropagation()}>
+                                            <div
+                                                className="modal-div"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 <button
                                                     type="button"
                                                     onClick={closeModal}
@@ -440,32 +556,50 @@ function NewNotification() {
                                                     onCropComplete={onCropComplete}
                                                 />
                                                 <div className="crop-controls">
-                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon" style={{ width: "180px", fontSize: "15px" }}>
+                                                    <div
+                                                        className="control-group d-flex align-items-center pt-1 rounded-pill ps-2 zoom-icon"
+                                                        style={{ width: "180px", fontSize: "15px" }}
+                                                    >
                                                         <label className="form-labels me-2">Zoom</label>
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm border-0"
-                                                            onClick={() => setZoom(prev => Math.max(1, prev - 0.1))}
+                                                            onClick={() =>
+                                                                setZoom((prev) => Math.max(1, prev - 0.1))
+                                                            }
                                                         >
-                                                            <FiMinusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                            <FiMinusCircle
+                                                                style={{ color: "#000080", fontSize: "18px" }}
+                                                            />
                                                         </button>
                                                         <span className="mx-2">{zoom.toFixed(1)}x</span>
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm border-0"
-                                                            onClick={() => setZoom(prev => Math.min(3, prev + 0.1))}
+                                                            onClick={() =>
+                                                                setZoom((prev) => Math.min(3, prev + 0.1))
+                                                            }
                                                         >
-                                                            <GoPlusCircle style={{ color: "#000080", fontSize: "18px" }} />
+                                                            <GoPlusCircle
+                                                                style={{ color: "#000080", fontSize: "18px" }}
+                                                            />
                                                         </button>
                                                     </div>
-                                                    <div className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon" style={{ width: "130px", fontSize: "15px" }}>
+                                                    <div
+                                                        className="control-group d-flex align-items-center pt-1 rounded-pill ps-3 zoom-icon"
+                                                        style={{ width: "130px", fontSize: "15px" }}
+                                                    >
                                                         <label className="form-labels">Rotation</label>
                                                         <button
                                                             type="button"
                                                             className="btn btn-sm mx-2 border-0"
-                                                            onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                                            onClick={() =>
+                                                                setRotation((prev) => (prev + 90) % 360)
+                                                            }
                                                         >
-                                                            <FaArrowRotateRight style={{ color: "#000080", fontSize: "17px" }} />
+                                                            <FaArrowRotateRight
+                                                                style={{ color: "#000080", fontSize: "17px" }}
+                                                            />
                                                         </button>
                                                     </div>
                                                     <button
@@ -494,32 +628,27 @@ function NewNotification() {
                                             </div>
                                         </div>
                                     )}
-
-
                                 </div>
                                 {/* Submit buttons */}
                                 <div className="mt-4">
-                                    <button type="submit" className="submit-btn ms-3 rounded-pill"
+                                    <button
+                                        type="submit"
+                                        className="submit-btn ms-3 rounded-pill"
                                         style={{
-                                            textTransform: "uppercase"
+                                            textTransform: "uppercase",
                                         }}
-                                    >Send Notification</button>
-                                    <button type="submit" className="submit-btn  rounded-pill "
-                                        style={{
-                                            backgroundColor: "#8DA9C4",
-                                            color: "#0B2545",
-                                            textTransform: "uppercase"
-                                        }}
-                                    >SCHEDULE</button>
-
+                                    >
+                                        Send Notification
+                                    </button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     );
 }
 
-export default NewNotification
+export default NewNotification;

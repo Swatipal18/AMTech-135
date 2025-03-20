@@ -7,8 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import debounce from 'lodash.debounce';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
-
+const baseUrl = import.meta.env.VITE_API_URL;
 function AllNotifications() {
     const [search, setSearch] = useState('');
     const [role, setRole] = useState('all');
@@ -18,12 +17,14 @@ function AllNotifications() {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    // useEffect(() => {
-    //     setCurrentPage(1);
-    // }, [searchTerm]);
-    // useEffect(() => {
-    //     fetchItems(currentPage, searchTerm);
-    // }, [currentPage, limit]);
+    const [items, setItems] = useState([])
+    const navigate = useNavigate()
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+    useEffect(() => {
+        fetchItems(currentPage, searchTerm);
+    }, [currentPage, limit]);
     function Allitemsearch(e) {
         const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
@@ -106,6 +107,7 @@ function AllNotifications() {
         );
     };
     const handleDelete = async (_id) => {
+        // console.log('_id: ', _id);
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: "This action cannot be undone!",
@@ -117,7 +119,7 @@ function AllNotifications() {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`${baseUrl}/menu/delete/${_id}`);
+                await axios.delete(`${baseUrl}/notifications/${_id}`);
                 fetchItems();
                 toast.success('Item deleted successfully!', {
                     position: "top-right",
@@ -137,42 +139,48 @@ function AllNotifications() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/EditItem/${id}`);
+        navigate(`/Editnotification/${id}`);
     };
-    // const fetchItems = async (page, search) => {
-    //     try {
-    //         setLoading(true);
-    //         setError(null);
-    //         const pageNumber = Math.max(Number(page), 1);
-    //         const limitNumber = Number(limit);
-    //         // const response = await axios.get(`${baseUrl}/subscriptions/list`, {
-    //         // params: { page: pageNumber, limit: limitNumber, search: search || '' }
-    //         // });
+    const fetchItems = async (page, search) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const pageNumber = Math.max(Number(page), 1);
+            const limitNumber = Number(limit);
+            const response = await axios.get(`${baseUrl}/notifications`,
+                {
+                    params: { page: pageNumber, limit: limitNumber, search: search || '' }
+                }
+            );
+            console.log('response: ', response.data.data.notifications);
 
-    //         if (response.data?.data?.subsItems) {
-    //             setItems(response.data.data.subsItems || []);
-    //             setTotalItems(response.data.data.subsItems.length || 0);
-    //         } else {
-    //             setError('No items found.');
-    //         }
-    //     } catch (error) {
-    //         setError('Failed to fetch items. Please try again later.');
-    //         console.error('Error fetching items:', error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+            if (response.data?.data?.notifications) {
+                setItems(response.data.data.notifications || []);
+                setTotalItems(response.data.data.notifications.length || 0);
+            } else {
+                setError('No items found.');
+            }
+        } catch (error) {
+            setError('Failed to fetch items. Please try again later.');
+            console.error('Error fetching items:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchItems()
+    }, [])
+
 
     return (
         <div className="page-container">
             <div className="header">
                 <div className="add-item ">
-
                     <Link className="text-decoration-none text-white" to="/NewNotification">
                         <FaPlus className="plus-icon me-2" />
                         Add New Notification</Link>
                 </div>
-
                 <div className="search w-50">
                     <FaSearch className="search-icons" />
                     <input
@@ -214,55 +222,14 @@ function AllNotifications() {
                             </thead>
                             <tbody>
 
-                                {/* {items.map((item, index) => (
+                                {items.map((item, index) => (
                                     <tr key={`${item._id}-${index}`} className="table-row">
-                                        <td>{item.itemName}</td>
-                                        <td>{getCategoryTitle(item.categoryId)}</td>
-                                        <td className="rating">
-                                            {[1, 2, 3, 4, 5].map((star) => (
-                                                <span
-                                                    key={star}
-                                                    className={`star ${star <= (item.ratings || 0) ? 'filled' : 'empty'}`}
-                                                >
-                                                    ★
-                                                </span>
-                                            ))}
-                                        </td>
+                                        <td>{item.title}</td>
+                                        <td>{item.body}</td>
                                         <td>
-                                            <label className={`switch ${item.isActiveForBusiness ? 'disabled' : ''}`}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={checkedItems[item._id]?.business || false}
-                                                    onChange={() => handleCheckboxChange(item._id, 'business', item)}
-                                                    disabled={item.isActiveForBusiness}
-                                                />
-                                                <span
-                                                    className="slider"
-                                                    style={{
-                                                        backgroundColor: item.isActiveForBusiness ? '#4CAF50' : '#ff0000',
-                                                        cursor: item.isActiveForBusiness ? 'not-allowed' : 'pointer'
-                                                    }}
-                                                ></span>
-                                            </label>
+                                            {item.userType === "0" ? "Business" : item.userType === "1" ? "Personal" : item.userType === "4" ? "Delivery Boy" : item.userType === "all" ? "All User" : 'Admin'}
                                         </td>
-                                        <td>
-                                            <label className={`switch ${item.isActiveForPersonal ? 'disabled' : ''}`}>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={checkedItems[item._id]?.personal || false}
-                                                    onChange={() => handleCheckboxChange(item._id, 'personal', item)}
-                                                    disabled={item.isActiveForPersonal}
-                                                />
-                                                <span
-                                                    className="slider"
-                                                    style={{
-                                                        backgroundColor: item.isActiveForPersonal ? '#4CAF50' : '#ff0000',
-                                                        cursor: item.isActiveForPersonal ? 'not-allowed' : 'pointer'
-                                                    }}
-                                                ></span>
-                                            </label>
-                                        </td>
-
+                                        <td>hello</td>
                                         <td className="actions d-flex justify-content-around">
                                             <button className="edit-btn" onClick={() => handleEdit(item._id, item)}>
                                                 EDIT
@@ -272,7 +239,7 @@ function AllNotifications() {
                                             </button>
                                         </td>
                                     </tr>
-                                ))} */}
+                                ))}
                             </tbody>
                         </table>
                         <Pagination />
